@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>Attach Labels</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader"><img src="images/labels.gif" border="0"></span></a></p>
+    <p><a href="index.html"><span class="blackheader">Attach Labels</span></a></p>
+    Attaches labels with zones' attributes (number, name, area etc) to selected zones.
+    <p><span class="blacksubheader">Tool Operation</span> </p> 
+	<ol>
+		<li>select zone objects</li>
+		<li>open tool dialog</li>
+		<li>select existing label template from a drop-down list</li>
+		<li>set appropriate layer for labels</li>
+		<li>attach labels</li>
+	</ol>
+	
+	<p><span class="blacksubheader">Advanced Operations</span> </p> 
+	It is also possible to edit label template or create a new one.<br>
+	Label template is just a string (it can be multiline if necessary), which has some mentions of zone attributes
+	prefixed by a '@' sign and may have some explanatory information as well.<br>
+	Refer to 'Attributes List' chapter of 'Help System' in order to find out what kind of properties can be displayed in
+	a label.
+
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		'Rebuild' command refreshes label's contents as well.
+	</div>
+</body>
+</html>

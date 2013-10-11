@@ -1,0 +1,65 @@
+<html>
+<head>
+<title>Recommended Workflow</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader">Recommended Workflow</span></a></p>
+    <ul>
+		<li>
+			<div class="rounded_block"><img src="images/buttons/web_dial_32.png">&nbsp;<span class="blackheader">Create some zone objects using 'LSS Zone' tool</span>
+				<ul>
+					<li><img src="images/buttons/draw_contour_cur.png">&nbsp;'Draw Contour' method</li>
+					<li><img src="images/buttons/pick_face_cur.png">&nbsp;'Pick Floor Face' method</li>
+					<li><img src="images/buttons/cut_opening.gif">&nbsp;Cut openings</li>
+				</ul>
+			</div>
+		</li>
+		<li><div class="rounded_block"><img src="images/buttons/move.png">&nbsp;<span class="blackheader">Copy the identical zones using 'Move' tool</span>
+				<ul>
+					<li><img src="images/copy1.png">&nbsp;copy within one floor</li>
+					<li><img src="images/copy2.png">&nbsp;copy identical floors</li>
+				</ul>
+			</div>
+		</li>
+		<li><div class="rounded_block"><img src="images/buttons/rebuild_32.png">&nbsp;<span class="blackheader">'Rebuild' previously copied zones</span></div></li>
+		<li><div class="rounded_block"><img src="images/buttons/props_32.png">&nbsp;<span class="blackheader">Adjust identity attributes of copied zones</span>
+				<ul>
+					<li>room number</li>
+					<li>floor number</li>
+				</ul>
+			</div>
+		</li>
+		<li><div class="rounded_block"><img src="images/buttons/labels_32.png">&nbsp;<span class="blackheader">Attach labels</span></div></li>
+		<li><div class="rounded_block"><img src="images/buttons/list_32.png">&nbsp;<span class="blackheader">Generate reports using 'List Zones' command</span>
+				<ul>
+					<li>rooms list</li>
+					<li>finishing materials list</li>
+					<li>floors list</li>
+					<li>etc</li>
+				</ul>
+			</div>
+		</li>
+	</ul>
+
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		'View/Edit Properties' dialog rebuilds selected zones in case if non-identity transformation of a zone group detected.
+		That's why 'Rebuild' step is actually optional. But it is also important to be aware of in case if some of zone's internal
+		elements (floor, ceiling, wall) were edited manually using SketchUp tools.
+	</div>
+</body>
+</html>

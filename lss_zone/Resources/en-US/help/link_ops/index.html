@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>Link Openings</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader"><img src="images/link_ops.gif" border="0"></span></a></p>
+    <p><a href="index.html"><span class="blackheader">Link Openings</span></a></p>
+    Finds adjacent openings of selected zone objects
+    <p><span class="blacksubheader">Tool Operation</span> </p> 
+	<ol>
+		<li>select zone objects</li>
+		<li>open tool dialog</li>
+		<li>adjust check distance between openings</li>
+		<li>launch linking process</li>
+	</ol>
+	
+	<p><span class="blacksubheader">Advanced Operations</span> </p> 
+	When links graph is finished it is possible
+	<ul>
+		<li>to move its nodes</li>
+		<li>to build links graph in an active model</li>
+	</ul>
+
+	<p><span class="blacksubheader">Post Processing</span></p>
+	It is possible to move spheres, which represent graph nodes, inside graph group in a model after its creation,
+	then it is possible to refresh links.<br>
+	To refresh links after moving spheres inside a group:
+	<ul>
+		<li>select graph group in a model</li>
+		<li>right-click on it and choose "Refresh Links Graph" from pop-up menu or select "Plugins&gt;LSS Zone&gt;Link Openings&gt;Refresh Links Graph" from main menu</li>
+	</ul>
+
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		The additional result of linking openings is that each adjacent opening becomes marked as internal.
+		Each zone stores internal and external openings area separately so linking process affects internal and external openings area obviously.
+		It is also possible to launch 'Recalculate' or 'Rebuild' commands to ensure, that internal openings area and external
+		openings area of selected zones are actual.
+	</div>
+</body>
+</html>

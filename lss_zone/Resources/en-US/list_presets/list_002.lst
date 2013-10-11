@@ -1,0 +1,5 @@
+query_string=@number @name @height @area @memo 
+sort_dir=ascending
+group_by=
+sort_by=number
+list_name=New List Template 002

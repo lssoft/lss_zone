@@ -1,0 +1,94 @@
+<html>
+<head>
+<title>Zone Tool</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader"><img src="images/zone_tool.gif" border="0"></span></a></p>
+    <p><a href="index.html"><span class="blackheader">Zone Tool</span></a></p>
+    Create zone object.
+    <p><span class="blacksubheader">Tool Operation</span> </p> 
+	<ol>
+		<li>open tool dialog</li>
+		<li>draw contour of a zone or pick floor face</li>
+		<li>adjust zone's settings (number, name, category, height etc)</li>
+		<li>apply settings to generate zone object</li>
+	</ol>
+	<br>
+	<span class="blacksubheader">Tool Modes</span>
+	<ul>
+		<li><img src="images/cursors/default_cur.png"> 'default' mode</li>
+		<li><img src="images/cursors/pick_face_cur.png"> 'pick face' mode</li>
+		<li><img src="images/cursors/draw_contour_cur.png"> 'draw contour' mode</li>
+		<li><img src="images/cursors/cut_opening_cur.png"> 'cut opening' mode</li>
+		<li><img src="images/cursors/eye_dropper_cur.png"> 'get material' mode</li>
+	</ul>
+	<br>
+	Activate each mode by clicking an appropriate command button on a dialog.<br>
+	Use 'Esc' key to get back from any mode to 'default' one.
+	
+	<p><span class="blacksubheader">Advanced Operations</span> </p> 
+	Select existing zone while tool is active by single-click, then
+	<ul>
+		<li>reshape its contour</li>
+		<li>change its height interactively</li>
+		<li>re-adjust its settings</li>
+		<li>cut openings</li>
+	</ul>
+	
+	<p><span class="blacksubheader">Modifier Keys</span> </p>
+	<ul>
+		<li>ESC, Home = cancel current operation and return to 'default' mode</li>
+		<li>Enter = 
+			<ul>
+				<li type="square">apply settings and generate zone when it's ready to be generated</li>
+				<li type="square">select zone under cursor in 'default' mode</li>
+				<li type="square">confirm face picking in 'pick face' mode</li>
+			</ul>
+		</li>
+		<li>Del = deletes last entered vertex of a zone contour or last segment of an opening in 'draw contour' or 'cut opening' modes</li>
+		<li>End = finish drawing a contour of a zone or contour of an opening</li>
+		<li>Tab = toggle zone's geometry information visibility, while tool is active</li>
+		<li>Ins = insert new node in zone's contour, while cursor is over center of a segment</li>
+		<li>Shift = lock inference while 'draw contour' or 'cut opening' mode is active</li>
+	</ul>
+
+	<p><span class="blacksubheader">Post Processing</span></p>
+	<ul>
+		<li><img src="../images/buttons/recalc_24.png"> 'Recalculate' calculated attributes</li>
+		<li><img src="../images/buttons/rebuild_24.png"> 'Rebuild' zone object(s)</li>
+		<li><img src="../images/buttons/props_24.png"> 'View/Edit Properties' of selected zones</li>
+	</ul>
+	
+	<p><span class="blacksubheader">Tool Modes Description</span></p>
+	<img src="images/cursors/default_cur.png"> 'Default' mode is for selecting existing zone objects. It is possible to reshape and re-adjust properties of selected zone.<br>
+	<img src="images/cursors/pick_face_cur.png"> 'Pick Face' mode is for picking any face, that represents a contour of a floor, in an active model instead of drawing zone's contour vertex-by-vertex.<br>
+	<img src="images/cursors/draw_contour_cur.png"> 'Draw Contour' mode allows entering zone contour vertex-by-vertex.<br>
+	<img src="images/cursors/cut_opening_cur.png"> 'Cut Opening' mode becomes available after selecting an existing zone. Use it to draw openings inside selected zone.<br>
+	<img src="images/cursors/eye_dropper_cur.png"> 'Get Material' mode helps to obtain material directly from any object in an active model instead of choosing it from a drop-down list.<br>
+	Each mode of 'Zone Tool' has its own context pop-up menu.
+
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		It is possible to edit generated zone group and its contents as well manually using native SketchUp tools any time later after its creation.
+		It is possible to move/copy zone object or reshape elements inside zone group either.
+		But in order to keep zone's calculated attributes actual it is necessary to refresh calculated attributes after editing zone object
+		and/or its contents.<br>
+		That's why it is necessary to use <img src="../images/buttons/recalc_24.png">&nbsp;'Recalculate' or <img src="../images/buttons/rebuild_24.png">&nbsp;'Rebuild' commands
+		after editing zone object.
+	</div>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<html>
+<head>
+<title>LSS Zone Properties</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="lss_zone.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<script type="text/javascript" src="autosuggest/autosuggest.js"></script>
+</head>
+<script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
+<script type="text/javascript" src="lss_zone_props.js" charset="win-1251"></script>
+<body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<table id="zone_settings_table" class="settings_list">
+		<tbody id="zones_cnt">
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/buttons/props_32.png" align="bottom"></div>
+				</td>
+				<td class="tbl_hdr" colspan="2">
+					&nbsp;Properties
+				</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">
+					<span id="props_list_content_radio_grp">
+						<input type="hidden" id="props_list_content">
+						<img src="images/buttons/zone_only.gif" class="radio_selected" onmouseover="radio_over(this)" onmouseout="radio_out(this)" onclick="radio_click(this)" id="zone_only" alt="Display only basic zone attributes">
+						<img src="images/buttons/all.gif" class="radio_unselected" onmouseover="radio_over(this)" onmouseout="radio_out(this)" onclick="radio_click(this)" id="all" alt="Display all available attributes">
+					</span>
+				</td>
+				<td class="value_cell"></td>
+			</tr>
+			<tr id="zones_count_row">
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Count</td>
+				<td class="value_cell"><div id="zones_count"></div></td>
+			</tr>
+			</tr>
+		</tbody>
+		<tbody id="props_tbody">
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Number</td>
+				<td class="value_cell"><input type="text" id="number" value="001" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Name</td>
+				<td class="value_cell"><input type="text" id="name" value="Room" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Category</td>
+				<td class="value_cell"><input type="text" id="category" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input"></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/height.gif" align="bottom">
+				</td>
+				<td class="name_cell">Height</td>
+				<td class="value_cell"><input type="text" id="height" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/area.gif" align="bottom">
+				</td>
+				<td class="name_cell">Area</td>
+				<td class="value_cell"><input type="text" id="area" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" disabled class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/perimeter.gif" align="bottom">
+				</td>
+				<td class="name_cell">Perimeter</td>
+				<td class="value_cell"><input type="text" id="perimeter" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" disabled class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/volume.gif" align="bottom">
+				</td>
+				<td class="name_cell">Volume</td>
+				<td class="value_cell"><input type="text" id="volume" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" disabled class="value_input"></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/floor_level.gif" align="bottom">
+				</td>
+				<td class="name_cell">Floor Level</td>
+				<td class="value_cell"><input type="text" id="floor_level" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/floor_number.gif" align="bottom">
+				</td>
+				<td class="name_cell">Floor Number</td>
+				<td class="value_cell"><input type="text" id="floor_number" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/floor_material.gif" align="bottom">
+				</td>
+				<td class="name_cell">Floor Material</td>
+				<td class="value_cell"><div id="floor_mat_container"></div></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/ceiling_material.gif" align="bottom">
+				</td>
+				<td class="name_cell">Ceiling Material</td>
+				<td class="value_cell"><div id="ceiling_mat_container"></div></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/wall_material.gif" align="bottom">
+				</td>
+				<td class="name_cell">Walls Material</td>
+				<td class="value_cell"><div id="wall_mat_container"></div></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Floor REFNO</td>
+				<td class="value_cell"><input type="text" id="floor_refno" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Ceiling REFNO</td>
+				<td class="value_cell"><input type="text" id="ceiling_refno" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Walls REFNO</td>
+				<td class="value_cell"><input type="text" id="wall_refno" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input"></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Memo</td>
+				<td class="value_cell"><input type="text" id="memo" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+		<tbody id="all_props_tbody" style="display: none;">
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td colspan="2" class="expanding_cell"><div id="all_props_container"></div></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="bottom_tbl" class="bottom_tbl">
+		<tr>
+			<td align="left">
+				&nbsp;
+			</td>
+		</tr>
+		<tr>
+			<td align="left">
+				<img src="images/buttons/rebuild_24.png" class="btn_checked" onclick="click_chk(this)" onmouseover="btn_over(this)" onmouseout="btn_out(this)" id="rebuild_on_apply" alt="Enable/disable zone rebuilding after new propeties apply">
+			</td>
+			<td align="right">
+				<input type="button" onclick="refresh_data()" value="Reset"/>
+				<input type="button" onclick="apply_settings()" value="Apply" />
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<html>
+<head>
+<title>Rebuild</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader"><img src="images/rebuild.gif" border="0"></span></a></p>
+    <p><a href="index.html"><span class="blackheader">Rebuild</span></a></p>
+    Rebuilds existing zone objects.
+    <p><span class="blacksubheader">Command Operation</span> </p> 
+	<ol>
+		<li>select zone object(s)</li>
+		<li>launch command</li>
+	</ol>
+	This command erases selected zone(s) then re-creates it/them again 'from scratch'.<br>
+	<p><span class="blacksubheader">Steps of rebuilding</span> </p> 
+	<ul>
+		<li>reading basic zone properties from existing zone</li>
+		<li>reading information about attached labels</li>
+		<li>reading zone contour from an 'area' element inside existing zone</li>
+		<li>reading coordinates of openings if any</li>
+		<li>reading custom attributes</li>
+		<li>erasing existing zone</li>
+		<li>creating new zone based on and 'area' element contour and obtained information</li>
+	</ul>
+	The point is that it is possible to manipulate a zone using native SketchUp tools (move, rotate, scale), but after such manipulation
+	some information stored in zone's properties becomes irrelevant (for example, area and perimeter will not match actual zone object's size
+	after scaling a zone).<br>
+	It is also possible to manipulate elements inside zone group (area element, wall element(s), ceiling element etc). 'Rebuild' command takes
+	in account results of manipulations with 'area' element only and discards all other manipulations' results. So it is possible to launch
+	'Rebuild' command in order to 'undo' undesirable changes of internal zone's elements if any.
+	
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		In addition to attributes refreshing 'Rebuild' command re-attaches labels with new relevant information (area, perimeter, floor level etc)
+		if any.<br>
+		In case if it is necessary to preserve manually made changes of zone group internal elements (wall, floor, ceiling, opening elements)
+		and refresh zone's quantitative attributes, which depend on mentioned elements, then 'Recalculate' command should be used. 'Recalculate'
+		command leaves geometry of zone group and its elements intact in contrast with 'Rebuild' command, but it refreshes quantitative attributes of
+		a zone either.
+	</div>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<html>
+<head>
+<title>Attributes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <table class="specification_tbl" cellspacing="0" cellpadding="0">
+		<caption class="blacksubheader">List of Attributes</caption>
+		<tbody>
+			<tr>
+				<td class="specif_tbl_sub_hdr" align="center" colspan=2>Identification</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@number</td>
+			  <td class="specif_tbl_data">number of a zone</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@name</td>
+			  <td class="specif_tbl_data">name of a zone</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@category</td>
+			  <td class="specif_tbl_data">category<br>
+				  <div class="note">
+						It is an optional parameter but it may be useful for analytical purposes.
+				  </div>
+			  </td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@floor_number</td>
+			  <td class="specif_tbl_data">
+				floor number<br>
+				<div class="note">
+					It is a string field, so it is possible to use floor names ('zero floor', 'first floor' etc) instead of numbers, but
+					in case if list of zones is sorted by floor number, then it will be sorted in an alphabetical order.
+				</div>
+			  </td>
+			</tr>
+			<tr>
+				<td class="specif_tbl_sub_hdr" align="center" colspan=2>Geometry</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@area</td>
+			  <td class="specif_tbl_data">area</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@perimeter</td>
+			  <td class="specif_tbl_data">perimeter</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@height</td>
+			  <td class="specif_tbl_data">height</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@volume</td>
+			  <td class="specif_tbl_data">volume</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@floor_level</td>
+			  <td class="specif_tbl_data">floor level<br>
+				<div class="note">
+					This is the exact value of Z coordinate of zone's floor element relatively to a model zero.
+				</div>
+			  </td>
+			</tr>
+			<tr>
+				<td class="specif_tbl_sub_hdr" align="center" colspan=2>Materials and Surfaces Areas</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@floor_material</td>
+			  <td class="specif_tbl_data">floor material</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@wall_material</td>
+			  <td class="specif_tbl_data">wall material</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@ceiling_material</td>
+			  <td class="specif_tbl_data">ceiling material</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@floor_area</td>
+			  <td class="specif_tbl_data">floor area</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@wall_area</td>
+			  <td class="specif_tbl_data">wall area</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@ceiling_area</td>
+			  <td class="specif_tbl_data">ceiling area</td>
+			</tr>
+			<tr>
+				<td class="specif_tbl_sub_hdr" align="center" colspan=2>Openings</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@wall_ext_ops_area</td>
+			  <td class="specif_tbl_data">total area of external wall openings</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@wall_int_ops_area</td>
+			  <td class="specif_tbl_data">total area of internal wall openings</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@floor_ext_ops_area</td>
+			  <td class="specif_tbl_data">total area of external floor openings</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@floor_int_ops_area</td>
+			  <td class="specif_tbl_data">total area of internal floor openings</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@ceiling_ext_ops_area</td>
+			  <td class="specif_tbl_data">total area of external ceiling openings</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@ceiling_int_ops_area</td>
+			  <td class="specif_tbl_data">total area of internal ceiling openings</td>
+			</tr>
+			<tr>
+				<td class="specif_tbl_sub_hdr" align="center" colspan=2>Reference Numbers</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@floor_refno</td>
+			  <td class="specif_tbl_data">floor material's reference number</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@wall_refno</td>
+			  <td class="specif_tbl_data">wall material's reference number</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@ceiling_refno</td>
+			  <td class="specif_tbl_data">ceiling material's reference number</td>
+			</tr>
+			<tr>
+				<td class="specif_tbl_sub_hdr" align="center" colspan=2>Misc</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">@memo</td>
+			  <td class="specif_tbl_data">memo</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

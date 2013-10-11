@@ -1,0 +1,48 @@
+<html>
+<head>
+<title>View/Edit Properties</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+	<p><a href="index.html"><span class="blackheader"><img src="images/props.gif" border="0"></span></a></p>
+    <p><a href="index.html"><span class="blackheader">View/Edit Properties</span></a></p>
+    Displays 'Properties' dialog.
+    <p><span class="blacksubheader">Command Operation</span> </p> 
+	<ol>
+		<li>open dialog</li>
+		<li>select zone object(s)</li>
+		<li>view/edit properties by changing values of input boxes</li>
+		<li>apply settings</li>
+	</ol>
+	<p><span class="blacksubheader">Advanced Operations</span> </p>
+	It is possible to unselect and select other zones while dialog is active. Dialog contents refreshes automatically after
+	selection changes.<br>
+	If 'Rebuild' option is enabled, then 'Apply' re-generates zone object(s) in a batch manner (it literally launches 'Rebuild' command
+	after changing attributes' values.
+
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		Properties dialog has two different display modes: 'basic properties' and 'all properties'.<br>
+		'Basic Properties' mode displays identification and geometric properties of a zone only. The order
+		of properties is basically the same as in main 'Zone Tool' dialog.<br>
+		'All Properties' mode displays all available zone properties. It is even possible to attach
+		new custom properties and/or erase existing properties in this mode. Note that 'Rebuild'
+		command restores 'basic properties' of a zone even after their erasing, because 'basic properties'
+		are hard-coded inside zone entity class.<br>
+		Ability of non-basic attributes erasing gives opportunity to erase previously attached labels if needed.
+	</div>
+</body>
+</html>

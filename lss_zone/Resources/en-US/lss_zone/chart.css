@@ -1,0 +1,66 @@
+﻿.charts_container
+{
+	text-align: left;
+	height: 10em;
+	width: 100%;
+	overflow-y: scroll;
+	position: relative;
+	margin-top: 1em;
+	border: 1px solid silver;
+}
+
+.chart_widget
+{
+	text-align: left;
+	height: 6em;
+	width: 12em;
+	display:inline;
+	float:left;
+	padding: 0.5em;
+}
+
+.chart_container
+{
+	text-align: left;
+	height: 6em;
+	width: 12em;
+	display:inline;
+	float:left;
+}
+
+.chart_header
+{
+	width: 100%;
+	position: relative;
+	border: 1px solid silver;
+	padding: 3px;
+}
+
+.chart_footer
+{
+	width: 100%;
+	position: relative;
+}
+
+.chart_close_btn
+{
+	width: 3em;
+	cursor: hand;
+	text-align: right;
+	display:inline;
+	float:right;
+}
+
+.chart_name
+{
+	width: 9em;
+	display:inline;
+	float:left;
+}
+
+.chart_cell
+{
+	height: 14em;
+	padding-right: 1em;
+	margin-right: 1em;
+}

@@ -1,0 +1,105 @@
+<html>
+<head>
+<title>Attach Labels</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="lss_zone.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<script type="text/javascript" src="autosuggest/autosuggest.js"></script>
+</head>
+<script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
+<script type="text/javascript" src="lss_zone_label_template.js" charset="win-1251"></script>
+<body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<table class="settings_list">
+		<tbody id="hdr_body">
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/buttons/labels_32.png" align="bottom"></div>
+				</td>
+				<td class="tbl_hdr" colspan="2">
+					&nbsp;Label Settings
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="settings_list">
+		<tbody id="label_string_body">
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="fixed_name_cell">Template name</td>
+				<td class="fixed_value_cell">
+					<input type="text" value="" id="preset_name" class="value_input" onchange="send_setting(this)">
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell" colspan="2">Label Text</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="fixed_text_cell" id="label_text_container" colspan="2">
+					<textarea rows="5" id="label_template" onkeyup="send_label_template(this)" class="value_input"></textarea>
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell" colspan="2">Preview of Label</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="label_preview_cell" colspan="2">
+					<textarea rows="5" id="preview_container" class="preview_area"></textarea>
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="bottom_tbl" class="bottom_tbl">
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td align="right">
+				<input type="button" onclick="save_template()" value="Save" />
+				<input type="button" onclick="cancel_changes()" value="Cancel"/>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

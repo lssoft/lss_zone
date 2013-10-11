@@ -1,0 +1,126 @@
+<html>
+<head>
+<title>List Template</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="lss_zone.css" rel="stylesheet" type="text/css">
+<link href="chart.css" rel="stylesheet" type="text/css">
+<link href="data_table.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<script type="text/javascript" src="autosuggest/autosuggest.js"></script>
+</head>
+<script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
+<script type="text/javascript" src="lss_zone_list_template.js" charset="win-1251"></script>
+<script src="raphael/raphael-min.js" charset="utf-8"></script>
+<script src="raphael/g.raphael-min.js" charset="utf-8"></script>
+<script src="raphael/g.pie-min.js" charset="utf-8"></script>
+<body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<table id="page_table" class="settings_list">
+		<tbody id="list_body">
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/buttons/list_zones_32.png" align="bottom"></div>
+				</td>
+				<td class="tbl_hdr">
+					&nbsp;List Template
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="settings_list">
+		<tbody>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="fixed_name_cell">Template name</td>
+				<td class="fixed_value_cell">
+					<input type="text" value="" id="list_name" class="value_input" onchange="send_setting(this)">
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="settings_list">
+		<tbody>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="table_cell"><div class="table_container" id="table_container"></div></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="settings_list">
+		<tbody id="settings_body">
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="fixed_name_cell">Query String</td>
+				<td class="fixed_text_cell"><textarea rows="4" id="query_string" onkeyup="query_str_key_up(this)" class="value_input"></textarea></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="fixed_name_cell">Sort By</td>
+				<td class="fixed_value_cell">
+					<select id="sort_by" class="value_input" onchange="query_condition_change(this)"></select>
+				</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="fixed_name_cell">Sort Direction</td>
+				<td class="fixed_value_cell">
+					<select id="sort_dir" class="value_input" onchange="query_condition_change(this)" value="ascending">
+						<option value="ascending">ascending</option>
+						<option value="descending">descending</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="fixed_name_cell">Group By</td>
+				<td class="fixed_value_cell">
+					<select id="group_by" class="value_input" onchange="query_condition_change(this)"></select>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="settings_list">
+		<tbody id="settings_body">
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="chart_cell" colspan="2">
+					<input type="button" onclick="add_new_chart()" value="Add Chart">
+					<div class="charts_container" id="charts_container"></div>
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="bottom_tbl" class="bottom_tbl">
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td align="right">
+				<input type="button" onclick="save_template()" value="Save" />
+				<input type="button" onclick="cancel_changes()" value="Cancel"/>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

@@ -1,0 +1,14 @@
+query_string=@number @name @floor_material @floor_area @ceiling_material @ceiling_area @wall_material @wall_area
+sort_dir=ascending
+group_by=
+sort_by=name
+list_name=Materials (Simple)
+<name_aliases>
+name=Room Name
+number=Room#
+area=Floor Area
+walls_area=Wall Area
+floor_material=Floor Material
+ceiling_material=Ceiling Material
+wall_material=Wall Material
+</name_aliases>

@@ -1,0 +1,5 @@
+label_name=Number and Volume
+<label_template>
+@number
+Volume=@volume
+<label_template>

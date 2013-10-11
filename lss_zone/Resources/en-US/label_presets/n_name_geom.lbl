@@ -1,0 +1,5 @@
+label_name=Name and Area
+<label_template>
+@name
+@area
+<label_template>

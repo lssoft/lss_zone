@@ -1,0 +1,20 @@
+query_string=@number @name @area @perimeter @volume
+sort_dir=ascending
+group_by=
+sort_by=number
+list_name=Rooms Geometry
+<chart>
+legend_field=name
+chart_name=Areas
+data_field=area
+</chart>
+<chart>
+legend_field=name
+chart_name=Perimeters
+data_field=perimeter
+</chart>
+<chart>
+legend_field=name
+chart_name=Volumes
+data_field=volume
+</chart>

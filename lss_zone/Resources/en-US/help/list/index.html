@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>List Zones</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader"><img src="images/list.gif" border="0"></span></a></p>
+    <p><a href="index.html"><span class="blackheader">List Zones</span></a></p>
+    Generates a list of selected zones attributes.
+    <p><span class="blacksubheader">Tool Operation</span> </p> 
+	<ol>
+		<li>select zone objects</li>
+		<li>open tool dialog</li>
+		<li>select existing report template from a drop-down list</li>
+		<li>save generated list into a file</li>
+	</ol>
+	
+	<p><span class="blacksubheader">Advanced Operations</span> </p> 
+	It is also possible to edit list template or create a new one.<br>
+	List template is just a string, which has some mentions of zone attributes
+	prefixed by a '@' sign. The order of mentions in a string matters (the order of columns of result list is literally the same).<br>
+	Refer to 'Attributes List' chapter of 'Help System' in order to find out what kind of properties can be displayed in
+	a list.
+
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		It is recommended to launch 'Recalculate' or 'Rebuild' commands before launching zones listing to ensure
+		that calculated attributes contain actual data.
+	</div>
+</body>
+</html>

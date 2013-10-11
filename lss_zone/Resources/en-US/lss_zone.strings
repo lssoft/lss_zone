@@ -1,0 +1,140 @@
+//LSS Zone extension resource file
+//Links System Software (c)2013
+//lss_zone_entity.rb
+"Room"="Room";
+"There is no nodal points to create zone object from..."="There is no nodal points to create zone object from...";
+"Create Zone"="Create Zone";
+//lss_zone_help.rb
+"Help"="Help";
+"Click to view extension's Help System."="Click to view extension's Help System.";
+//lss_zone_label_template.rb
+"Label Template"="Label Template";
+//lss_zone_label.rb
+"Attach Labels"="Attach Labels";
+"Select zones, then click to attach labels."="Select zones, then click to attach labels.";
+"Filtering selection: "="Filtering selection: ";
+"Filtering complete."="Filtering complete.";
+"Labels"="Labels";
+"Attaching labels: "="Attaching labels: ";
+"Labels attaching complete."="Labels attaching complete.";
+"New Label Template"="New Label Template";
+"It is necessary to select some zone objects before launching 'Labels' command."="It is necessary to select some zone objects before launching 'Labels' command.";
+//lss_zone_layers.rb
+"LSS Zone Area"="LSS Zone Area";
+"LSS Zone Wall"="LSS Zone Wall";
+"LSS Zone Floor"="LSS Zone Floor";
+"LSS Zone Ceiling"="LSS Zone Ceiling";
+"LSS Zone Volume"="LSS Zone Volume";
+"LSS Zone Openings"="LSS Zone Openings";
+"LSS Zone"="LSS Zone";
+//lss_zone_link_ops.rb
+"Link Openings Tool"="Link Openings Tool";
+"Select zones with openings, then click to link openings."="Select zones with openings, then click to link openings.";
+"Refresh Links Graph"="Refresh Links Graph";
+"Link Openings"="Link Openings";
+"It is necessary to select some zone objects before launching 'Link Openings' command."="It is necessary to select some zone objects before launching 'Link Openings' command.";
+"Collecting openings: "="Collecting openings: ";
+"Collecting complete."="Collecting complete.";
+"Linking openings: "="Linking openings: ";
+"Linking complete."="Linking complete.";
+"Build Graph"="Build Graph";
+"Populating with nodes: "="Populating with nodes: ";
+"Populating with nodes complete."="Populating with nodes complete.";
+"Populating with links: "="Populating with links: ";
+"Populating with links complete."="Populating with links complete.";
+"It is necessary to select some graph objects before launching 'Refresh Links Graph' command."="It is necessary to select some graph objects before launching 'Refresh Links Graph' command.";
+"Refresh Graph"="Refresh Graph";
+"Reading nodes and links: "="Reading nodes and links: ";
+"Reading complete."="Reading complete.";
+"Building nodes array: "="Building nodes array: ";
+"Building links array: "="Building links array: ";
+"Graph refreshing complete."="Graph refreshing complete.";
+//lss_zone_list.rb
+"List Zones"="List Zones";
+"Select zones, then click to generate a list of selected zones."="Select zones, then click to generate a list of selected zones.";
+"It is necessary to select some zone objects before launching 'List' command."="It is necessary to select some zone objects before launching 'List' command.";
+"Collecting data: "="Collecting data: ";
+"Data collection complete."="Data collection complete.";
+"Selecting fields: "="Selecting fields: ";
+"Selection complete."="Selection complete.";
+"Grouping: "="Grouping: ";
+"Grouping complete."="Grouping complete.";
+"Formatting data: "="Formatting data: ";
+"Formatting complete."="Formatting complete.";
+"New List Template"="New List Template";
+"Sending data: "="Sending data: ";
+"Data sent."="Data sent.";
+"Save List of Zones to HTML File"="Save List of Zones to HTML File";
+"zones_list.html"="zones_list.html";
+"Saving to a file: "="Saving to a file: ";
+"Saving complete."="Saving complete.";
+//lss_zone_list_template.rb
+"List Template"="List Template";
+//lss_zone_props.rb
+"View/Edit Properties"="View/Edit Properties";
+"Select zones, then click to view/edit their properties."="Select zones, then click to view/edit their properties.";
+"Reading attributes: "="Reading attributes: ";
+"Attributes reading complete."="Attributes reading complete.";
+"Adjust Properties of the Zone(s)"="Adjust Properties of the Zone(s)";
+"Applying new properties: "="Applying new properties: ";
+"Transformed zone was rebuilded"="Transformed zone was rebuilded";
+"Applying new properties: "="Applying new properties: ";
+"New properties applying complete."="New properties applying complete.";
+"Properties"="Properties";
+"#Default"="#Default";
+"There are "="There are ";
+" entities selected."=" entities selected.";
+"It is necessary to select a zone to view/edit its properties."="It is necessary to select a zone to view/edit its properties.";
+//lss_zone_rebuild.rb
+"Rebuild"="Rebuild";
+"Select zones, then click to rebuild."="Select zones, then click to rebuild.";
+"It is necessary to select some zone objects before launching 'Rebuild' command."="It is necessary to select some zone objects before launching 'Rebuild' command.";
+"Rebuild Zone(s)"="Rebuild Zone(s)";
+"Rebuilding zones: "="Rebuilding zones: ";
+"Rebuilding complete."="Rebuilding complete.";
+//lss_zone_recalc.rb
+"Recalculate"="Recalculate";
+"Select zones, then click to recalculate."="Select zones, then click to recalculate.";
+"It is necessary to select some zone objects before launching 'Recalculate' command."="It is necessary to select some zone objects before launching 'Recalculate' command.";
+"Recalculate Zone(s)"="Recalculate Zone(s)";
+"Recalculating attributes: "="Recalculating attributes: ";
+"Recalculation complete."="Recalculation complete.";
+"Recalculate Zone's Attributes"="Recalculate Zone's Attributes";
+//lss_zone_settings.rb
+"Global Settings"="Global Settings";
+"Click to adjust extension's global settings."="Click to adjust extension's global settings.";
+//lss_zone_tool.rb
+"LSS Zone"="LSS Zone";
+"Click to launch LSS Zone dialog window."="Click to launch LSS Zone dialog window.";
+"Room"="Room";
+"Draw zone or pick existing face before clicking 'Create'"="Draw zone or pick existing face before clicking 'Create'";
+"Click on a face to pick its material."="Click on a face to pick its material.";
+"Recreate Zone"="Recreate Zone";
+"Area: "="Area: ";
+"Perimeter: "="Perimeter: ";
+"Height: "="Height: ";
+"Volume: "="Volume: ";
+"Contour intersection(s) detected."="Contour intersection(s) detected.";
+"Finish drawing"="Finish drawing";
+"Finish"="Finish";
+"Cancel Last Node"="Cancel Last Node";
+"Cancel Whole"="Cancel Whole";
+"Hide Geometry Summary"="Hide Geometry Summary";
+"Show Geometry Summary"="Show Geometry Summary";
+"Terminate Tool"="Terminate Tool";
+"Exit Picking Mode"="Exit Picking Mode";
+"Close Contour and Finish"="Close Contour and Finish";
+"Cancel Last Segment"="Cancel Last Segment";
+"Cancel"="Cancel";
+"Delete Opening"="Delete Opening";
+"Erase Opening"="Erase Opening";
+"Select"="Select";
+"Unselect"="Unselect";
+"Insert Node"="Insert Node";
+"Reset"="Reset";
+//lss_zone_toolbar.rb
+"LSS Zone"="LSS Zone";
+//lss_zone_web.rb
+"Visit Extension's Web Page"="Visit Extension's Web Page";
+"Click to visit extension's official web-page."="Click to visit extension's official web-page.";
+"About"="About";

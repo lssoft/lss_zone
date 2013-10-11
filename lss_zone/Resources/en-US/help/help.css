@@ -1,0 +1,226 @@
+.body
+{ font: 100%  Helvetica, Arial, sans-serif;
+  margin-right:0em;
+  margin-left:0em;
+  line-height: 1.25em;
+  color:#636363; 
+  background: white
+}
+.blacksubheader 
+{ font-size:1.1em;
+  font-weight:bold;
+  color:#666666; 
+}
+
+.blackheader 
+{ font-size:1.5em;
+	font-weight:bold;
+	color:black; 
+}
+
+ol			
+{ list-style-type: decimal;
+	padding: 0;
+	margin: 0;
+	margin-left: 1.5em;
+}
+ul			
+{ list-style-type: circle;
+	padding: 0;
+	margin: 0;
+	margin-left: 1.5em;
+}
+p			{ margin-bottom: 0; }
+a			
+{ 	color: red;
+	text-decoration:none;
+}
+a:hover			
+{ 	color: #666666;
+	text-decoration:none;
+	text-shadow: black 1px 1px 2px, black 0px 0px 0.5em;
+}
+.note
+{ font-style:italic;
+  color:#666666;
+}
+.specification_tbl
+{ 	border:0;
+	padding:0;
+	margin:0;
+	width:100%;
+	border-spacing:0;
+}
+.specif_tbl_sub_hdr
+{	font-weight:bold;
+	vertical-align: middle;
+	background: white;
+	height: 32px;
+	color:#666666;
+	padding:0.5em;
+}
+.specif_tbl_data
+{	
+	background: white;
+	padding:0.5em;
+	vertical-align:top;
+}
+.specif_tbl_val
+{	
+	background: white;
+	padding:0.5em;
+	color:red;
+	vertical-align:top;
+	font-weight:bold;
+	width: 320px;
+}
+.page_tbl
+{ 	border:0;
+	border-width:0;
+	padding:0;
+	margin:0;
+	width:100%;
+	border-spacing:0;
+}
+.navigation
+{	font-size:1em;
+	font-weight:bold;
+	line-height: 1em;
+	width: 320px;
+	vertical-align:top;
+}
+.brief_info
+{
+	background: white;
+	padding:0.5em;
+	vertical-align:top;
+	font-weight:bold;
+}
+.help_header
+{
+	font-size:2em;
+	font-weight:bold;
+	background: #A6A6A6 url(images/hdr_back.gif) repeat-x;
+	vertical-align: middle;
+	color:white;
+	padding:0px;
+	height: 64px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.help_footer
+{
+	font-size:0.8em;
+	font-weight:bold;
+	background: #A6A6A6 url(images/hdr_back.gif) repeat-x;
+	vertical-align: middle;
+	color:white;
+	padding:0px;
+	height: 32px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.help_footer_font
+{
+	font-size:0.8em;
+	font-weight:bold;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.footer_a
+{
+	color:white;
+}
+
+.white_overlay
+{
+	background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left top, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* IE10+ */
+	background: linear-gradient(to top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='ffffff00', endColorstr='#ffffffff',GradientType=0 ); /* IE6-9 */
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom:0;
+	right:0;
+    z-index:2;
+}
+
+.img_thumb
+{
+	width: 100%;
+}
+
+.img_cont
+{
+	padding: 1em;
+	background: white;
+	vertical-align: middle;
+	text-align: center;
+	border-radius: 12px;
+	padding: 0.5em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 200px;
+	height: 200px;
+	margin: 1em;
+	position: relative;
+}
+
+.img_cont_over
+{
+	padding: 1em;
+	background: white;
+	vertical-align: middle;
+	text-align: center;
+	border-radius: 12px;
+	padding: 0.5em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 200px;
+	height: 200px;
+	margin: 1em;
+	box-shadow: 5px 5px 3px DimGray;
+	position: relative;
+}
+
+.rounded_block
+{
+	width: 39em;
+	background: LightGray;
+	border-color: white;
+	border: 3px;
+	vertical-align: middle;
+	margin: 1em;
+	border-radius: 12px;
+	padding: 0.5em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.pop_up_block
+{
+	background: white;
+	vertical-align: middle;
+	text-align: center;
+	border-radius: 12px;
+	padding: 0.5em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	box-shadow: 10px 10px 5px DimGray;
+}
+
+.elt_over_shadow
+{
+	box-shadow: 5px 5px 3px DimGray;
+}

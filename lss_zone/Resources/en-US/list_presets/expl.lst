@@ -1,0 +1,10 @@
+query_string=@number @name @area
+sort_dir=ascending
+group_by=
+sort_by=number
+list_name=Rooms
+<name_aliases>
+name=Room Name
+number=Number
+area=Area
+</name_aliases>

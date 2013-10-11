@@ -1,0 +1,61 @@
+﻿.table_container
+{
+	text-align: left;
+	height: 6em;
+	overflow-y: scroll;
+}
+
+.table_cell
+{
+	height: 10em;
+	padding-right: 1em;
+	margin-right: 1em;
+}
+
+.data_grid_cell
+{
+	overflow: hidden;
+	border: 1px solid black;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+.data_grid_col_head
+{
+	overflow: hidden;
+	border: 1px solid black;
+	border-spacing: 0;
+	border-collapse: collapse;
+	background: #A6A6A6 url(images/backs/hdr_back.gif) repeat-x;
+	cursor: hand;
+}
+
+.sort_by_asc
+{
+	overflow: hidden;
+	border: 1px solid black;
+	border-spacing: 0;
+	border-collapse: collapse;
+	background: #A6A6A6 url(images/backs/arrow_up.gif) no-repeat;
+	cursor: hand;
+}
+
+.sort_by_dec
+{
+	overflow: hidden;
+	border: 1px solid black;
+	border-spacing: 0;
+	border-collapse: collapse;
+	background: #A6A6A6 url(images/backs/arrow_down.gif) no-repeat;
+	cursor: hand;
+}
+
+.data_grid_table
+{
+	border: 1px solid black;
+	width: 100%;
+	background: white;
+	table-layout: fixed;
+	border-spacing: 0;
+	border-collapse: collapse;
+}

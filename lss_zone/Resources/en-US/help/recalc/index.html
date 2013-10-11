@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>Recalculate</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader"><img src="images/recalc.gif" border="0"></span></a></p>
+    <p><a href="index.html"><span class="blackheader">Recalculate</span></a></p>
+    Recalculates existing zone objects.
+    <p><span class="blacksubheader">Command Operation</span> </p> 
+	<ol>
+		<li>select zone object(s)</li>
+		<li>launch command</li>
+	</ol>
+	<br>
+	It is possible to edit elements inside zone group manually using native SketchUp tools.
+	The point is that quantitative information about modified elements which is stored in zone's attributes becomes irrelevant after
+	such modification of an element. For example, you may edit ceiling element of a zone manually, but 'ceiling_area' attribute of a zone still
+	stores an initial value, because modification of an element simply does not affect zone's attributes.<br>
+	Note that tools like 'Attach Labels', 'List Zones' or 'View/Edit Properties' display only attribute's value (not an element's actual geometry)
+	so it is important to set actual values for quantitative attributes.<br>
+	Use 'Recalculate' command to update all quantitative attributes of selected zone(s).
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		It is also possible to refresh zone(s) using 'Rebuild' command, but 'Rebuild' command refreshes zone object in a more agressive way.
+		It just re-creates it again 'from scratch'. It also ensures
+		that all quantitative attributes store relevant information, but it causes changes lost of such elements as walls, floor, ceiling if any,
+		because 'Rebuild' command re-creates all those mentioned elements again in contrast with 'Recalculate' command.
+		If there were no changes of mentioned above elements, then 'Rebuild' command is actually more preferable.
+	</div>
+</body>
+</html>

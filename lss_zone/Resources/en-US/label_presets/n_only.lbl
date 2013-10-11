@@ -1,0 +1,4 @@
+label_name=Number Only
+<label_template>
+@number
+</label_template>

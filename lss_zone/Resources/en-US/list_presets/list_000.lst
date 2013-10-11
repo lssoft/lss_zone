@@ -1,0 +1,10 @@
+query_string=@category @area
+sort_dir=ascending
+group_by=category
+sort_by=category
+list_name=Categories
+<chart>
+legend_field=category
+chart_name=Chart 0
+data_field=area
+</chart>

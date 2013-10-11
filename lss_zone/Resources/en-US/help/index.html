@@ -1,0 +1,230 @@
+<html>
+<head>
+<title>LSS Zone Help Index</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<link rel="icon" href="favicon.ico" type="image/x-icon"> 
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<script>
+function image_over(info_img){
+	img_src_str=info_img.getAttribute("src");
+	img_src_str=img_src_str.replace(".gif", "_demo.gif");
+	info_img.setAttribute("src", img_src_str);
+}
+function image_out(info_img){
+	img_src_str=info_img.getAttribute("src");
+	img_src_str=img_src_str.replace("_demo.gif", ".gif");
+	info_img.setAttribute("src", img_src_str);
+}
+</script>
+<script type="text/javascript" src="help.js"></script>
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient {
+       filter: none;
+    }
+  </style>
+<![endif]-->
+</head>
+<body class="body"> 
+ <table class="specification_tbl" cellspacing="0" cellpadding="0">
+	
+	<caption>
+		<table width="100%" class="page_tbl">
+			<tr class="help_header">
+				<td>
+					<div style="margin: 0.5em; vertical-align: middle;">'LSS Zone' Help System</div>
+				</td>
+				<td align="right">
+					<div style="margin: 0.5em; vertical-align: middle;"><a href="http://sites.google.com/site/lssoft2011/home" target="blank"><img src="images/lss_logo_alpha.gif" border="0" style="vertical-align: middle;" title="Visit Links' Systems Software web-site"></a></div>
+				</td>
+			</tr>
+		</table>
+	</caption>
+	<tfoot>
+		<tr class="help_footer">
+			<td>
+				<div style="margin: 0.5em; vertical-align: middle;">Browse more information on-line&gt;&gt;</div>
+			</td>
+			<td>
+				<table width="100%">
+					<tr class="help_footer_font">
+						<td>
+							<div style="margin: 0.5em; vertical-align: middle;" id="related_info_div">
+								<script type="text/javascript" src="rel_info.js"></script>
+							</div>
+						</td>
+						<td align="right">
+							<div style="margin: 0.5em; vertical-align: middle;">
+								<a class="footer_a" href="http://sites.google.com/site/lssoft2011" target="blank">(c)2012 Links' Systems Software</a>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</tfoot>
+	<tbody>
+		<tr>
+		  <td colspan=2>&nbsp;</td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val"><img src="images/buttons/web_dial_32.png" valign="top">&nbsp;<a href="zone_tool.html">Zone Tool</a></td>
+		  <td class="brief_info">Create zone object</td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val">
+			<a href="zone_tool.html">
+				<div class="img_cont">
+					<img src="images/screenshots/zone_tool.png" class="img_thumb" border="0">
+					<div class="white_overlay"  onmouseover="thumb_div_over(this)" onmouseout="thumb_div_out(this)"></div>
+				</div>
+			</a>
+		  </td>
+		  <td class="specif_tbl_data">
+		  Tool processing:
+			<ul>
+				<li>open tool dialog</li>
+				<li>draw contour of a zone or pick floor face</li>
+				<li>adjust zone's settings (number, name, category, height etc)</li>
+				<li>apply settings to generate zone object</li>
+			</ul>
+			<br>
+			Advanced operations:<br>
+			select existing zone while tool is active, then
+			<ul>
+				<li>reshape its contour</li>
+				<li>change its height interactively</li>
+				<li>re-adjust its settings</li>
+				<li>cut openings</li>
+			</ul>
+			<br>
+			<a href="zone_tool.html" title="Learn about modifier keys, advanced operations etc.">Learn more...</a>
+		  </td>
+		</tr>
+		
+		<tr>
+		  <td class="specif_tbl_val"><img src="images/buttons/link_ops_32.png" border="0" valign="top">&nbsp;<a href="link_ops.html">Link Openings</a></td>
+		  <td class="brief_info">Finds adjacent openings of selected zone objects</td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val">
+			<a href="link_ops.html">
+				<div class="img_cont">
+					<img src="images/screenshots/link_ops.png" class="img_thumb" border="0">
+					<div class="white_overlay"  onmouseover="thumb_div_over(this)" onmouseout="thumb_div_out(this)"></div>
+				</div>
+			</a>
+		  </td>
+		  <td class="specif_tbl_data">
+		  Tool processing:
+			<ul>
+				<li>select zone objects</li>
+				<li>open tool dialog</li>
+				<li>adjust check distance between openings</li>
+				<li>launch linking process</li>
+			</ul>
+			<br>
+			Advanced operations:<br>
+			when links graph is finished it is possible
+			<ul>
+				<li>to move its nodes</li>
+				<li>to build links graph in an active model</li>
+			</ul>
+			<br>
+			<a href="link_ops.html" title="Learn about modifier keys, advanced operations etc.">Learn more...</a>
+		  </td>
+		</tr>
+		
+		<tr>
+		  <td class="specif_tbl_val"><img src="images/buttons/labels_32.png" border="0" valign="top">&nbsp;<a href="labels.html">Attach Labels</a></td>
+		  <td class="brief_info">Attaches labels with zones' attributes (number, name, area etc) to selected zones</td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val">
+			<a href="labels.html">
+				<div class="img_cont">
+					<img src="images/screenshots/labels.png" class="img_thumb" border="0">
+					<div class="white_overlay"  onmouseover="thumb_div_over(this)" onmouseout="thumb_div_out(this)"></div>
+				</div>
+			</a>
+		  </td>
+		  <td class="specif_tbl_data">
+		  Tool processing:
+			<ul>
+				<li>select zone objects</li>
+				<li>open tool dialog</li>
+				<li>select existing label template from a drop-down list</li>
+				<li>set appropriate layer for labels</li>
+				<li>attach labels</li>
+			</ul>
+			<br>
+			It is also possible to edit label template or create a new one.
+			<br>
+			<a href="labels.html" title="Learn about modifier keys, advanced operations etc.">Learn more...</a>
+		  </td>
+		</tr>
+		
+		<tr>
+		  <td class="specif_tbl_val"><img src="images/buttons/list_32.png" border="0" valign="top">&nbsp;<a href="list.html">List Zones</a></td>
+		  <td class="brief_info">Generates a list of selected zones attributes</td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val">
+			<a href="list.html">
+				<div class="img_cont">
+					<img src="images/screenshots/list.png" class="img_thumb" border="0">
+					<div class="white_overlay"  onmouseover="thumb_div_over(this)" onmouseout="thumb_div_out(this)"></div>
+				</div>
+			</a>
+		  </td>
+		  <td class="specif_tbl_data">
+		  Tool processing:
+			<ul>
+				<li>select zone objects</li>
+				<li>open tool dialog</li>
+				<li>select existing report template from a drop-down list</li>
+				<li>save generated list into a file</li>
+			</ul>
+			<br>
+			It is also possible to edit list template or create a new one.
+			<br>
+			<a href="list.html" title="Learn about modifier keys, advanced operations etc.">Learn more...</a>
+		  </td>
+		</tr>
+		
+		<tr>
+		  <td class="specif_tbl_val"><img src="images/buttons/recalc_32.png" border="0" valign="top">&nbsp;<a href="recalc.html">Recalculate</a></td>
+		  <td class="brief_info">Recalculates existing zone objects</td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val"><img src="images/buttons/rebuild_32.png" border="0" valign="top">&nbsp;<a href="rebuild.html">Rebuild</a></td>
+		  <td class="brief_info">Rebuilds existing zone objects</td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val"><img src="images/buttons/props_32.png" border="0" valign="top">&nbsp;<a href="props.html">View/Edit Properties</a></td>
+		  <td class="brief_info">Displays 'Properties' dialog</td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val"><a href="attrs.html">Attributes List</a></td>
+		  <td class="brief_info">
+				List of basic zone's attributes.
+		  </td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val"><a href="elements.html">Elements of a Zone</a></td>
+		  <td class="brief_info">
+				Explanation of zone group contents.
+		  </td>
+		</tr>
+		<tr>
+		  <td class="specif_tbl_val"><a href="wrk_flow.html">Recommended Workflow</a></td>
+		  <td class="brief_info">
+				Recommended basic steps of using 'LSS Zone' extension.
+		  </td>
+		</tr>
+	</tbody>
+ </table>
+<p>&nbsp;</p> 
+</body>
+</html>

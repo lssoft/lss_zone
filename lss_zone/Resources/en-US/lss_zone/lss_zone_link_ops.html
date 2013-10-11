@@ -1,0 +1,99 @@
+<html>
+<head>
+<title>Link Openings</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="lss_zone.css" rel="stylesheet" type="text/css">
+<link href="links_preview.css" rel="stylesheet" type="text/css">
+<script src="raphael/raphael-min.js" charset="utf-8"></script>
+<script src="raphael/g.raphael-min.js" charset="utf-8"></script>
+</head>
+<script type="text/javascript" src="lss_zone.js" charset="UTF-8"></script>
+<script type="text/javascript" src="lss_zone_link_ops.js" charset="UTF-8"></script>
+<body class="body" onload="load_init_data()" onkeyup="key_up_body(event)" onresize="rebuild_links_graph()">
+	<table id="link_settings_table" class="settings_list">
+		<tbody id="props_body">
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/buttons/link_ops_32.png" align="bottom"></div>
+				</td>
+				<td class="tbl_hdr" colspan="2">
+					&nbsp;Link Settings
+				</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Check Distance</td>
+				<td class="value_cell"><input type="text" id="check_dist" value="001" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="links_preview_table" class="links_preview_table" style="display: none;">
+		<tbody id="links_preview_tbody">
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">
+					&nbsp;Links Preview
+				</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="links_cell" id="links_cell">
+					<div class="links_container" id="links_container"></div>
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="build_graph_table" class="settings_list" style="display: none;">
+		<tbody id="build_graph_tbody">
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">
+					<input type="checkbox" onchange="send_setting(this)" value="true" id="weightened_graph"/>&nbsp;Weigtened&nbsp;graph
+				</td>
+				<td class="value_cell">
+					<input type="button" onclick="build_graph()" value="Build" title="Click to generate graph in an active model."/>
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="bottom_tbl" class="bottom_tbl">
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td align="right">
+				<input type="button" onclick="apply_settings()" value="Link!" />
+				<input type="button" onclick="reset_tool()" value="Reset"/>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

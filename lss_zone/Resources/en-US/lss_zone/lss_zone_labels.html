@@ -1,0 +1,100 @@
+<html>
+<head>
+<title>Labels</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="lss_zone.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<script type="text/javascript" src="autosuggest/autosuggest.js"></script>
+</head>
+<script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
+<script type="text/javascript" src="lss_zone_labels.js" charset="win-1251"></script>
+<body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<table class="settings_list">
+		<tr>
+			<td class="info_img_cell">
+				<img src="images/buttons/labels_32.png" align="bottom"></div>
+			</td>
+			<td class="tbl_hdr" colspan="2">
+				&nbsp;Attach Labels
+			</td>
+		</tr>
+		<tr>
+			<td class="info_img_cell">
+				&nbsp;
+			</td>
+			<td class="name_cell" colspan="2">
+				Label template
+			</td>
+		</tr>
+	</table>
+	<table class="settings_list">
+		<tr>
+			<td class="info_img_cell">
+				&nbsp;
+			</td>
+			<td class="preset_btns_cell">
+				<input type="button" onclick="edit_preset('preset_name')" value="..." title="Edit preset"/>
+				<input type="button" onclick="add_preset()" value=" + " title="Add preset"/>
+				<input type="button" onclick="delete_preset('preset_name')" value=" - " title="Delete preset"/>
+			</td>
+			<td class="preset_selector_cell">
+				<select id="preset_name" onchange="preset_change(this)" class="value_input" title="Select preset"></select>
+			</td>
+		</tr>
+		<tr>
+			<td class="info_img_cell">
+				&nbsp;
+			</td>
+			<td class="fixed_name_cell">
+				Label's&nbsp;layer
+			</td>
+			<td class="fixed_value_cell">
+				<input type="text" id="label_layer" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input" title="Layer where labels should be">
+			</td>
+		</tr>
+	</table>
+	<table class="settings_list">
+		<tbody id="label_string_body">
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell" colspan="2">Preview of Label</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="label_preview_cell" colspan="2">
+					<textarea rows="5" id="preview_container" class="preview_area"></textarea>
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="bottom_tbl" class="bottom_tbl">
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td align="right">
+				<input type="button" onclick="apply_settings()" value="Apply" />
+				<input type="button" onclick="cancel_changes()" value="Cancel"/>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

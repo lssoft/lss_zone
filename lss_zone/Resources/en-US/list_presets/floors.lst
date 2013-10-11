@@ -1,0 +1,5 @@
+query_string=@floor_refno @floor_material @number @name @area 
+sort_dir=ascending
+group_by=floor_material
+sort_by=floor_material
+list_name=List of Floors

@@ -1,0 +1,4 @@
+label_name=Area and Volume
+<label_template>
+@area\n@volume\n\n
+<label_template>

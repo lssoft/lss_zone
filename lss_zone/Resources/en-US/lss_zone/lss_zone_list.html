@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>List Zones</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="lss_zone.css" rel="stylesheet" type="text/css">
+<link href="chart.css" rel="stylesheet" type="text/css">
+<link href="data_table.css" rel="stylesheet" type="text/css">
+</head>
+<script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
+<script type="text/javascript" src="lss_zone_list.js" charset="win-1251"></script>
+<script type="text/javascript" src="lss_zone_autocomplete.js" charset="win-1251"></script>
+<script src="raphael/raphael-min.js" charset="utf-8"></script>
+<script src="raphael/g.raphael-min.js" charset="utf-8"></script>
+<script src="raphael/g.pie-min.js" charset="utf-8"></script>
+<body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<table class="settings_list">
+		<tbody id="list_body">
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/buttons/list_zones_32.png" align="bottom"></div>
+				</td>
+				<td class="tbl_hdr" colspan="2">
+					&nbsp;List Zones
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="settings_list">
+		<tbody>
+			<tr>
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="preset_btns_cell">
+					<input type="button" onclick="edit_preset('list_name')" value="..." title="Edit preset"/>
+					<input type="button" onclick="add_preset()" value=" + " title="Add preset"/>
+					<input type="button" onclick="delete_preset('list_name')" value=" - " title="Delete preset"/>
+				</td>
+				<td class="preset_selector_cell">
+					<select id="list_name" onchange="preset_change(this)" class="value_input" title="Select preset"></select>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="settings_list">
+		<tbody>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="table_cell"><div class="table_container" id="table_container"></div></td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="settings_list">
+		<tbody>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="chart_cell" colspan="2" id="charts_cell">
+					Charts
+					<div class="charts_container" id="charts_container"></div>
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="bottom_tbl" class="bottom_tbl">
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td align="right">
+				<input type="button" onclick="apply_settings()" value="Save List" />
+				<input type="button" onclick="cancel_changes()" value="Cancel"/>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

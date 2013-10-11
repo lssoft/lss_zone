@@ -1,0 +1,40 @@
+<html>
+<head>
+<title>Elements of a Zone</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader">Elements of a Zone</span></a></p>
+    <ul>
+		<li><div class="rounded_block"><img src="images/area.png" width="110" height="54" onmouseover="image_over(this)" onmouseout="image_out(this)" style="vertical-align: middle;">&nbsp;area element</div></li>
+		<li><div class="rounded_block"><img src="images/walls.png" width="110" height="54" onmouseover="image_over(this)" onmouseout="image_out(this)" style="vertical-align: middle;">&nbsp;wall elements</div></li>
+		<li><div class="rounded_block"><img src="images/floor.png" width="110" height="54" onmouseover="image_over(this)" onmouseout="image_out(this)" style="vertical-align: middle;">&nbsp;floor element</div></li>
+		<li><div class="rounded_block"><img src="images/ceiling.png" width="110" height="54" onmouseover="image_over(this)" onmouseout="image_out(this)" style="vertical-align: middle;">&nbsp;ceiling element</div></li>
+		<li><div class="rounded_block"><img src="images/volume.png" width="110" height="54" onmouseover="image_over(this)" onmouseout="image_out(this)" style="vertical-align: middle;">&nbsp;volume element</div></li>
+		<li><div class="rounded_block"><img src="images/openings.png" width="110" height="54" onmouseover="image_over(this)" onmouseout="image_out(this)" style="vertical-align: middle;">&nbsp;opening elements</div></li>
+		<li><div class="rounded_block"><img src="images/label.png" width="110" height="54" onmouseover="image_over(this)" onmouseout="image_out(this)" style="vertical-align: middle;">&nbsp;label element</div></li>
+	</ul>
+
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		It is possible to edit 'area' element manually using native SketchUp tools, then rebuild zone object in order
+		to refresh 'floor', 'walls' and 'ceiling' elements. Note that 'Rebuild' command causes manual modifications loss of
+		'floor', 'walls' and 'ceiling' elements if any.<br>
+		If it is necessary to take in account manual modifications of mentioned above elements, then it is necessary to
+		use 'Recalculate' command.
+	</div>
+</body>
+</html>
