@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_tool.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_tool.rb ver. 1.0.1 beta 09-Oct-13
 # The main file, which contains the main logic.
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -25,8 +25,14 @@ module LSS_Extensions
 				lss_zone_cmd=UI::Command.new($lsszoneStrings.GetString("LSS Zone")){
 					Sketchup.active_model.select_tool(lss_zone_tool)
 				}
-				lss_zone_cmd.small_icon = "./tb_icons/web_dial_24.png"
-				lss_zone_cmd.large_icon = "./tb_icons/web_dial_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_cmd.small_icon = "./tb_icons/web_dial_24.png"
+					lss_zone_cmd.large_icon = "./tb_icons/web_dial_32.png"
+				else
+					lss_zone_cmd.small_icon = "./tb_icons/web_dial_16.png"
+					lss_zone_cmd.large_icon = "./tb_icons/web_dial_24.png"
+				end
 				lss_zone_cmd.tooltip = $lsszoneStrings.GetString("Click to launch LSS Zone dialog window.")
 				lss_zone_cmd.menu_text=$lsszoneStrings.GetString("LSS Zone")
 				$lsszoneToolbar.add_item(lss_zone_cmd)
@@ -98,6 +104,10 @@ module LSS_Extensions
 				@floor_refno=""
 				@wall_refno=""
 				@ceiling_refno=""
+				# Zone type
+				@zone_type="room"
+				# Box type settings
+				@floors_count=1
 				
 				@settings_hash=Hash.new
 				
@@ -175,6 +185,9 @@ module LSS_Extensions
 				@floor_refno=Sketchup.read_default("LSS_Zone", "floor_refno", "")
 				@wall_refno=Sketchup.read_default("LSS_Zone", "wall_refno", "")
 				@ceiling_refno=Sketchup.read_default("LSS_Zone", "ceiling_refno", "")
+				
+				@zone_type=Sketchup.read_default("LSS_Zone", "zone_type", "room")
+				@floors_count=Sketchup.read_default("LSS_Zone", "floors_count", 1)
 				self.settings2hash
 			end
 			
@@ -200,6 +213,9 @@ module LSS_Extensions
 				@settings_hash["floor_refno"]=[@floor_refno, "string"]
 				@settings_hash["wall_refno"]=[@wall_refno, "string"]
 				@settings_hash["ceiling_refno"]=[@ceiling_refno, "string"]
+				
+				@settings_hash["zone_type"]=[@zone_type, "string"]
+				@settings_hash["floors_count"]=[@floors_count, "integer"]
 				
 				# Store data types
 				@settings_hash.each_key{|key|
@@ -231,6 +247,9 @@ module LSS_Extensions
 				@floor_refno=@settings_hash["floor_refno"][0]
 				@wall_refno=@settings_hash["wall_refno"][0]
 				@ceiling_refno=@settings_hash["ceiling_refno"][0]
+				
+				@zone_type=@settings_hash["zone_type"][0]
+				@floors_count=@settings_hash["floors_count"][0]
 			end
 			
 			def write_defaults
@@ -383,6 +402,15 @@ module LSS_Extensions
 								js_command = "apply_defaults()"
 								@zone_dialog.execute_script(js_command)
 							end
+							# Switch dialog view according to zone type
+							if key=="zone_type"
+								js_command = "zone_type_view('" + val + "')"
+								@zone_dialog.execute_script(js_command)
+								if val=="flat"
+									@settings_hash["height"]=0
+									@height=0
+								end
+							end
 						end
 						self.hash2settings
 					end
@@ -502,6 +530,9 @@ module LSS_Extensions
 				@zone_entity.labels_arr=@labels_arr
 				# Openings
 				@zone_entity.openings_arr=@openings_arr
+				
+				@zone_entity.zone_type=@zone_type
+				@zone_entity.floors_count=@floors_count
 			end
 			
 			def getExtents

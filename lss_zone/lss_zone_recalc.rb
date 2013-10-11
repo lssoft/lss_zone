@@ -22,8 +22,14 @@ module LSS_Extensions
 					Sketchup.active_model.select_tool(lss_zone_recalc)
 					lss_zone_recalc.process_selection
 				}
-				lss_zone_recalc_cmd.small_icon = "./tb_icons/recalc_24.png"
-				lss_zone_recalc_cmd.large_icon = "./tb_icons/recalc_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_recalc_cmd.small_icon = "./tb_icons/recalc_24.png"
+					lss_zone_recalc_cmd.large_icon = "./tb_icons/recalc_32.png"
+				else
+					lss_zone_recalc_cmd.small_icon = "./tb_icons/recalc_16.png"
+					lss_zone_recalc_cmd.large_icon = "./tb_icons/recalc_24.png"
+				end
 				lss_zone_recalc_cmd.tooltip = $lsszoneStrings.GetString("Select zones, then click to recalculate.")
 				lss_zone_recalc_cmd.menu_text=$lsszoneStrings.GetString("Recalculate")
 				$lsszoneToolbar.add_item(lss_zone_recalc_cmd)

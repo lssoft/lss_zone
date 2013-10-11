@@ -6,6 +6,7 @@ var suggest_fields_arr = new Array ();
 var name_aliases = {};
 var charts_arr = new Array ();
 var chart_no=0;
+var txt_pos=0;
 
 function get_key_val(key_val_str){
 	key_val=key_val_str.split("|");
@@ -50,20 +51,63 @@ function get_name_alias(name_alias_str){
 }
 
 function send_query_string(txt_box){
+	txt_pos=get_caret_pos(txt_box); // Added in ver. 1.0.1 08-Oct-13
 	var query_string=escape(txt_box.value);
 	var act_name="query_string" + delimiter + query_string;
 	callRuby(act_name);
 	callRuby("get_fields");
 	populate_selectors();
 	callRuby("get_settings");
+	apply_defaults(); // Added in ver. 1.0.1 08-Oct-13
 	callRuby("get_zones_data");
 	build_table();
+	setCaretPosition(txt_box.id, txt_pos); // Added in ver. 1.0.1 08-Oct-13
 }
 
 function query_str_key_up(txt_box){
 	// if (event.keyCode==32) {
 		send_query_string(txt_box);
 	// }
+}
+
+// Added in ver. 1.0.1 08-Oct-13
+function setCaretPosition(elemId, caretPos) {
+    var elem = document.getElementById(elemId);
+    if(elem != null) {
+        if(elem.createTextRange) {
+            var range = elem.createTextRange();
+            range.move('character', caretPos);
+            range.select();
+        }
+        else {
+            if(elem.selectionStart) {
+                elem.focus();
+                elem.setSelectionRange(caretPos, caretPos);
+            }
+            else
+                elem.focus();
+        }
+    }
+}
+
+// Added in ver. 1.0.1 08-Oct-13
+function get_caret_pos(txt_box) {
+	var caret_pos = 0;
+	// IE Support
+	if (document.selection) {
+		txt_box.focus ();
+		// To get cursor position, get empty selection range
+		var sel = document.selection.createRange ();
+		// Move selection start to 0 position
+		sel.moveStart ('character', -txt_box.value.length);
+		// The caret position is selection length
+		caret_pos = sel.text.length;
+	}
+	// Firefox support
+	else if (txt_box.selectionStart || txt_box.selectionStart == '0') {
+		caret_pos = txt_box.selectionStart;
+	}
+	return (caret_pos);
 }
 
 function custom_init(){

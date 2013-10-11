@@ -19,6 +19,24 @@
 				</td>
 			</tr>
 			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell" colspan="2">
+					<span id="zone_type_radio_grp">
+						<input type="hidden" id="zone_type">
+						<img src="images/room.gif" class="radio_selected" onmouseover="radio_over(this)" onmouseout="radio_out(this)" onclick="radio_click(this)" id="room" alt="Room">
+						<img src="images/box.gif" class="radio_unselected" onmouseover="radio_over(this)" onmouseout="radio_out(this)" onclick="radio_click(this)" id="box" alt="Building box">
+						<img src="images/flat.gif" class="radio_unselected" onmouseover="radio_over(this)" onmouseout="radio_out(this)" onclick="radio_click(this)" id="flat" alt="Flat zone">
+					</span>
+				</td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
 				<td class="info_img_cell">
 					&nbsp;
 				</td>
@@ -57,17 +75,17 @@
 			</tr>
 		</tbody>
 		<tbody id="props_tbody">
-			<tr>
+			<tr id="number_row">
 				<td class="info_img_cell">&nbsp;</td>
 				<td class="name_cell">Number</td>
 				<td class="value_cell"><input type="text" id="number" value="001" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
 			</tr>
-			<tr>
+			<tr id="name_row">
 				<td class="info_img_cell">&nbsp;</td>
 				<td class="name_cell">Name</td>
 				<td class="value_cell"><input type="text" id="name" value="Room" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
 			</tr>
-			<tr>
+			<tr id="category_row">
 				<td class="info_img_cell">
 					&nbsp;
 				</td>
@@ -81,28 +99,28 @@
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>
-			<tr>
+			<tr id="height_row">
 				<td class="info_img_cell">
 					<img src="images/height.gif" align="bottom">
 				</td>
 				<td class="name_cell">Height</td>
 				<td class="value_cell"><input type="text" id="height" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
 			</tr>
-			<tr>
+			<tr id="area_row">
 				<td class="info_img_cell">
 					<img src="images/area.gif" align="bottom">
 				</td>
 				<td class="name_cell">Area</td>
 				<td class="value_cell"><input type="text" id="area" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" disabled class="value_input"></td>
 			</tr>
-			<tr>
+			<tr id="perimeter_row">
 				<td class="info_img_cell">
 					<img src="images/perimeter.gif" align="bottom">
 				</td>
 				<td class="name_cell">Perimeter</td>
 				<td class="value_cell"><input type="text" id="perimeter" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" disabled class="value_input"></td>
 			</tr>
-			<tr>
+			<tr id="volume_row">
 				<td class="info_img_cell">
 					<img src="images/volume.gif" align="bottom">
 				</td>
@@ -116,19 +134,26 @@
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>
-			<tr>
+			<tr id="floor_level_row">
 				<td class="info_img_cell">
 					<img src="images/floor_level.gif" align="bottom">
 				</td>
 				<td class="name_cell">Floor Level</td>
 				<td class="value_cell"><input type="text" id="floor_level" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
 			</tr>
-			<tr>
+			<tr id="floor_number_row">
 				<td class="info_img_cell">
 					<img src="images/floor_number.gif" align="bottom">
 				</td>
 				<td class="name_cell">Floor Number</td>
 				<td class="value_cell"><input type="text" id="floor_number" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr id="floors_count_row">
+				<td class="info_img_cell">
+					<img src="images/floors_count.gif" align="bottom">
+				</td>
+				<td class="name_cell">Floors Count</td>
+				<td class="value_cell"><input type="text" id="floors_count" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
 			</tr>
 			<tr class="splitter_row">
 				<td class="splitter_img_cell">
@@ -137,7 +162,7 @@
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>
-			<tr>
+			<tr id="floor_mat_row">
 				<td class="info_img_cell">
 					<img src="images/floor_material.gif" align="bottom">
 				</td>
@@ -146,7 +171,7 @@
 				</td>
 				<td class="value_cell"><div id="floor_mat_container"></div></td>
 			</tr>
-			<tr>
+			<tr id="ceiling_mat_row">
 				<td class="info_img_cell">
 					<img src="images/ceiling_material.gif" align="bottom">
 				</td>
@@ -155,7 +180,7 @@
 				</td>
 				<td class="value_cell"><div id="ceiling_mat_container"></div></td>
 			</tr>
-			<tr>
+			<tr id="wall_mat_row">
 				<td class="info_img_cell">
 					<img src="images/wall_material.gif" align="bottom">
 				</td>
@@ -164,21 +189,21 @@
 				</td>
 				<td class="value_cell"><div id="wall_mat_container"></div></td>
 			</tr>
-			<tr>
+			<tr id="floor_refno_row">
 				<td class="info_img_cell">
 					&nbsp;
 				</td>
 				<td class="name_cell">Floor REFNO</td>
 				<td class="value_cell"><input type="text" id="floor_refno" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input"></td>
 			</tr>
-			<tr>
+			<tr id="ceiling_refno_row">
 				<td class="info_img_cell">
 					&nbsp;
 				</td>
 				<td class="name_cell">Ceiling REFNO</td>
 				<td class="value_cell"><input type="text" id="ceiling_refno" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input"></td>
 			</tr>
-			<tr>
+			<tr id="wall_refno_row">
 				<td class="info_img_cell">
 					&nbsp;
 				</td>
@@ -192,7 +217,7 @@
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>
-			<tr>
+			<tr id="memo_row">
 				<td class="info_img_cell">
 					&nbsp;
 				</td>

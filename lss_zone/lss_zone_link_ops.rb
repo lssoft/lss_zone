@@ -20,8 +20,14 @@ module LSS_Extensions
 					link_ops_tool=LSS_Zone_Link_Ops_Tool.new
 					Sketchup.active_model.select_tool(link_ops_tool)
 				}
-				lss_zone_link_ops_cmd.small_icon = "./tb_icons/link_ops_24.png"
-				lss_zone_link_ops_cmd.large_icon = "./tb_icons/link_ops_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_link_ops_cmd.small_icon = "./tb_icons/link_ops_24.png"
+					lss_zone_link_ops_cmd.large_icon = "./tb_icons/link_ops_32.png"
+				else
+					lss_zone_link_ops_cmd.small_icon = "./tb_icons/link_ops_16.png"
+					lss_zone_link_ops_cmd.large_icon = "./tb_icons/link_ops_24.png"
+				end
 				lss_zone_link_ops_cmd.tooltip = $lsszoneStrings.GetString("Select zones with openings, then click to link openings.")
 				$lsszoneToolbar.add_item(lss_zone_link_ops_cmd)
 				lss_zone_refresh_graph_cmd=UI::Command.new($lsszoneStrings.GetString("Refresh Links Graph")){

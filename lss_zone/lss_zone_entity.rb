@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_entity.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_entity.rb ver. 1.0.1 beta 09-Oct-13
 # This file contains the class with Zone Entity
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -51,6 +51,10 @@ module LSS_Extensions
 			# Labels
 			attr_accessor :labels_arr
 			attr_accessor :default_label
+			# Zone type
+			attr_accessor :zone_type
+			# Box type settings
+			attr_accessor :floors_count
 			
 			# Nodal points
 			attr_accessor :nodal_points
@@ -100,6 +104,10 @@ module LSS_Extensions
 				# Labels
 				@default_label=["Default Label", "@number\n@area", "LSS Zone Label"]
 				@labels_arr=[@default_label]
+				# Zone type
+				@zone_type="room"
+				# Box type settings
+				@floors_count=1
 			
 				@model=Sketchup.active_model
 				@entities=@model.active_entities
@@ -140,113 +148,137 @@ module LSS_Extensions
 					@perimeter=area_element.perimeter
 					@volume=@area*(@height.to_f)
 					
-					# Create 'floor_element'
-					floor_element=LSS_Element_Group.new(@nodal_points, "floor", @floor_material, @zone_group)
-					floor_group=floor_element.create
-					@floor_area=floor_element.area
-					floor_group.layer=@zone_layers.floor_layer
-					
-					# Create 'ceiling_element'
-					ceiling_points=Array.new
-					@nodal_points.each{|pt|
-						ceiling_pt=Geom::Point3d.new(pt.x, pt.y, @ceiling_z)
-						ceiling_points<<ceiling_pt
-					}
-					ceiling_element=LSS_Element_Group.new(ceiling_points, "ceiling", @ceiling_material, @zone_group)
-					ceiling_group=ceiling_element.create
-					@ceiling_area=ceiling_element.area
-					ceiling_group.layer=@zone_layers.ceiling_layer
-					
-					# Create wall elements
-					@wall_area=0
-					for i in 0..@nodal_points.length-1
-						pt1=@nodal_points[i-1]
-						pt2=@nodal_points[i]
-						pt3=Geom::Point3d.new(pt1.x, pt1.y, @ceiling_z)
-						pt4=Geom::Point3d.new(pt2.x, pt2.y, @ceiling_z)
-						wall_points=[pt1, pt2, pt4, pt3]
-						wall_element=LSS_Element_Group.new(wall_points, "wall", @wall_material, @zone_group)
-						wall_group=wall_element.create
-						wall_group.layer=@zone_layers.wall_layer
-						@wall_area+=wall_element.area
+					if @zone_type=="room"
+						# Create 'floor_element'
+						floor_element=LSS_Element_Group.new(@nodal_points, "floor", @floor_material, @zone_group)
+						floor_group=floor_element.create
+						@floor_area=floor_element.area
+						floor_group.layer=@zone_layers.floor_layer
+						
+						# Create 'ceiling_element'
+						ceiling_points=Array.new
+						@nodal_points.each{|pt|
+							ceiling_pt=Geom::Point3d.new(pt.x, pt.y, @ceiling_z)
+							ceiling_points<<ceiling_pt
+						}
+						ceiling_element=LSS_Element_Group.new(ceiling_points, "ceiling", @ceiling_material, @zone_group)
+						ceiling_group=ceiling_element.create
+						@ceiling_area=ceiling_element.area
+						ceiling_group.layer=@zone_layers.ceiling_layer
 					end
 					
-					# Create volume element
-					volume_element=LSS_Volume_Group.new(@nodal_points, @height, @category, @zone_group)
-					volume_group=volume_element.create
-					volume_group.layer=@zone_layers.volume_layer
+					# Walls and volume may exist only if @height>0. Check added in ver. 1.0.1 beta 08-Oct-13.
+					if @height.to_f>0
+						if @zone_type=="room"
+							# Create wall elements
+							@wall_area=0
+							for i in 0..@nodal_points.length-1
+								pt1=@nodal_points[i-1]
+								pt2=@nodal_points[i]
+								pt3=Geom::Point3d.new(pt1.x, pt1.y, @ceiling_z)
+								pt4=Geom::Point3d.new(pt2.x, pt2.y, @ceiling_z)
+								wall_points=[pt1, pt2, pt4, pt3]
+								wall_element=LSS_Element_Group.new(wall_points, "wall", @wall_material, @zone_group)
+								wall_group=wall_element.create
+								wall_group.layer=@zone_layers.wall_layer
+								@wall_area+=wall_element.area
+							end
+						end
+						
+						if @zone_type!="flat"
+							# Create volume element
+							volume_element=LSS_Volume_Group.new(@nodal_points, @height, @category, @zone_group)
+							volume_group=volume_element.create
+							volume_group.layer=@zone_layers.volume_layer
+						end
+					end
 					
-					# Create openings
-					@openings_arr.each{|opening|
-						pts=opening["points"].uniq
-						if pts.is_a?(Array)
-							if pts.length>2
-								op_type=opening["type"]
-								is_internal=opening["is_internal"]
-								link_time=opening["link_time"]
-								opening_element=LSS_Element_Group.new(pts, op_type, nil, @zone_group)
-								opening_group=opening_element.create
-								opening_area=opening_element.area
-								opening_group.layer=@zone_layers.openings_layer
-								opening_group.set_attribute("LSS_Zone_Element", "is_internal", is_internal)
-								opening_group.set_attribute("LSS_Zone_Element", "link_time", link_time)
-								# It is necessary to store information about zone's floor level because
-								# openings have to be rebuilded relatively to it (in case of rebuilding).
-								opening_group.set_attribute("LSS_Zone_Element", "floor_level", @floor_level)
-								case op_type
-									when "wall_opening"
-									@wall_area-=opening_area
-									if is_internal
-										@wall_int_ops_area+=opening_area
-									else
-										@wall_ext_ops_area+=opening_area
-									end
-									when "floor_opening"
-									@floor_area-=opening_area
-									if is_internal
-										@floor_int_ops_area+=opening_area
-									else
-										@floor_ext_ops_area+=opening_area
-									end
-									when "ceiling_opening"
-									@ceiling_area-=opening_area
-									if is_internal
-										@ceiling_int_ops_area+=opening_area
-									else
-										@ceiling_ext_ops_area+=opening_area
+					if @zone_type=="room"
+						# Create openings
+						@openings_arr.each{|opening|
+							pts=opening["points"].uniq
+							if pts.is_a?(Array)
+								if pts.length>2
+									op_type=opening["type"]
+									is_internal=opening["is_internal"]
+									link_time=opening["link_time"]
+									opening_element=LSS_Element_Group.new(pts, op_type, nil, @zone_group)
+									opening_group=opening_element.create
+									opening_area=opening_element.area
+									opening_group.layer=@zone_layers.openings_layer
+									opening_group.set_attribute("LSS_Zone_Element", "is_internal", is_internal)
+									opening_group.set_attribute("LSS_Zone_Element", "link_time", link_time)
+									# It is necessary to store information about zone's floor level because
+									# openings have to be rebuilded relatively to it (in case of rebuilding).
+									opening_group.set_attribute("LSS_Zone_Element", "floor_level", @floor_level)
+									case op_type
+										when "wall_opening"
+										@wall_area-=opening_area
+										if is_internal
+											@wall_int_ops_area+=opening_area
+										else
+											@wall_ext_ops_area+=opening_area
+										end
+										when "floor_opening"
+										@floor_area-=opening_area
+										if is_internal
+											@floor_int_ops_area+=opening_area
+										else
+											@floor_ext_ops_area+=opening_area
+										end
+										when "ceiling_opening"
+										@ceiling_area-=opening_area
+										if is_internal
+											@ceiling_int_ops_area+=opening_area
+										else
+											@ceiling_ext_ops_area+=opening_area
+										end
 									end
 								end
 							end
-						end
-					}
+						}
+					end
 					
 					# Store attributes
+					# Identity
 					@zone_group.set_attribute("LSS_Zone_Entity", "number", @number)
 					@zone_group.set_attribute("LSS_Zone_Entity", "name", @name)
+					@zone_group.set_attribute("LSS_Zone_Entity", "category", @category)
+					# Geometry
 					@zone_group.set_attribute("LSS_Zone_Entity", "area", @area)
 					@zone_group.set_attribute("LSS_Zone_Entity", "perimeter", @perimeter)
-					@zone_group.set_attribute("LSS_Zone_Entity", "height", @height)
-					@zone_group.set_attribute("LSS_Zone_Entity", "volume", @volume)
-					@zone_group.set_attribute("LSS_Zone_Entity", "floor_level", @floor_level)
-					@zone_group.set_attribute("LSS_Zone_Entity", "floor_number", @floor_number)
-					@zone_group.set_attribute("LSS_Zone_Entity", "category", @category)
+					if @zone_type!="flat"
+						@zone_group.set_attribute("LSS_Zone_Entity", "height", @height)
+						@zone_group.set_attribute("LSS_Zone_Entity", "volume", @volume)
+					end
+					if @zone_type=="room"
+						@zone_group.set_attribute("LSS_Zone_Entity", "floor_level", @floor_level)
+						@zone_group.set_attribute("LSS_Zone_Entity", "floor_number", @floor_number)
+					end
+					# Misc
 					@zone_group.set_attribute("LSS_Zone_Entity", "memo", @memo)
-					@zone_group.set_attribute("LSS_Zone_Entity", "floor_material", @floor_material)
-					@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_material", @ceiling_material)
-					@zone_group.set_attribute("LSS_Zone_Entity", "wall_material", @wall_material)
-					@zone_group.set_attribute("LSS_Zone_Entity", "floor_area", @floor_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_area", @ceiling_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "wall_area", @wall_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "wall_int_ops_area", @wall_int_ops_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "wall_ext_ops_area", @wall_ext_ops_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "floor_int_ops_area", @floor_int_ops_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "floor_ext_ops_area", @floor_ext_ops_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_int_ops_area", @ceiling_int_ops_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_ext_ops_area", @ceiling_ext_ops_area)
-					@zone_group.set_attribute("LSS_Zone_Entity", "floor_refno", @floor_refno)
-					@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_refno", @ceiling_refno)
-					@zone_group.set_attribute("LSS_Zone_Entity", "wall_refno", @wall_refno)
-					
+					if @zone_type=="box"
+						@zone_group.set_attribute("LSS_Zone_Entity", "floors_count", @floors_count)
+					end
+					# Materials
+					if @zone_type=="room"
+						@zone_group.set_attribute("LSS_Zone_Entity", "floor_material", @floor_material)
+						@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_material", @ceiling_material)
+						@zone_group.set_attribute("LSS_Zone_Entity", "wall_material", @wall_material)
+						@zone_group.set_attribute("LSS_Zone_Entity", "floor_area", @floor_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_area", @ceiling_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "wall_area", @wall_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "wall_int_ops_area", @wall_int_ops_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "wall_ext_ops_area", @wall_ext_ops_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "floor_int_ops_area", @floor_int_ops_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "floor_ext_ops_area", @floor_ext_ops_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_int_ops_area", @ceiling_int_ops_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_ext_ops_area", @ceiling_ext_ops_area)
+						@zone_group.set_attribute("LSS_Zone_Entity", "floor_refno", @floor_refno)
+						@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_refno", @ceiling_refno)
+						@zone_group.set_attribute("LSS_Zone_Entity", "wall_refno", @wall_refno)
+					end
+
 					# Attach Labels
 					if @labels_arr.nil?
 						@labels_arr=[@default_label]

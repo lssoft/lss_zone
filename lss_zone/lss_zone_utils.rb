@@ -263,21 +263,39 @@ module LSS_Extensions
 		class LSS_Dirs
 			def resource_path
 				resource_dir = File.join( File.dirname(__FILE__), "Resources", Sketchup.get_locale )
-				chk_path = "#{resource_dir}/lss_zone.strings"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=14
+					chk_path = ("#{resource_dir}/lss_zone.strings").force_encoding("UTF-8")
+				else
+					chk_path = "#{resource_dir}/lss_zone.strings"
+				end
 				if File.exists?(chk_path)
 					puts "Localized resource file successfully found!"
 				else
 					resource_dir = File.join( File.dirname(__FILE__), "Resources", Sketchup.get_locale.split("-")[0] )
 					chk_path = "#{resource_dir}/lss_zone.strings"
+					if su_ver.split(".")[0].to_i>=14
+						chk_path = ("#{resource_dir}/lss_zone.strings").force_encoding("UTF-8")
+					else
+						chk_path = "#{resource_dir}/lss_zone.strings"
+					end
 					if File.exists?(chk_path)
 						puts "Localized resource file successfully found in an alternative location!"
 					else
 						resource_dir = File.join( File.dirname(__FILE__), "Resources", "en-US" )
 						chk_path = "#{resource_dir}/lss_zone.strings"
+						if su_ver.split(".")[0].to_i>=14
+							chk_path = ("#{resource_dir}/lss_zone.strings").force_encoding("UTF-8")
+						else
+							chk_path = "#{resource_dir}/lss_zone.strings"
+						end
 						if File.exists?(chk_path)
 							puts "Localized resource file not found. File from 'en-US' folder loaded."
 						else
 							resource_dir = File.join( File.dirname(__FILE__), "Resources", "en" )
+							if su_ver.split(".")[0].to_i>=14
+								resource_dir = resource_dir.force_encoding("UTF-8")
+							end
 							puts "Localized resource file not found. File from 'en' folder loaded."
 						end
 					end

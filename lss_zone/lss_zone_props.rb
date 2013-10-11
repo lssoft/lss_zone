@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_props.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_props.rb ver. 1.0.1 beta 09-Oct-13
 # The file, which contains 'Zone Properties' dialog implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -21,8 +21,14 @@ module LSS_Extensions
 					lss_zone_props=LSS_Zone_Props.new
 					lss_zone_props.activate
 				}
-				lss_zone_props_cmd.small_icon = "./tb_icons/props_24.png"
-				lss_zone_props_cmd.large_icon = "./tb_icons/props_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_props_cmd.small_icon = "./tb_icons/props_24.png"
+					lss_zone_props_cmd.large_icon = "./tb_icons/props_32.png"
+				else
+					lss_zone_props_cmd.small_icon = "./tb_icons/props_16.png"
+					lss_zone_props_cmd.large_icon = "./tb_icons/props_24.png"
+				end
 				lss_zone_props_cmd.tooltip = $lsszoneStrings.GetString("Select zones, then click to view/edit their properties.")
 				$lsszoneToolbar.add_item(lss_zone_props_cmd)
 				$lsszoneMenu.add_item(lss_zone_props_cmd)
@@ -76,6 +82,9 @@ module LSS_Extensions
 				@wall_refno=etalon_zone.get_attribute("LSS_Zone_Entity", "wall_refno")
 				@ceiling_refno=etalon_zone.get_attribute("LSS_Zone_Entity", "ceiling_refno")
 				
+				@zone_type=etalon_zone.get_attribute("LSS_Zone_Entity", "zone_type")
+				@floors_count=etalon_zone.get_attribute("LSS_Zone_Entity", "floors_count")
+				
 				@area=0; @perimeter=0; @volume=0
 				i=1; tot_cnt=@zones_arr.length
 				progr_char="|"; rest_char="_"; scale_coeff=1
@@ -98,11 +107,16 @@ module LSS_Extensions
 					# Sum geometry properties
 					@area+=zone_obj.get_attribute("LSS_Zone_Entity", "area").to_f
 					@perimeter+=zone_obj.get_attribute("LSS_Zone_Entity", "perimeter").to_f
-					@volume+=zone_obj.get_attribute("LSS_Zone_Entity", "volume").to_f
-					
-					@floor_area+=zone_obj.get_attribute("LSS_Zone_Entity", "floor_area").to_f
-					@ceiling_area+=zone_obj.get_attribute("LSS_Zone_Entity", "ceiling_area").to_f
-					@wall_area+=zone_obj.get_attribute("LSS_Zone_Entity", "wall_area").to_f
+					# Condition added ver. 1.0.1 beta 09-Oct-13
+					if zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")!="flat"
+						@volume+=zone_obj.get_attribute("LSS_Zone_Entity", "volume").to_f
+					end
+					# Condition added ver. 1.0.1 beta 09-Oct-13
+					if zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")=="room"
+						@floor_area+=zone_obj.get_attribute("LSS_Zone_Entity", "floor_area").to_f
+						@ceiling_area+=zone_obj.get_attribute("LSS_Zone_Entity", "ceiling_area").to_f
+						@wall_area+=zone_obj.get_attribute("LSS_Zone_Entity", "wall_area").to_f
+					end
 					progr_bar.update(i)
 					i+=1
 					Sketchup.status_text=$lsszoneStrings.GetString("Reading attributes: ") + progr_bar.progr_string
@@ -709,6 +723,12 @@ module LSS_Extensions
 					@props_dialog.execute_script(js_command) if js_command
 				else
 					if @category
+						js_command = "get_category('" + @category + "')"
+						@props_dialog.execute_script(js_command) if js_command
+						js_command = "bind_categories()"
+						@props_dialog.execute_script(js_command) if js_command
+					else
+						@category="#Default"
 						js_command = "get_category('" + @category + "')"
 						@props_dialog.execute_script(js_command) if js_command
 						js_command = "bind_categories()"

@@ -23,8 +23,14 @@ module LSS_Extensions
 					Sketchup.active_model.select_tool(lss_zone_labels_tool)
 					lss_zone_labels_tool.filter_selection
 				}
-				lss_zone_labels_cmd.small_icon = "./tb_icons/labels_24.png"
-				lss_zone_labels_cmd.large_icon = "./tb_icons/labels_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_labels_cmd.small_icon = "./tb_icons/labels_24.png"
+					lss_zone_labels_cmd.large_icon = "./tb_icons/labels_32.png"
+				else
+					lss_zone_labels_cmd.small_icon = "./tb_icons/labels_16.png"
+					lss_zone_labels_cmd.large_icon = "./tb_icons/labels_24.png"
+				end
 				lss_zone_labels_cmd.tooltip = $lsszoneStrings.GetString("Select zones, then click to attach labels.")
 				$lsszoneToolbar.add_item(lss_zone_labels_cmd)
 				$lsszoneMenu.add_item(lss_zone_labels_cmd)

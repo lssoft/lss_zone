@@ -491,3 +491,68 @@ function close_btn_over(evt){
 function close_btn_out(evt){
 	this.className="close_btn";
 }
+
+function zone_type_view(zone_type){
+	var height_row=document.getElementById("height_row");
+	var volume_row=document.getElementById("volume_row");
+	var floor_level_row=document.getElementById("floor_level_row");
+	var floor_number_row=document.getElementById("floor_number_row");
+	var floors_count_row=document.getElementById("floors_count_row");
+	var floor_mat_row=document.getElementById("floor_mat_row");
+	var ceiling_mat_row=document.getElementById("ceiling_mat_row");
+	var wall_mat_row=document.getElementById("wall_mat_row");
+	var floor_refno_row=document.getElementById("floor_refno_row");
+	var ceiling_refno_row=document.getElementById("ceiling_refno_row");
+	var wall_refno_row=document.getElementById("wall_refno_row");
+	switch(zone_type)
+	{
+		case "room":
+			// Display room related rows
+			height_row.style.display="";
+			volume_row.style.display="";
+			floor_level_row.style.display="";
+			floor_number_row.style.display="";
+			floor_mat_row.style.display="";
+			ceiling_mat_row.style.display="";
+			wall_mat_row.style.display="";
+			floor_refno_row.style.display="";
+			ceiling_refno_row.style.display="";
+			wall_refno_row.style.display="";
+			// Hide non-related rows
+			floors_count_row.style.display="none";
+			break;
+		case "box":
+			// Display building box related rows
+			floors_count_row.style.display="";
+			height_row.style.display="";
+			volume_row.style.display="";
+			// Hide non-related rows
+			floor_level_row.style.display="none";
+			floor_number_row.style.display="none";
+			floor_mat_row.style.display="none";
+			ceiling_mat_row.style.display="none";
+			wall_mat_row.style.display="none";
+			floor_refno_row.style.display="none";
+			ceiling_refno_row.style.display="none";
+			wall_refno_row.style.display="none";
+			break;
+		case "flat":
+			// Display flat zone related rows
+			
+			// Hide non-related rows
+			height_row.style.display="none";
+			volume_row.style.display="none";
+			floor_level_row.style.display="none";
+			floor_number_row.style.display="none";
+			floor_mat_row.style.display="none";
+			ceiling_mat_row.style.display="none";
+			wall_mat_row.style.display="none";
+			floor_refno_row.style.display="none";
+			ceiling_refno_row.style.display="none";
+			wall_refno_row.style.display="none";
+			floors_count_row.style.display="none";
+			break;
+		default:
+		
+	}
+}

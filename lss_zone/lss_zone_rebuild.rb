@@ -22,8 +22,14 @@ module LSS_Extensions
 					Sketchup.active_model.select_tool(lss_zone_rebuild)
 					lss_zone_rebuild.process_selection
 				}
-				lss_zone_rebuild_cmd.small_icon = "./tb_icons/rebuild_24.png"
-				lss_zone_rebuild_cmd.large_icon = "./tb_icons/rebuild_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_rebuild_cmd.small_icon = "./tb_icons/rebuild_24.png"
+					lss_zone_rebuild_cmd.large_icon = "./tb_icons/rebuild_32.png"
+				else
+					lss_zone_rebuild_cmd.small_icon = "./tb_icons/rebuild_16.png"
+					lss_zone_rebuild_cmd.large_icon = "./tb_icons/rebuild_24.png"
+				end
 				lss_zone_rebuild_cmd.tooltip = $lsszoneStrings.GetString("Select zones, then click to rebuild.")
 				lss_zone_rebuild_cmd.menu_text=$lsszoneStrings.GetString("Rebuild")
 				$lsszoneToolbar.add_item(lss_zone_rebuild_cmd)

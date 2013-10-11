@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_loader.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_loader.rb ver. 1.0.1 beta 08-Oct-13
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -38,6 +38,9 @@ module LSS_Extensions
 		
 		#loads the script, which contains 'Zone Properties' dialog implementation
 		require 'lss_zone/lss_zone_props.rb'
+		
+		#loads the script, which contains 'Zone Layers' toolbar implementation. Added 08-Oct-13
+		require 'lss_zone/lss_zone_layers_cmd.rb'
 		
 		#loads the script, which launches help system
 		require 'lss_zone/lss_zone_help.rb'

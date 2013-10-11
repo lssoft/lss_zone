@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_list.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_list.rb ver. 1.0.1 beta 08-Oct-13
 # The file, which contains report generator implementation.
 # It generates all or selected zones list in an active model.
 
@@ -21,8 +21,14 @@ module LSS_Extensions
 				lss_zone_list_cmd=UI::Command.new($lsszoneStrings.GetString("List Zones")){
 					LSS_Zone_List.new.list_dial
 				}
-				lss_zone_list_cmd.small_icon = "./tb_icons/list_24.png"
-				lss_zone_list_cmd.large_icon = "./tb_icons/list_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_list_cmd.small_icon = "./tb_icons/list_24.png"
+					lss_zone_list_cmd.large_icon = "./tb_icons/list_32.png"
+				else
+					lss_zone_list_cmd.small_icon = "./tb_icons/list_16.png"
+					lss_zone_list_cmd.large_icon = "./tb_icons/list_24.png"
+				end
 				lss_zone_list_cmd.tooltip = $lsszoneStrings.GetString("Select zones, then click to generate a list of selected zones.")
 				$lsszoneToolbar.add_item(lss_zone_list_cmd)
 				$lsszoneMenu.add_item(lss_zone_list_cmd)
@@ -175,7 +181,26 @@ module LSS_Extensions
 									if new_record[key].nil?
 										new_record[key]=grp_rec[key]
 									else
-										new_record[key]+=grp_rec[key]
+										# Handling of different grouping cases. Added in ver. 1.0.1 beta 08-Oct-13
+										value_type=Sketchup.read_default("LSS Zone Data Types", key)
+										case value_type
+											when "distance"
+												if key!="floor_level"
+													new_record[key]+=grp_rec[key]
+												else
+													new_record[key]+=", " + grp_rec[key].to_s if (new_record[key].include?(grp_rec[key].to_s))==false
+												end
+											when "area"
+												new_record[key]+=grp_rec[key]
+											when "volume"
+												new_record[key]+=grp_rec[key]
+											when "string"
+												new_record[key]+=", " + grp_rec[key].to_s if (new_record[key].include?(grp_rec[key].to_s))==false
+											when "boolean"
+												new_record[key]="..."
+											else
+												new_record[key]+=grp_rec[key]
+										end
 									end
 								end
 							}

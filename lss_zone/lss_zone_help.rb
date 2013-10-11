@@ -20,8 +20,14 @@ module LSS_Extensions
 					help_index_path="#{resource_dir}/help/index.html"
 					status=UI.openURL(help_index_path)
 				}
-				lss_zone_help_cmd.small_icon = "./tb_icons/help_24.png"
-				lss_zone_help_cmd.large_icon = "./tb_icons/help_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_help_cmd.small_icon = "./tb_icons/help_24.png"
+					lss_zone_help_cmd.large_icon = "./tb_icons/help_32.png"
+				else
+					lss_zone_help_cmd.small_icon = "./tb_icons/help_16.png"
+					lss_zone_help_cmd.large_icon = "./tb_icons/help_24.png"
+				end
 				lss_zone_help_cmd.tooltip = $lsszoneStrings.GetString("Click to view extension's Help System.")
 				$lsszoneToolbar.add_separator
 				$lsszoneMenu.add_separator

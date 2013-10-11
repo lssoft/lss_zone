@@ -20,8 +20,14 @@ module LSS_Extensions
 				lss_zone_settings_cmd=UI::Command.new($lsszoneStrings.GetString("Global Settings")){
 					
 				}
-				lss_zone_settings_cmd.small_icon = "./tb_icons/settings_24.png"
-				lss_zone_settings_cmd.large_icon = "./tb_icons/settings_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_settings_cmd.small_icon = "./tb_icons/settings_24.png"
+					lss_zone_settings_cmd.large_icon = "./tb_icons/settings_32.png"
+				else
+					lss_zone_settings_cmd.small_icon = "./tb_icons/settings_16.png"
+					lss_zone_settings_cmd.large_icon = "./tb_icons/settings_24.png"
+				end
 				lss_zone_settings_cmd.tooltip = $lsszoneStrings.GetString("Click to adjust extension's global settings.")
 				$lsszoneToolbar.add_item(lss_zone_settings_cmd)
 				$lsszoneMenu.add_item(lss_zone_settings_cmd)

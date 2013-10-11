@@ -21,8 +21,15 @@ module LSS_Extensions
 					lss_zone_url="http://sites.google.com/site/lssoft2011/home/lss-zone"
 					status=UI.openURL(lss_zone_url)
 				}
-				lss_zone_web_cmd.small_icon = "./tb_icons/web_24.png"
-				lss_zone_web_cmd.large_icon = "./tb_icons/web_32.png"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=13
+					lss_zone_web_cmd.small_icon = "./tb_icons/web_24.png"
+					lss_zone_web_cmd.large_icon = "./tb_icons/web_32.png"
+				else
+					lss_zone_web_cmd.small_icon = "./tb_icons/web_16.png"
+					lss_zone_web_cmd.large_icon = "./tb_icons/web_24.png"
+				end
+				
 				lss_zone_web_cmd.tooltip = $lsszoneStrings.GetString("Click to visit extension's official web-page.")
 				$lsszoneToolbar.add_item(lss_zone_web_cmd)
 				$lsszoneMenu.add_item(lss_zone_web_cmd)
