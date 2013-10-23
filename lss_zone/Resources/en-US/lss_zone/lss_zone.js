@@ -556,3 +556,7 @@ function zone_type_view(zone_type){
 		
 	}
 }
+
+function close_dial(){
+	callRuby("close_dial");
+}

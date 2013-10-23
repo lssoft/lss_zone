@@ -39,7 +39,10 @@ module LSS_Extensions
 		#loads the script, which contains 'Zone Properties' dialog implementation
 		require 'lss_zone/lss_zone_props.rb'
 		
-		#loads the script, which contains 'Zone Layers' toolbar implementation. Added 08-Oct-13
+		#loads the script, which contains 'Filter' dialog implementation. Added in ver. 1.1.0 20-Oct-13.
+		require 'lss_zone/lss_zone_filter.rb'
+		
+		#loads the script, which contains 'Zone Layers' toolbar implementation. Added 08-Oct-13.
 		require 'lss_zone/lss_zone_layers_cmd.rb'
 		
 		#loads the script, which launches help system

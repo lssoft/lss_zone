@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_layers_cmd.rb ver. 1.0.0 beta 08-Oct-13
+# lss_zone_layers_cmd.rb ver. 1.0.2 beta 15-Oct-13
 # The script, which contains a class, wich contains 'Zone Layers' toolbar implementation
 
 
@@ -53,18 +53,36 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.lss_zone_layer.visible?
-						zone_layers.lss_zone_layer.visible=false
+					if zone_layers.lss_zone_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
+						if zone_layers.lss_zone_layer.visible?
+							zone_layers.lss_zone_layer.visible=false
+						else
+							zone_layers.lss_zone_layer.visible=true
+						end
 					else
-						zone_layers.lss_zone_layer.visible=true
+						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
+						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+							if zone_layers.lss_zone_layer.visible?
+								zone_layers.lss_zone_layer.visible=false
+							else
+								zone_layers.lss_zone_layer.visible=true
+							end
+						end
 					end
 				}
 				zone_layer_cmd.set_validation_proc {
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.lss_zone_layer.visible?
-						MF_CHECKED
+					if zone_layers.lss_zone_layer
+						if zone_layers.lss_zone_layer.visible?
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
 					else
 						MF_UNCHECKED
 					end
@@ -85,18 +103,36 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.area_layer.visible?
-						zone_layers.area_layer.visible=false
+					if zone_layers.lss_zone_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
+						if zone_layers.area_layer.visible?
+							zone_layers.area_layer.visible=false
+						else
+							zone_layers.area_layer.visible=true
+						end
 					else
-						zone_layers.area_layer.visible=true
+						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
+						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+							if zone_layers.area_layer.visible?
+								zone_layers.area_layer.visible=false
+							else
+								zone_layers.area_layer.visible=true
+							end
+						end
 					end
 				}
 				area_layer_cmd.set_validation_proc {
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.area_layer.visible?
-						MF_CHECKED
+					if zone_layers.area_layer
+						if zone_layers.area_layer.visible?
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
 					else
 						MF_UNCHECKED
 					end
@@ -117,18 +153,36 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.ceiling_layer.visible?
-						zone_layers.ceiling_layer.visible=false
+					if zone_layers.lss_zone_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
+						if zone_layers.ceiling_layer.visible?
+							zone_layers.ceiling_layer.visible=false
+						else
+							zone_layers.ceiling_layer.visible=true
+						end
 					else
-						zone_layers.ceiling_layer.visible=true
+						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
+						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+							if zone_layers.ceiling_layer.visible?
+								zone_layers.ceiling_layer.visible=false
+							else
+								zone_layers.ceiling_layer.visible=true
+							end
+						end
 					end
 				}
 				ceiling_layer_cmd.set_validation_proc {
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.ceiling_layer.visible?
-						MF_CHECKED
+					if zone_layers.ceiling_layer
+						if zone_layers.ceiling_layer.visible?
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
 					else
 						MF_UNCHECKED
 					end
@@ -149,18 +203,36 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.wall_layer.visible?
-						zone_layers.wall_layer.visible=false
+					if zone_layers.lss_zone_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
+						if zone_layers.wall_layer.visible?
+							zone_layers.wall_layer.visible=false
+						else
+							zone_layers.wall_layer.visible=true
+						end
 					else
-						zone_layers.wall_layer.visible=true
+						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
+						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+							if zone_layers.wall_layer.visible?
+								zone_layers.wall_layer.visible=false
+							else
+								zone_layers.wall_layer.visible=true
+							end
+						end
 					end
 				}
 				walls_layer_cmd.set_validation_proc {
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.wall_layer.visible?
-						MF_CHECKED
+					if zone_layers.wall_layer
+						if zone_layers.wall_layer.visible?
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
 					else
 						MF_UNCHECKED
 					end
@@ -181,18 +253,36 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.floor_layer.visible?
-						zone_layers.floor_layer.visible=false
+					if zone_layers.lss_zone_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
+						if zone_layers.floor_layer.visible?
+							zone_layers.floor_layer.visible=false
+						else
+							zone_layers.floor_layer.visible=true
+						end
 					else
-						zone_layers.floor_layer.visible=true
+						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
+						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+							if zone_layers.floor_layer.visible?
+								zone_layers.floor_layer.visible=false
+							else
+								zone_layers.floor_layer.visible=true
+							end
+						end
 					end
 				}
 				floor_layer_cmd.set_validation_proc {
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.floor_layer.visible?
-						MF_CHECKED
+					if zone_layers.floor_layer
+						if zone_layers.floor_layer.visible?
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
 					else
 						MF_UNCHECKED
 					end
@@ -223,8 +313,12 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.volume_layer.visible?
-						MF_CHECKED
+					if zone_layers.volume_layer
+						if zone_layers.volume_layer.visible?
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
 					else
 						MF_UNCHECKED
 					end
@@ -255,8 +349,12 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.openings_layer.visible?
-						MF_CHECKED
+					if zone_layers.openings_layer
+						if zone_layers.openings_layer.visible?
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
 					else
 						MF_UNCHECKED
 					end

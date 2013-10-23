@@ -50,6 +50,7 @@ module LSS_Extensions
 				@dict_new_names=Hash.new
 				@new_attrs=Array.new
 				@rebuild_on_apply="true"
+				@zone_types_cnt=Hash.new
 			end
 			
 			def selection_filter
@@ -59,9 +60,11 @@ module LSS_Extensions
 			end
 			
 			def obtain_common_settings
+				@zone_types_cnt=Hash.new
 				if @zones_arr.length==0
 					return
 				end
+				@zone_types_cnt["room"]=0; @zone_types_cnt["box"]=0; @zone_types_cnt["flat"]=0
 				etalon_zone=@zones_arr.first
 				@number=etalon_zone.get_attribute("LSS_Zone_Entity", "number")
 				@name=etalon_zone.get_attribute("LSS_Zone_Entity", "name")
@@ -104,6 +107,8 @@ module LSS_Extensions
 					@floor_refno="..." if zone_obj.get_attribute("LSS_Zone_Entity", "floor_refno").to_s!=@floor_refno
 					@wall_refno="..." if zone_obj.get_attribute("LSS_Zone_Entity", "wall_refno").to_s!=@wall_refno
 					@ceiling_refno="..." if zone_obj.get_attribute("LSS_Zone_Entity", "ceiling_refno").to_s!=@ceiling_refno
+					
+					@zone_type="..." if zone_obj.get_attribute("LSS_Zone_Entity", "zone_type").to_s!=@zone_type
 					# Sum geometry properties
 					@area+=zone_obj.get_attribute("LSS_Zone_Entity", "area").to_f
 					@perimeter+=zone_obj.get_attribute("LSS_Zone_Entity", "perimeter").to_f
@@ -113,9 +118,23 @@ module LSS_Extensions
 					end
 					# Condition added ver. 1.0.1 beta 09-Oct-13
 					if zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")=="room"
-						@floor_area+=zone_obj.get_attribute("LSS_Zone_Entity", "floor_area").to_f
-						@ceiling_area+=zone_obj.get_attribute("LSS_Zone_Entity", "ceiling_area").to_f
-						@wall_area+=zone_obj.get_attribute("LSS_Zone_Entity", "wall_area").to_f
+						@floor_area="..." if zone_obj.get_attribute("LSS_Zone_Entity", "floor_area").to_s!=@floor_area.to_s
+						@ceiling_area="..." if zone_obj.get_attribute("LSS_Zone_Entity", "ceiling_area").to_s!=@ceiling_area.to_s
+						@wall_area="..." if zone_obj.get_attribute("LSS_Zone_Entity", "wall_area").to_s!=@wall_area.to_s
+					end
+					if zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")=="box"
+						@floors_count="..." if zone_obj.get_attribute("LSS_Zone_Entity", "floors_count").to_s!=@floors_count.to_s
+					end
+					# Zones' types count. Added in ver. 1.1.0 21-Oct-13.
+					case zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")
+						when "room"
+						@zone_types_cnt["room"]+=1
+						when "box"
+						@zone_types_cnt["box"]+=1
+						when "flat"
+						@zone_types_cnt["flat"]+=1
+						else # Treat 'nil' as a 'room' type
+						@zone_types_cnt["room"]+=1
 					end
 					progr_bar.update(i)
 					i+=1
@@ -183,6 +202,9 @@ module LSS_Extensions
 				
 				@settings_hash["props_list_content"]=[@props_list_content, "string"]
 				@settings_hash["rebuild_on_apply"]=[@rebuild_on_apply, "boolean"]
+				
+				@settings_hash["zone_type"]=[@zone_type, "string"]
+				@settings_hash["floors_count"]=[@floors_count, "integer"]
 			end
 			
 			def hash2settings
@@ -212,6 +234,9 @@ module LSS_Extensions
 				
 				@props_list_content=@settings_hash["props_list_content"][0]
 				@rebuild_on_apply=@settings_hash["rebuild_on_apply"][0]
+				
+				@zone_type=@settings_hash["zone_type"][0]
+				@floors_count=@settings_hash["floors_count"][0]
 			end
 			
 			# This method sets new attributes to all selected zones (or maybe other objects in case if @props_list_content=="all").
@@ -408,7 +433,12 @@ module LSS_Extensions
 						view.invalidate
 					end
 					if action_name=="get_zones_cnt"
-						js_command = "get_zones_cnt('" + @zones_arr.length.to_s + "')"
+						cnt_str=""
+						@zone_types_cnt.each_key{|key|
+							cnt_str+=key+"="+@zone_types_cnt[key].to_s+","
+						}
+						cnt_str.chomp!(",")
+						js_command = "get_zones_cnt('" + cnt_str + "')"
 						@props_dialog.execute_script(js_command)
 					end
 					if action_name=="get_materials"
@@ -591,19 +621,21 @@ module LSS_Extensions
 					@selection.each{|ent|
 						if ent.respond_to?("attribute_dictionaries")
 							dicts=ent.attribute_dictionaries
-							dict=dicts[dict_name]
-							if dict
-								dict.each_key{|key|
-									if props_hash[key].nil?
-										props_hash[key]=dict[key]
-									else
-										if props_hash[key].to_s!="..."
-											if props_hash[key].to_s!=dict[key].to_s
-												props_hash[key]="..."
+							if dicts
+								dict=dicts[dict_name]
+								if dict
+									dict.each_key{|key|
+										if props_hash[key].nil?
+											props_hash[key]=dict[key]
+										else
+											if props_hash[key].to_s!="..."
+												if props_hash[key].to_s!=dict[key].to_s
+													props_hash[key]="..."
+												end
 											end
 										end
-									end
-								}
+									}
+								end
 							end
 						end
 					}
@@ -785,61 +817,6 @@ module LSS_Extensions
 			end
 			
 		end #class LSS_Zone_Props_Tool
-		
-		# This class contains implementation of selection observer which becomes active, when 'Properties' dialog is opened.
-		# This observer sends information about selection changes to 'Properties' dialog, so dialog displays relevant information.
-		
-		class LSS_Zone_Selection_Observer < Sketchup::SelectionObserver
-			def initialize(web_dial)
-				@properties_dialog=web_dial
-			end
-			
-			def onSelectionBulkChange(selection)
-				js_command="refresh_data()"
-				@properties_dialog.execute_script(js_command)
-				if selection.count>1
-					Sketchup.status_text=$lsszoneStrings.GetString("There are ") + selection.count.to_s + $lsszoneStrings.GetString(" entities selected.")
-				end
-			end
-			
-			def onSelectionCleared(selection)
-				js_command="refresh_data()"
-				@properties_dialog.execute_script(js_command)
-				Sketchup.status_text=$lsszoneStrings.GetString("It is necessary to select a zone to view/edit its properties.")
-			end
-		end #class LSS_Zone_Selection_Observer
-		
-		# This application observer just closes 'Properties' dialog in case if new model created, another
-		# existing model is opened or application is closed.
-		# It is necessary to save defaults and what is more important to disable selection observer, which
-		# is active while 'Properties' dialog is opened.
-		
-		class LSS_Zone_App_Observer < Sketchup::AppObserver
-			def initialize(web_dial)
-				@web_dial=web_dial
-			end
-			def onNewModel(model)
-				if @web_dial
-					if @web_dial.visible?
-						@web_dial.close
-					end
-				end
-			end
-			def onQuit()
-				if @web_dial
-					if @web_dial.visible?
-						@web_dial.close
-					end
-				end
-			end
-			def onOpenModel(model)
-				if @web_dial
-					if @web_dial.visible?
-						@web_dial.close
-					end
-				end
-			end
-		end #class LSS_Zone_App_Observer
 
 		if( not file_loaded?("lss_zone_props.rb") )
 			LSS_Zone_Props_Cmd.new

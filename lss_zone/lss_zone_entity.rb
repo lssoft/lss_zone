@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_entity.rb ver. 1.0.1 beta 09-Oct-13
+# lss_zone_entity.rb ver. 1.0.2 beta 15-Oct-13
 # This file contains the class with Zone Entity
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -123,13 +123,21 @@ module LSS_Extensions
 				
 				self.clear_dups
 				
-				@zone_layers=LSS_Zone_Layers.new
 				# lss_zone_layer
 				# area_layer
 				# wall_layer
 				# floor_layer
 				# ceiling_layer
 				# volume_layer
+				@zone_layers=LSS_Zone_Layers.new
+				
+				if @zone_layers.lss_zone_layer.nil?
+					@zone_layers.create_layers
+				end
+				
+				if @zone_type.nil?
+					@zone_type="room"
+				end
 				
 				@model.start_operation($lsszoneStrings.GetString("Create Zone"), true)
 				
@@ -278,6 +286,7 @@ module LSS_Extensions
 						@zone_group.set_attribute("LSS_Zone_Entity", "ceiling_refno", @ceiling_refno)
 						@zone_group.set_attribute("LSS_Zone_Entity", "wall_refno", @wall_refno)
 					end
+					@zone_group.set_attribute("LSS_Zone_Entity", "zone_type", @zone_type)
 
 					# Attach Labels
 					if @labels_arr.nil?
@@ -328,6 +337,9 @@ module LSS_Extensions
 						@zone_group.set_attribute(dict_name, "label_template", label_template)
 						@zone_group.set_attribute(dict_name, "label_layer", label_layer)
 					}
+					
+					# Assign name to group. Added in ver. 1.1.0 22-Oct-13.
+					@zone_group.name="LSS Zone"
 					
 				@model.commit_operation
 			end
@@ -405,6 +417,8 @@ module LSS_Extensions
 				@element_face.edges.each{|edg|
 					@perimeter+=edg.length
 				}
+				# Assign name to the group. Added in ver. 1.1.0 22-Oct-13
+				@element_group.name="#{@type} element"
 				@element_group
 			end
 		end #class LSS_Element_Group
@@ -442,6 +456,8 @@ module LSS_Extensions
 					@element_group.material=materials[@material]
 				end
 				@element_group.set_attribute("LSS_Zone_Element", "type", "volume")
+				# Assign name to the group. Added in ver. 1.1.0 22-Oct-13
+				@element_group.name="volume element"
 				@element_group
 			end
 		end #class LSS_Volume_Group

@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_list.rb ver. 1.0.1 beta 08-Oct-13
+# lss_zone_list.rb ver. 1.0.2 beta 15-Oct-13
 # The file, which contains report generator implementation.
 # It generates all or selected zones list in an active model.
 
@@ -180,15 +180,25 @@ module LSS_Extensions
 								else
 									if new_record[key].nil?
 										new_record[key]=grp_rec[key]
+										# Added in ver. 1.0.2 beta 15-Oct-13.
+										if key=="floor_level"
+											value=grp_rec[key]
+											dist_str=Sketchup.format_length(value.to_f).to_s
+											value=dist_str
+											new_record[key]=value
+										end
 									else
 										# Handling of different grouping cases. Added in ver. 1.0.1 beta 08-Oct-13
 										value_type=Sketchup.read_default("LSS Zone Data Types", key)
 										case value_type
 											when "distance"
 												if key!="floor_level"
-													new_record[key]+=grp_rec[key]
+													new_record[key]=new_record[key].to_f+grp_rec[key].to_f
 												else
-													new_record[key]+=", " + grp_rec[key].to_s if (new_record[key].include?(grp_rec[key].to_s))==false
+													value=grp_rec[key]
+													dist_str=Sketchup.format_length(value.to_f).to_s
+													value=dist_str
+													new_record[key]+="; " + value if (new_record[key].include?(value))==false
 												end
 											when "area"
 												new_record[key]+=grp_rec[key]
@@ -232,6 +242,12 @@ module LSS_Extensions
 							when "distance"
 								dist_str=Sketchup.format_length(value.to_f).to_s
 								value=dist_str
+								# Unformat back "floor_level". Added 15-Oct-13.
+								if key=="floor_level"
+									if @group_by!=""
+										value=record[key]
+									end
+								end
 							when "area"
 								area_str=Sketchup.format_area(value.to_f).to_s
 								value=area_str

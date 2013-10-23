@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_layers.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_layers.rb ver. 1.0.2 beta 15-Oct-13
 # The script, which contains a class wich makes layers to store all necessary zone elements in an active model
 
 
@@ -24,9 +24,22 @@ module LSS_Extensions
 			attr_accessor :ceiling_layer
 			attr_accessor :volume_layer
 			attr_accessor :openings_layer
+			
+			# Initialize layers. Initialization will return 'nil' values in case if there is no layers structure in an active model.
 			def initialize
 				@model = Sketchup.active_model
 				@layers = @model.layers
+				@lss_zone_layer=@layers[$lsszoneStrings.GetString("LSS Zone")]
+				@area_layer=@layers[$lsszoneStrings.GetString("LSS Zone Area")]
+				@wall_layer=@layers[$lsszoneStrings.GetString("LSS Zone Wall")]
+				@floor_layer=@layers[$lsszoneStrings.GetString("LSS Zone Floor")]
+				@ceiling_layer=@layers[$lsszoneStrings.GetString("LSS Zone Ceiling")]
+				@volume_layer=@layers[$lsszoneStrings.GetString("LSS Zone Volume")]
+				@openings_layer=@layers[$lsszoneStrings.GetString("LSS Zone Openings")]
+			end
+			
+			# Method which creates layers structure
+			def create_layers
 				area_exist=false; wall_exist=false; floor_exist=false; ceiling_exist=false; volume_exist=false; openings_exist=false
 				area_exist=true if @layers[$lsszoneStrings.GetString("LSS Zone Area")]
 				wall_exist=true if @layers[$lsszoneStrings.GetString("LSS Zone Wall")]

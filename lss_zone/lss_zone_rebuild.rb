@@ -102,6 +102,9 @@ module LSS_Extensions
 				@floor_refno=@zone_group.get_attribute("LSS_Zone_Entity", "floor_refno")
 				@ceiling_refno=@zone_group.get_attribute("LSS_Zone_Entity", "ceiling_refno")
 				@wall_refno=@zone_group.get_attribute("LSS_Zone_Entity", "wall_refno")
+				# New properties added in ver. 1.1.0 22-Oct-13.
+				@zone_type=@zone_group.get_attribute("LSS_Zone_Entity", "zone_type")
+				@floors_count=@zone_group.get_attribute("LSS_Zone_Entity", "floors_count")
 				
 				@labels_arr=Array.new
 				zone_attr_dicts=@zone_group.attribute_dictionaries
@@ -136,11 +139,19 @@ module LSS_Extensions
 					end
 				}
 				if @recalc_height
-					floor_grp=@zone_group.entities.select{|grp| (grp.get_attribute("LSS_Zone_Element", "type")=="floor")}[0]
-					ceiling_grp=@zone_group.entities.select{|grp| (grp.get_attribute("LSS_Zone_Element", "type")=="ceiling")}[0]
-					floor_pt=floor_grp.bounds.center
-					ceiling_pt=ceiling_grp.bounds.center
-					@height=(ceiling_pt.z-floor_pt.z).abs
+					# Zone types handling added in ver. 1.1.0 22-Oct-13.
+					if @zone_type=="room"
+						floor_grp=@zone_group.entities.select{|grp| (grp.get_attribute("LSS_Zone_Element", "type")=="floor")}[0]
+						ceiling_grp=@zone_group.entities.select{|grp| (grp.get_attribute("LSS_Zone_Element", "type")=="ceiling")}[0]
+						floor_pt=floor_grp.bounds.center
+						ceiling_pt=ceiling_grp.bounds.center
+						@height=(ceiling_pt.z-floor_pt.z).abs
+					end
+					if @zone_type=="box"
+						max_pt=@zone_group.bounds.max
+						min_pt=@zone_group.bounds.min
+						@height=max_pt.z-min_pt.z
+					end
 				end
 				
 				
@@ -226,6 +237,7 @@ module LSS_Extensions
 					# Additional
 					@zone_entity.floor_level=@floor_level
 					@zone_entity.floor_number=@floor_number
+					@zone_entity.floors_count=@floors_count # Added in ver. 1.1.0 22-Oct-13
 					@zone_entity.category=@category
 					@zone_entity.memo=@memo
 					# Materials
@@ -239,6 +251,8 @@ module LSS_Extensions
 					@zone_entity.labels_arr=@labels_arr
 					# Openings
 					@zone_entity.openings_arr=@openings_arr
+					# Zone Type
+					@zone_entity.zone_type=@zone_type # Added in ver. 1.1.0 22-Oct-13
 					
 					@zone_entity.create_zone
 					new_zone_group=@zone_entity.zone_group

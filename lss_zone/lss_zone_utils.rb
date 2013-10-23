@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_utils.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_utils.rb ver. 1.1.0 beta 23-Oct-13
 # File with some utility classes
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -224,6 +224,22 @@ module LSS_Extensions
 				end
 				vol_str
 			end
+			
+			def parse_area(area_str) # Added in ver. 1.1.0, 23-Oct-13
+				one_unit=Sketchup.parse_length("1")
+				one_sq_unit=one_unit**2
+				area_in_units=area_str.to_f
+				area=area_in_units*one_sq_unit
+				area
+			end
+			
+			def parse_volume(volume_str) # Added in ver. 1.1.0, 23-Oct-13
+				one_unit=Sketchup.parse_length("1")
+				one_cubic_unit=one_unit**3
+				volume_in_units=volume_str.to_f
+				volume=volume_in_units*one_cubic_unit
+				volume
+			end
 		end #class LSS_Math
 
 		# This is a class, which contains small progress bar string generation
@@ -395,6 +411,61 @@ module LSS_Extensions
 			end
 
 		end #class LSS_Tools_Observer
+		
+		# This class contains implementation of selection observer which becomes active, when 'Properties' dialog is opened.
+		# This observer sends information about selection changes to 'Properties' dialog, so dialog displays relevant information.
+		
+		class LSS_Zone_Selection_Observer < Sketchup::SelectionObserver # Moved to lss_zone_utils.rb in ver. 1.1.0 22-Oct-13.
+			def initialize(web_dial)
+				@web_dial=web_dial
+			end
+			
+			def onSelectionBulkChange(selection)
+				js_command="refresh_data()"
+				@web_dial.execute_script(js_command)
+				if selection.count>1
+					Sketchup.status_text=$lsszoneStrings.GetString("There are ") + selection.count.to_s + $lsszoneStrings.GetString(" entities selected.")
+				end
+			end
+			
+			def onSelectionCleared(selection)
+				js_command="refresh_data()"
+				@web_dial.execute_script(js_command)
+				Sketchup.status_text=$lsszoneStrings.GetString("It is necessary to select a zone to view/edit its properties.")
+			end
+		end #class LSS_Zone_Selection_Observer
+		
+		# This application observer just closes 'Properties' dialog in case if new model created, another
+		# existing model is opened or application is closed.
+		# It is necessary to save defaults and what is more important to disable selection observer, which
+		# is active while 'Properties' dialog is opened.
+		
+		class LSS_Zone_App_Observer < Sketchup::AppObserver # Moved to lss_zone_utils.rb in ver. 1.1.0 22-Oct-13.
+			def initialize(web_dial)
+				@web_dial=web_dial
+			end
+			def onNewModel(model)
+				if @web_dial
+					if @web_dial.visible?
+						@web_dial.close
+					end
+				end
+			end
+			def onQuit()
+				if @web_dial
+					if @web_dial.visible?
+						@web_dial.close
+					end
+				end
+			end
+			def onOpenModel(model)
+				if @web_dial
+					if @web_dial.visible?
+						@web_dial.close
+					end
+				end
+			end
+		end #class LSS_Zone_App_Observer
 		
 	end #module LSS_Zone_Extension
 end #module LSS_Extensions
