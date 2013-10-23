@@ -19,6 +19,4 @@ It is just a recommended workflow for entering and managing information about ro
 * attach labels
 * generate reports
 
-For more information visit [lss_zone_page]
-
-[lss_zone_page]: http://sites.google.com/site/lssoft2011/home/lss-zone/		"LSS Zone Page"
+For more information visit [LSS Zone page] (http://sites.google.com/site/lssoft2011/home/lss-zone/)
