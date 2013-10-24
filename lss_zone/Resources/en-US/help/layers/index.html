@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>Layers Toolbar</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+	<img src="images/layers_toolbar.png">
+    <p><a href="index.html"><span class="blackheader">Layers Toolbar</span></a></p>
+	You may toggle visibility of 'LSS Zone' related layers:
+    <ul>
+		<li><img src="../images/buttons/layers/lss_zone_24.png">&nbsp;'LSS Zone' layer</li>
+		<li><img src="../images/buttons/layers/area_24.png">&nbsp;'LSS Zone Area' layer</li>
+		<li><img src="../images/buttons/layers/ceiling_24.png">&nbsp;'LSS Zone Ceiling' layer</li>
+		<li><img src="../images/buttons/layers/walls_24.png">&nbsp;'LSS Zone Walls' layer</li>
+		<li><img src="../images/buttons/layers/floor_24.png">&nbsp;'LSS Zone Floor' layer</li>
+		<li><img src="../images/buttons/layers/volume_24.png">&nbsp;'LSS Zone Volume' layer</li>
+		<li><img src="../images/buttons/layers/ops_24.png">&nbsp;'LSS Zone Openings' layer</li>
+		<li><img src="../images/buttons/layers/hide_rest_24.png">&nbsp;hide all other layers except 'LSS Zone' related ones</li>
+	</ul>
+	<p>
+		Refer to 'Elements of a Zone' chapter in order to learn more about what exactly stored on each layer.
+	</p>
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		In a new model there are no 'LSS Zone' related layers, so extension suggests to create layers
+		after clicking on any button of 'Layers Toolbar'.
+	</div>
+</body>
+</html>

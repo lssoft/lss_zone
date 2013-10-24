@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_tool.rb ver. 1.0.1 beta 09-Oct-13
+# lss_zone_tool.rb ver. 1.1.0 beta 24-Oct-13
 # The main file, which contains the main logic.
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -627,11 +627,25 @@ module LSS_Extensions
 							parent=under_cur.parent
 							child=under_cur
 							while parent!=@model
-								inst_arr=parent.instances.select{|ent| parent.entities.include?(child)}
-								break if inst_arr[0].nil?
-								norm=norm.transform(inst_arr[0].transformation)
-								child=inst_arr[0]
-								parent=inst_arr[0].parent
+								if parent.respond_to?("instances") # Condition added in ver. 1.1.0 24-Oct-13
+									inst_arr=parent.instances.select{|ent| parent.entities.include?(child)}
+									break if inst_arr[0].nil?
+									ind=0
+									if inst_arr.length>1
+										inst_arr.each_index{|chk_ind|
+											inst=inst_arr[chk_ind]
+											if inst.bounds.contains?(@ip.position)
+												ind=chk_ind
+												break
+											end
+										}
+									end
+									norm=norm.transform(inst_arr[ind].transformation)
+									child=inst_arr[ind]
+									parent=inst_arr[ind].parent
+								else
+									break
+								end
 							end
 							if norm.z.abs>0.1 # Comparison with zero sometimes does not work well because of accuracy
 								@face_under_cur=under_cur
@@ -641,11 +655,25 @@ module LSS_Extensions
 								verts=@face_under_cur.outer_loop.vertices
 								pt0=verts.first.position
 								while parent!=@model
-									inst_arr=parent.instances.select{|ent| parent.entities.include?(child)}
-									break if inst_arr[0].nil?
-									pt0=pt0.transform(inst_arr[0].transformation)
-									child=inst_arr[0]
-									parent=inst_arr[0].parent
+									if parent.respond_to?("instances") # Condition added in ver. 1.1.0 24-Oct-13
+										inst_arr=parent.instances.select{|ent| parent.entities.include?(child)}
+										break if inst_arr[0].nil?
+										ind=0
+										if inst_arr.length>1
+											inst_arr.each_index{|chk_ind|
+												inst=inst_arr[chk_ind]
+												if inst.bounds.contains?(@ip.position)
+													ind=chk_ind
+													break
+												end
+											}
+										end
+										pt0=pt0.transform(inst_arr[ind].transformation)
+										child=inst_arr[ind]
+										parent=inst_arr[ind].parent
+									else
+										break
+									end
 								end
 								@floor_level=pt0.z
 								verts.each{|vrt|
@@ -653,11 +681,25 @@ module LSS_Extensions
 									parent=@face_under_cur.parent
 									child=under_cur
 									while parent!=@model
-										inst_arr=parent.instances.select{|ent| parent.entities.include?(child)}
-										break if inst_arr[0].nil?
-										pt1=pt1.transform(inst_arr[0].transformation)
-										child=inst_arr[0]
-										parent=inst_arr[0].parent
+										if parent.respond_to?("instances") # Condition added in ver. 1.1.0 24-Oct-13
+											inst_arr=parent.instances.select{|ent| parent.entities.include?(child)}
+											break if inst_arr[0].nil?
+											ind=0
+											if inst_arr.length>1
+												inst_arr.each_index{|chk_ind|
+													inst=inst_arr[chk_ind]
+													if inst.bounds.contains?(@ip.position)
+														ind=chk_ind
+														break
+													end
+												}
+											end
+											pt1=pt1.transform(inst_arr[ind].transformation)
+											child=inst_arr[ind]
+											parent=inst_arr[ind].parent
+										else
+											break
+										end
 									end
 									pt1.z=@floor_level
 									@nodal_points<<pt1
@@ -953,7 +995,13 @@ module LSS_Extensions
 							@picked_face=@face_under_cur
 							self.refresh_mid_points
 							if @height.to_f==0
-								@pick_state="specify_height"
+								if @zone_type!="flat"
+									@pick_state="specify_height"
+								else
+									@last_state=@pick_state
+									@pick_state=nil
+									@ready4apply=true
+								end
 							else
 								@last_state=@pick_state
 								@pick_state=nil

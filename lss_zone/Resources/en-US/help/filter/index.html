@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Filter Dialog</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+	<a href="index.html"><img src="../images/screenshots/filter_screenshot.png" width="265" height="191" border="0"></a>
+    <p><a href="index.html"><span class="blackheader">Filter Dialog</span></a></p>
+	You may use this dialog to select particular zones from a large set of zones
+	automatically instead of picking them one-by-one.
+	<p>
+		<span class="blacksubheader">Usage Steps</span>
+		<ul>
+			<li>select set of zones, which contain particular zone(s) you need</li>
+			<li>open 'Filter Zones' dialog</li>
+			<li>specify filter condition(s), hit Enter to confirm condition change</li>
+			<li>adjust filter conditions if needed (use checkboxes to enable/disable particular filter conditions)</li>
+			<li>close the dialog if you are happy with selection results</li>
+		</ul>
+	</p>
+	<p>
+		Bounding boxes of zones, which were initially selected prior dialog opening, are highlighted by red dotted lines.<br>
+		Selection changes immediately after filtering conditions changes.
+	</p>
+	<p>
+		<span class="blacksubheader">Advanced Operations</span>
+	</p>
+	It is possible to set range of values instead of fixed value for quantitative filtering conditions.
+	Use "-" sign to separate bounding values of quantitative condition.
+	Note, that only decimal values are welcome.<br>
+	Quantitative conditions:
+	<ul>
+		<li>height</li>
+		<li>area</li>
+		<li>perimeter</li>
+		<li>volume</li>
+		<li>floor level</li>
+		<li>floor number</li>
+	</ul>
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		It is possible to select another set of zones right while the dialog is still active. It is necessary to ensure, that an initial
+		selection is highlighted by thin red dotted lines.
+	</div>
+</body>
+</html>

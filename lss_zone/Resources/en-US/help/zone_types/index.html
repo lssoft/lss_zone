@@ -1,0 +1,63 @@
+<html>
+<head>
+<title>Zone Types</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader">Zone Types</span></a></p>
+	There are several zone types:
+	<ul>
+		<li><img src="images/room.gif">&nbsp;room</li>
+		<li><img src="images/box.gif">&nbsp;box</li>
+		<li><img src="images/flat.gif">&nbsp;flat</li>
+	</ul>
+	<p><span class="blacksubheader">Room Type</span>&nbsp;<img src="images/room.gif" style="vertical-align: middle;"></p>
+	Zone of this type represents a room inside a building and has all of the following elements:
+	<ul>
+		<li>area element</li>
+		<li>floor element</li>
+		<li>wall elements</li>
+		<li>ceiling element</li>
+		<li>volume element</li>
+		<li>opening elements (if any)</li>
+		<li>label element(s)</li>
+	</ul>
+	It has all attributes listed in 'Attributes List' chapter except 'floors_count'.
+	<p><span class="blacksubheader">Box Type</span>&nbsp;<img src="images/box.gif" style="vertical-align: middle;"></p>
+	Zone of this type roughly represents a whole building (for urban design purposes)
+	so it doesn't have any elements related to room only (floor, walls, ceiling and openings).
+	It has the following elements:
+	<ul>
+		<li>area element</li>
+		<li>volume element</li>
+		<li>label element(s)</li>
+	</ul>
+	Zone of this type does not have room-related attributes obviously, but it has 'floors_count' attribute.
+	<p><span class="blacksubheader">Flat Type</span>&nbsp;<img src="images/flat.gif" style="vertical-align: middle;"></p>
+	The most simple type. It has only the following elements:
+	<ul>
+		<li>area element</li>
+		<li>label element(s)</li>
+	</ul>
+	In contrast with previous type it doesn't even have height or volume. It might be used for urban design as well. It is possible to
+	represent some flat elements of a site plan using this type of a zone.
+	<p><span class="blacksubheader">Note</span> </p> 
+	<div class="note">
+		Extension treats zone objects without specified zone type attribute as zones of a 'room' type. It was made for
+		backward compatibility with previous version, in which zone type feature was not implemented yet.
+	</div>
+</body>
+</html>

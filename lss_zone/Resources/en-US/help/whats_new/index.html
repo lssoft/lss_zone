@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>What's New</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <p><a href="index.html"><span class="blackheader">Version 1.1.0</span></a></p>
+	<br>
+	<img src="../images/lss_zone_new_1_1.png">
+	<p><span class="blacksubheader">New Features</span></p>
+	<ul>
+		<li>'Layers Toolbar' added</li>
+		<li>'Filter Zones' dialog added</li>
+		<li>handling of three zone types added (room, box, flat)</li>
+	</ul>
+	<p><span class="blacksubheader">Fixes</span></p>
+	<ul>
+		<li>'List Template' dialog updates results after 'Query string' changes as expected</li>
+		<li>report generator display properly grouped string values in a zones' list now</li>
+		<li>proper handling of a zero height of a zone implemented</li>
+		<li>picking a floor face in a model with multiple <i>identical</i> component instances works well now</li>
+	</ul>
+</body>
+</html>

@@ -597,6 +597,12 @@ module LSS_Extensions
 				@zones_arr=nil
 				view.invalidate
 			end
+			
+			def getInstructorContentDirectory
+				locale=Sketchup.get_locale 
+				dir_path="../../../../Plugins/lss_zone/Resources/#{locale}/help/filter/"
+				return dir_path
+			end
 		end #class LSS_Show_Filter_Set_Tool
 
 		if( not file_loaded?("lss_zone_filter.rb") )

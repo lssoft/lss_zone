@@ -189,6 +189,34 @@ function apply_defaults(){
 					}
 				}
 			}
+			// Special setting handling
+			// Setting 'zone type' radio into appropriate state
+			if (input_ctrl.id == 'zone_type') {
+				input_ctrl.value=settings_arr[i][1];
+				switch(input_ctrl.value)
+				{
+					case "room":
+						var room_btn=document.getElementById("room");
+						if (room_btn){
+							radio_click(room_btn);
+						}
+						break;
+					case "box":
+						var box_btn=document.getElementById("box");
+						if (box_btn){
+							radio_click(box_btn);
+						}
+						break;
+					case "flat":
+						var flat_btn=document.getElementById("flat");
+						if (flat_btn){
+							radio_click(flat_btn);
+						}
+						break;
+					default:
+						break;
+				}
+			}
 		}
 	}
 }
