@@ -138,3 +138,31 @@
 "Visit Extension's Web Page"="Visit Extension's Web Page";
 "Click to visit extension's official web-page."="Click to visit extension's official web-page.";
 "About"="About";
+//lss_zone_filter.rb
+"Filter"="Filter";
+"Select zones, then click to display 'Filter Zones' dialog."="Select zones, then click to display 'Filter Zones' dialog.";
+"Reading attributes: "="Reading attributes: ";
+"Attributes reading complete."="Attributes reading complete.";
+"Filter Zones"="Filter Zones";
+//lss_zone_layers_cmd.rb
+"Zone Layers"="Zone Layers";
+"Zone Layers Toolbar"="Zone Layers Toolbar";
+"Click to toggle 'Zone Layers' toolbar visibility."="Click to toggle 'Zone Layers' toolbar visibility.";
+"Main Layer"="Main Layer";
+"There are no 'LSS Zone' layers in an active model."="There are no 'LSS Zone' layers in an active model.";
+"Would you like to create 'LSS Zone' layers?"="Would you like to create 'LSS Zone' layers?";
+"Click to toggle main zone layer visibility."="Click to toggle main zone layer visibility.";
+"Area Layer"="Area Layer";
+"Click to toggle area layer visibility."="Click to toggle area layer visibility.";
+"Ceiling Layer"="Ceiling Layer";
+"Click to toggle ceiling layer visibility."="Click to toggle ceiling layer visibility.";
+"Walls Layer"="Walls Layer";
+"Click to toggle walls layer visibility."="Click to toggle walls layer visibility.";
+"Floor Layer"="Floor Layer";
+"Click to toggle floor layer visibility."="Click to toggle floor layer visibility.";
+"Volume Layer"="Volume Layer";
+"Click to toggle volume layer visibility."="Click to toggle volume layer visibility.";
+"Openings Layer"="Openings Layer";
+"Click to toggle openings layer visibility."="Click to toggle openings layer visibility.";
+"Hide the Rest"="Hide the Rest";
+"Click to hide all layers except 'LSS Zone' related ones."="Click to hide all layers except 'LSS Zone' related ones.";

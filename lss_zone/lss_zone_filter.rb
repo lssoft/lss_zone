@@ -27,7 +27,7 @@ module LSS_Extensions
 					lss_zone_filter_cmd.small_icon = "./tb_icons/filter_16.png"
 					lss_zone_filter_cmd.large_icon = "./tb_icons/filter_24.png"
 				end
-				lss_zone_filter_cmd.tooltip = $lsszoneStrings.GetString("Click to display 'Filter' dialog.")
+				lss_zone_filter_cmd.tooltip = $lsszoneStrings.GetString("Select zones, then click to display 'Filter Zones' dialog.")
 				$lsszoneToolbar.add_item(lss_zone_filter_cmd)
 				$lsszoneMenu.add_item(lss_zone_filter_cmd)
 			end

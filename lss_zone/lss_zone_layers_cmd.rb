@@ -60,8 +60,8 @@ module LSS_Extensions
 							zone_layers.lss_zone_layer.visible=true
 						end
 					else
-						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
-						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
 						res=UI.messagebox(warn_str, MB_YESNO)
 						if res==6
 							zone_layers.create_layers
@@ -110,8 +110,8 @@ module LSS_Extensions
 							zone_layers.area_layer.visible=true
 						end
 					else
-						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
-						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
 						res=UI.messagebox(warn_str, MB_YESNO)
 						if res==6
 							zone_layers.create_layers
@@ -160,8 +160,8 @@ module LSS_Extensions
 							zone_layers.ceiling_layer.visible=true
 						end
 					else
-						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
-						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
 						res=UI.messagebox(warn_str, MB_YESNO)
 						if res==6
 							zone_layers.create_layers
@@ -210,8 +210,8 @@ module LSS_Extensions
 							zone_layers.wall_layer.visible=true
 						end
 					else
-						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
-						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
 						res=UI.messagebox(warn_str, MB_YESNO)
 						if res==6
 							zone_layers.create_layers
@@ -253,15 +253,15 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.lss_zone_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
+					if zone_layers.floor_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
 						if zone_layers.floor_layer.visible?
 							zone_layers.floor_layer.visible=false
 						else
 							zone_layers.floor_layer.visible=true
 						end
 					else
-						warn_str=$lsszoneStrings.GetString("There is no 'LSS Zone' layers in an active model.")
-						warn_str+=$lsszoneStrings.GetString("\nWould you like to create 'LSS Zone' layers?")
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
 						res=UI.messagebox(warn_str, MB_YESNO)
 						if res==6
 							zone_layers.create_layers
@@ -303,10 +303,24 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.volume_layer.visible?
-						zone_layers.volume_layer.visible=false
+					if zone_layers.volume_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
+						if zone_layers.volume_layer.visible?
+							zone_layers.volume_layer.visible=false
+						else
+							zone_layers.volume_layer.visible=true
+						end
 					else
-						zone_layers.volume_layer.visible=true
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+							if zone_layers.volume_layer.visible?
+								zone_layers.volume_layer.visible=false
+							else
+								zone_layers.volume_layer.visible=true
+							end
+						end
 					end
 				}
 				volume_layer_cmd.set_validation_proc {
@@ -339,10 +353,24 @@ module LSS_Extensions
 					model = Sketchup.active_model
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
-					if zone_layers.openings_layer.visible?
-						zone_layers.openings_layer.visible=false
+					if zone_layers.openings_layer # Condition added in ver. 1.0.2 beta 15-Oct-13.
+						if zone_layers.openings_layer.visible?
+							zone_layers.openings_layer.visible=false
+						else
+							zone_layers.openings_layer.visible=true
+						end
 					else
-						zone_layers.openings_layer.visible=true
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+							if zone_layers.openings_layer.visible?
+								zone_layers.openings_layer.visible=false
+							else
+								zone_layers.openings_layer.visible=true
+							end
+						end
 					end
 				}
 				ops_layer_cmd.set_validation_proc {
@@ -432,10 +460,10 @@ module LSS_Extensions
 
 		end #class LSS_Zone_Layers_Cmd
 
-		if( not file_loaded?("lss_zone_layers.rb") )
+		if( not file_loaded?("lss_zone_layers_cmd.rb") )
 			LSS_Zone_Layers_Cmd.new
 		end
 		#-----------------------------------------------------------------------------
-		file_loaded("lss_zone_layers.rb")
+		file_loaded("lss_zone_layers_cmd.rb")
 	end #module LSS_Zone_Extension
 end #module LSS_Extensions	
