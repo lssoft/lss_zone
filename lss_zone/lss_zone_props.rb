@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_props.rb ver. 1.0.1 beta 09-Oct-13
+# lss_zone_props.rb ver. 1.1.0 beta 25-Oct-13
 # The file, which contains 'Zone Properties' dialog implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -242,7 +242,7 @@ module LSS_Extensions
 			# This method sets new attributes to all selected zones (or maybe other objects in case if @props_list_content=="all").
 			# Then it performs zones rebuilding in case if @rebuild_on_apply=="true"
 			def batch_props_apply
-				@model.start_operation($lsszoneStrings.GetString("Adjust Properties of the Zone(s)"), true, true)
+				@model.start_operation($lsszoneStrings.GetString("Adjust Properties of the Zone(s)"), true)
 					lss_zone_rebuild=LSS_Zone_Rebuild_Tool.new
 					i=1; tot_cnt=@zones_arr.length
 					progr_char="|"; rest_char="_"; scale_coeff=1
@@ -398,8 +398,8 @@ module LSS_Extensions
 						# using face points z coordinate and zone group transformation.
 						lss_zone_rebuild.recalc_floor_level=false
 						lss_zone_rebuild.recalc_height=false
-						
-						lss_zone_rebuild.process_selection
+						# Set parameter to 'false' so 'process_selection' method does not perform '@model.start_operation'
+						lss_zone_rebuild.process_selection(false)
 					end
 				@model.commit_operation
 				js_command="refresh_data()"

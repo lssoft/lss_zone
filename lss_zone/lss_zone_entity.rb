@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_entity.rb ver. 1.0.2 beta 15-Oct-13
+# lss_zone_entity.rb ver. 1.1.0 beta 25-Oct-13
 # This file contains the class with Zone Entity
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -115,7 +115,8 @@ module LSS_Extensions
 			
 			# This is a main method, which generates zone group in an active model
 			
-			def create_zone
+			def create_zone(stand_alone=true)
+				# If stand_alone==false, then method is called from another @model.start_operation
 				if @nodal_points.length==0
 					UI.messagebox($lsszoneStrings.GetString("There is no nodal points to create zone object from..."))
 					return
@@ -139,7 +140,8 @@ module LSS_Extensions
 					@zone_type="room"
 				end
 				
-				@model.start_operation($lsszoneStrings.GetString("Create Zone"), true)
+				@model.start_operation($lsszoneStrings.GetString("Create Zone"), true) if stand_alone
+				# If stand_alone==false, then method is called from another @model.start_operation
 				
 					@zone_group=@entities.add_group
 					@zone_group.layer=@zone_layers.lss_zone_layer
@@ -341,7 +343,8 @@ module LSS_Extensions
 					# Assign name to group. Added in ver. 1.1.0 22-Oct-13.
 					@zone_group.name="LSS Zone"
 					
-				@model.commit_operation
+				@model.commit_operation if stand_alone
+				# If stand_alone==false, then method is called from another @model.start_operation
 			end
 			
 			# This method erases duplicated points from @nodal_points array.
@@ -399,6 +402,11 @@ module LSS_Extensions
 				@area=0
 				@perimeter=0
 				@assign_material2group=false
+				# Added in ver. 1.1.0 25-Oct-13.
+				@zone_layers=LSS_Zone_Layers.new
+				if @zone_layers.lss_zone_layer.nil?
+					@zone_layers.create_layers
+				end
 			end
 			
 			def create
@@ -411,6 +419,7 @@ module LSS_Extensions
 					@element_face.material=materials[@material] if @material and @material!=""
 				end
 				@element_face.set_attribute("LSS_Zone_Element", "type", @type)
+				@element_face.layer=@zone_layers.lss_zone_layer # Added in ver. 1.1.0 25-Oct-13.
 				@element_group.set_attribute("LSS_Zone_Element", "type", @type)
 				
 				@area=@element_face.area
@@ -433,6 +442,11 @@ module LSS_Extensions
 				@material=material
 				@zone_group=zone_group
 				@volume=0
+				# Added in ver. 1.1.0 25-Oct-13.
+				@zone_layers=LSS_Zone_Layers.new
+				if @zone_layers.lss_zone_layer.nil?
+					@zone_layers.create_layers
+				end
 			end
 			
 			def create
@@ -450,6 +464,7 @@ module LSS_Extensions
 					pt3=ceiling_points[i]
 					pt4=ceiling_points[i-1]
 					side_face=@element_group.entities.add_face(pt1, pt2, pt3, pt4)
+					side_face.layer=@zone_layers.lss_zone_layer # Added in ver. 1.1.0 25-Oct-13.
 				end
 				materials=Sketchup.active_model.materials
 				if @material and @material!=""

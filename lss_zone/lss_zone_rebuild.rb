@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_rebuild.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_rebuild.rb ver. 1.1.0 beta 25-Oct-13
 # The file, which contains created zone(s) refreshing implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -54,7 +54,7 @@ module LSS_Extensions
 				@tool_nil=true
 			end
 			
-			def process_selection
+			def process_selection(stand_alone=true)
 				if @selection.length==0
 					UI.messagebox($lsszoneStrings.GetString("It is necessary to select some zone objects before launching 'Rebuild' command."))
 				else
@@ -62,26 +62,29 @@ module LSS_Extensions
 					progr_char="|"; rest_char="_"; scale_coeff=1
 					progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
 					new_zones=Array.new
-					@model.start_operation($lsszoneStrings.GetString("Rebuild Zone(s)"), true)
-					@selection.each{|ent|
-						if ent.is_a?(Sketchup::Group)
-							number=ent.get_attribute("LSS_Zone_Entity", "number")
-							if number
-								new_zones<<self.rebuild(ent) if (ent.deleted?)==false
+					@model.start_operation($lsszoneStrings.GetString("Rebuild Zone(s)"), true) if stand_alone
+					# If stand_alone==false, then method is called from another @model.start_operation
+						@selection.each{|ent|
+							if ent.is_a?(Sketchup::Group)
+								number=ent.get_attribute("LSS_Zone_Entity", "number")
+								if number
+									# Set the second optional parameter to 'false' so 'rebuild' method does not perform '@model.start_operation'
+									new_zones<<self.rebuild(ent, false) if (ent.deleted?)==false
+								end
 							end
-						end
-						progr_bar.update(i)
-						i+=1
-						Sketchup.status_text=$lsszoneStrings.GetString("Rebuilding zones: ") + progr_bar.progr_string
-					}
-					Sketchup.status_text=$lsszoneStrings.GetString("Rebuilding complete.")
-					@selection.add(new_zones)
-					@model.commit_operation
+							progr_bar.update(i)
+							i+=1
+							Sketchup.status_text=$lsszoneStrings.GetString("Rebuilding zones: ") + progr_bar.progr_string
+						}
+						Sketchup.status_text=$lsszoneStrings.GetString("Rebuilding complete.")
+						@selection.add(new_zones)
+					@model.commit_operation if stand_alone
+					# If stand_alone==false, then method is called from another @model.start_operation
 					Sketchup.active_model.select_tool(nil) if @tool_nil
 				end
 			end
 			
-			def rebuild(zone_group)
+			def rebuild(zone_group, stand_alone=true)
 				@zone_group=zone_group
 				return if @zone_group.nil?
 				return if @zone_group.deleted?
@@ -213,15 +216,8 @@ module LSS_Extensions
 				# Double check if something wrong with @zone_group
 				return if @zone_group.nil?
 				return if @zone_group.deleted?
-				# boolean - if set to true, then this operation will be made "transparent", 
-				# which functionally means that whatever operation comes after this one will
-				# be appended into one combined operation, allowing the user the undo both 
-				# actions with a single undo command. This flag is a highly difficult one, 
-				# since there are so many ways that a SketchUp user can interrupt a given 
-				# operation with one of their own.
-				#Use extreme caution and test thoroughly when setting this to true.
-				@model.start_operation($lsszoneStrings.GetString("Rebuild Zone"), true, true)
-				#                                                                       ^^^^^
+				@model.start_operation($lsszoneStrings.GetString("Rebuild Zone"), true) if stand_alone
+				# If stand_alone==false, then method is called from another @model.start_operation
 					@zone_group.erase!
 					
 					@zone_entity=LSS_Zone_Entity.new
@@ -254,7 +250,8 @@ module LSS_Extensions
 					# Zone Type
 					@zone_entity.zone_type=@zone_type # Added in ver. 1.1.0 22-Oct-13
 					
-					@zone_entity.create_zone
+					# If the optional parameter==false, then "create_zone" method does not perform @model.start_operation
+					@zone_entity.create_zone(false)
 					new_zone_group=@zone_entity.zone_group
 					
 					# Attach back custom attributes to a new_zone_group
@@ -276,7 +273,9 @@ module LSS_Extensions
 							}
 						end
 					}
-				@model.commit_operation
+				@model.commit_operation if stand_alone
+				# If stand_alone==false, then method is called from another @model.start_operation
+				
 				#Return created zone group
 				new_zone_group
 			end

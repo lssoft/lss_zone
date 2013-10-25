@@ -152,7 +152,7 @@ function apply_defaults(){
 		}
 		var input_ctrl=document.getElementById(settings_arr[i][0]);
 		if (input_ctrl) {
-			if (input_ctrl.type == 'text') {
+			if (input_ctrl.type == 'text' || input_ctrl.type == 'hidden') {
 				input_ctrl.value=settings_arr[i][1];
 			}
 			if (input_ctrl.type == 'checkbox') {
@@ -187,34 +187,6 @@ function apply_defaults(){
 						var col = materials_arr[sel_ind-1].split("|")[1];
 						picker_btn.style.backgroundColor = "rgb(" + col + ")";
 					}
-				}
-			}
-			// Special setting handling
-			// Setting 'zone type' radio into appropriate state
-			if (input_ctrl.id == 'zone_type') {
-				input_ctrl.value=settings_arr[i][1];
-				switch(input_ctrl.value)
-				{
-					case "room":
-						var room_btn=document.getElementById("room");
-						if (room_btn){
-							radio_click(room_btn);
-						}
-						break;
-					case "box":
-						var box_btn=document.getElementById("box");
-						if (box_btn){
-							radio_click(box_btn);
-						}
-						break;
-					case "flat":
-						var flat_btn=document.getElementById("flat");
-						if (flat_btn){
-							radio_click(flat_btn);
-						}
-						break;
-					default:
-						break;
 				}
 			}
 		}
@@ -583,6 +555,11 @@ function zone_type_view(zone_type){
 		default:
 		
 	}
+}
+
+function refresh_volume(vol_str){
+	var volume_field=document.getElementById("volume");
+	volume_field.value=vol_str;
 }
 
 function close_dial(){

@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_tool.rb ver. 1.1.0 beta 24-Oct-13
+# lss_zone_tool.rb ver. 1.1.0 beta 25-Oct-13
 # The main file, which contains the main logic.
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -398,8 +398,8 @@ module LSS_Extensions
 								@height=@settings_hash[key][0]
 								@volume=@area.to_f*@height.to_f
 								@settings_hash["volume"]=@volume
-								self.send_settings2dlg
-								js_command = "apply_defaults()"
+								vol_str=LSS_Math.new.format_volume(@settings_hash[key][0].to_f)
+								js_command = "refresh_volume('" + vol_str + "')"
 								@zone_dialog.execute_script(js_command)
 							end
 							# Switch dialog view according to zone type
@@ -1117,9 +1117,20 @@ module LSS_Extensions
 								if number
 									@selected_zone=under_cur
 									self.read_settings_from_zone
-									disp=""
-									js_command = "opening_tbody_display('" + disp + "')"
+									self.send_settings2dlg
+									js_command = "apply_defaults()"
 									@zone_dialog.execute_script(js_command)
+									js_command = "custom_init()"
+									@zone_dialog.execute_script(js_command)
+									if @zone_type!="box" and @zone_type!="flat"
+										disp=""
+										js_command = "opening_tbody_display('" + disp + "')"
+										@zone_dialog.execute_script(js_command)
+									else
+										disp="none"
+										js_command = "opening_tbody_display('" + disp + "')"
+										@zone_dialog.execute_script(js_command)
+									end
 								else
 									self.small_reset
 									disp="none"
@@ -1180,7 +1191,8 @@ module LSS_Extensions
 					@over_mid_pt_ind=nil
 					@drag_state=false
 					self.create_zone_entity
-					@zone_entity.create_zone
+					# If the optional parameter==false, then "create_zone" method does not perform @model.start_operation
+					@zone_entity.create_zone(false)
 					@selected_zone=@zone_entity.zone_group
 					self.read_settings_from_zone
 					self.send_settings2dlg
@@ -1203,6 +1215,9 @@ module LSS_Extensions
 				@floor_material=@selected_zone.get_attribute("LSS_Zone_Entity", "floor_material")
 				@ceiling_material=@selected_zone.get_attribute("LSS_Zone_Entity", "ceiling_material")
 				@wall_material=@selected_zone.get_attribute("LSS_Zone_Entity", "wall_material")
+				
+				@zone_type=@selected_zone.get_attribute("LSS_Zone_Entity", "zone_type")
+				@floors_count=@selected_zone.get_attribute("LSS_Zone_Entity", "floors_count")
 				
 				area_face_grp=@selected_zone.entities.select{|grp| (grp.get_attribute("LSS_Zone_Element", "type")=="area")}[0]
 				if area_face_grp

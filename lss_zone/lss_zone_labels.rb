@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_labels.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_labels.rb ver. 1.1.0 beta 25-Oct-13
 # The script, which implements attaching labels with zone attributes to existing zone objects
 # in an active model.
 
@@ -204,7 +204,8 @@ module LSS_Extensions
 						i+=1
 						Sketchup.status_text=$lsszoneStrings.GetString("Attaching labels: ") + progr_bar.progr_string
 					}
-					rebuild_tool.process_selection
+					# Set parameter to 'false' so 'process_selection' method does not perform '@model.start_operation'
+					rebuild_tool.process_selection(false)
 					self.filter_selection
 				@model.commit_operation
 				Sketchup.status_text=$lsszoneStrings.GetString("Labels attaching complete.")

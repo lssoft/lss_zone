@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_recalc.rb ver. 1.0.0 beta 30-Sep-13
+# lss_zone_recalc.rb ver. 1.1.0 beta 25-Oct-13
 # The file, which contains created zone(s) refreshing implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -46,32 +46,35 @@ module LSS_Extensions
 				@selection=@model.selection
 			end
 			
-			def process_selection
+			def process_selection(stand_alone=true)
 				if @selection.length==0
 					UI.messagebox($lsszoneStrings.GetString("It is necessary to select some zone objects before launching 'Recalculate' command."))
 				else
-					@model.start_operation($lsszoneStrings.GetString("Recalculate Zone(s)"), true)
-					i=1; tot_cnt=@selection.length
-					progr_char="|"; rest_char="_"; scale_coeff=1
-					progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
-					@selection.each{|ent|
-						if ent.is_a?(Sketchup::Group)
-							number=ent.get_attribute("LSS_Zone_Entity", "number")
-							if number
-								self.recalc(ent)
+					@model.start_operation($lsszoneStrings.GetString("Recalculate Zone(s)"), true) if stand_alone
+					# If stand_alone==false, then method is called from another @model.start_operation
+						i=1; tot_cnt=@selection.length
+						progr_char="|"; rest_char="_"; scale_coeff=1
+						progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
+						@selection.each{|ent|
+							if ent.is_a?(Sketchup::Group)
+								number=ent.get_attribute("LSS_Zone_Entity", "number")
+								if number
+									# Set the second optional parameter to 'false' so 'recalc' method does not perform '@model.start_operation'
+									self.recalc(ent, false)
+								end
 							end
-						end
-						progr_bar.update(i)
-						i+=1
-						Sketchup.status_text=$lsszoneStrings.GetString("Recalculating attributes: ") + progr_bar.progr_string
-					}
-					Sketchup.status_text=$lsszoneStrings.GetString("Recalculation complete.")
-					@model.commit_operation
+							progr_bar.update(i)
+							i+=1
+							Sketchup.status_text=$lsszoneStrings.GetString("Recalculating attributes: ") + progr_bar.progr_string
+						}
+						Sketchup.status_text=$lsszoneStrings.GetString("Recalculation complete.")
+					@model.commit_operation if stand_alone
+					# If stand_alone==false, then method is called from another @model.start_operation
 					Sketchup.active_model.select_tool(nil)
 				end
 			end
 			
-			def recalc(zone_group)
+			def recalc(zone_group, stand_alone=true)
 				@zone_group=zone_group
 				@number=@zone_group.get_attribute("LSS_Zone_Entity", "number")
 				@name=@zone_group.get_attribute("LSS_Zone_Entity", "name")
@@ -185,15 +188,8 @@ module LSS_Extensions
 					end
 				}
 				
-				# boolean - if set to true, then this operation will be made "transparent", 
-				# which functionally means that whatever operation comes after this one will
-				# be appended into one combined operation, allowing the user the undo both 
-				# actions with a single undo command. This flag is a highly difficult one, 
-				# since there are so many ways that a SketchUp user can interrupt a given 
-				# operation with one of their own.
-				#Use extreme caution and test thoroughly when setting this to true.
-				@model.start_operation($lsszoneStrings.GetString("Recalculate Zone's Attributes"), true, true)
-				#                                                                                        ^^^^^
+				@model.start_operation($lsszoneStrings.GetString("Recalculate Zone's Attributes"), true) if stand_alone
+				# If stand_alone==false, then method is called from another @model.start_operation
 					@zone_group.set_attribute("LSS_Zone_Entity", "area", @area)
 					@zone_group.set_attribute("LSS_Zone_Entity", "perimeter", @perimeter)
 					@zone_group.set_attribute("LSS_Zone_Entity", "height", @height)
@@ -256,7 +252,9 @@ module LSS_Extensions
 						@zone_group.set_attribute(dict_name, "label_template", label_template)
 						@zone_group.set_attribute(dict_name, "label_layer", label_layer)
 					}
-				@model.commit_operation
+				@model.commit_operation if stand_alone
+				# If stand_alone==false, then method is called from another @model.start_operation
+				
 				#Return created zone group
 				@zone_group
 			end
