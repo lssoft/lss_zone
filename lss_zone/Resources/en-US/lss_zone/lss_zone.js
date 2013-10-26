@@ -364,20 +364,50 @@ function ctrl_onchange(evt){
 	if (this.id == "floor_material") {
 		var sel_ind=this.selectedIndex;
 		var picker_btn = document.getElementById("floor_eye_dropper");
-		var col = materials_arr[sel_ind-1].split("|")[1];
-		picker_btn.style.backgroundColor = "rgb(" + col + ")";
+		if (picker_btn){
+			var col = materials_arr[sel_ind-1].split("|")[1];
+			picker_btn.style.backgroundColor = "rgb(" + col + ")";
+		}
+		// Part which useful only in 'Filter Zones' dialog (lss_zone_filter.html)
+		var chk_box = document.getElementById("use_"+this.id);
+		if (chk_box){
+			chk_box.checked=true;
+			if (typeof window.condition_change == "function") { // Checks if condition_change exists
+				condition_change(chk_box); // Calls a function within custom *.js file
+			}
+		}
 	}
 	if (this.id == "ceiling_material") {
 		var sel_ind=this.selectedIndex;
 		var picker_btn = document.getElementById("ceiling_eye_dropper");
-		var col = materials_arr[sel_ind-1].split("|")[1];
-		picker_btn.style.backgroundColor = "rgb(" + col + ")";
+		if (picker_btn){
+			var col = materials_arr[sel_ind-1].split("|")[1];
+			picker_btn.style.backgroundColor = "rgb(" + col + ")";
+		}
+		// Part which useful only in 'Filter Zones' dialog (lss_zone_filter.html)
+		var chk_box = document.getElementById("use_"+this.id);
+		if (chk_box){
+			chk_box.checked=true;
+			if (typeof window.condition_change == "function") { // Checks if condition_change exists
+				condition_change(chk_box); // Calls a function within custom *.js file
+			}
+		}
 	}
 	if (this.id == "wall_material") {
 		var sel_ind=this.selectedIndex;
 		var picker_btn = document.getElementById("wall_eye_dropper");
-		var col = materials_arr[sel_ind-1].split("|")[1];
-		picker_btn.style.backgroundColor = "rgb(" + col + ")";
+		if (picker_btn){
+			var col = materials_arr[sel_ind-1].split("|")[1];
+			picker_btn.style.backgroundColor = "rgb(" + col + ")";
+		}
+		// Part which useful only in 'Filter Zones' dialog (lss_zone_filter.html)
+		var chk_box = document.getElementById("use_"+this.id);
+		if (chk_box){
+			chk_box.checked=true;
+			if (typeof window.condition_change == "function") { // Checks if condition_change exists
+				condition_change(chk_box); // Calls a function within custom *.js file
+			}
+		}
 	}
 }
 

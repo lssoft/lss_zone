@@ -111,9 +111,11 @@ module LSS_Extensions
 				@collected_data.each{|record|
 					new_record=Hash.new
 					record.each_key{|key|
-						if @query_string.include?(key)
-							new_record[key]=record[key]
-							count_fields+=1
+						if key!=""
+							if @query_string.include?(key)
+								new_record[key]=record[key]
+								count_fields+=1
+							end
 						end
 					}
 					selected_fields<<new_record

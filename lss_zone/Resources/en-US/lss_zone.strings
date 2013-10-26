@@ -166,3 +166,5 @@
 "Click to toggle openings layer visibility."="Click to toggle openings layer visibility.";
 "Hide the Rest"="Hide the Rest";
 "Click to hide all layers except 'LSS Zone' related ones."="Click to hide all layers except 'LSS Zone' related ones.";
+"Hiding layers: "="Hiding layers: ";
+"Unhiding layers: "="Unhiding layers: ";

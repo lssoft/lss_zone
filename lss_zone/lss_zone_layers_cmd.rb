@@ -399,11 +399,21 @@ module LSS_Extensions
 				layers_submenu.add_item(ops_layer_cmd)
 				
 				# Hide the Rest command
-				$hidden_layers=Array.new
 				hide_rest_cmd=UI::Command.new($lsszoneStrings.GetString("Hide the Rest")){
 					model = Sketchup.active_model
+					create_if_nil=true
+					hidden_layers = model.attribute_dictionary("LSS Zone Hidden Layers", create_if_nil)
 					layers = model.layers
 					zone_layers=LSS_Zone_Layers.new
+					if zone_layers.lss_zone_layer.nil? # Condition added in ver. 1.0.2 beta 26-Oct-13.
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+						end
+					end
+					return if zone_layers.lss_zone_layer.nil?
 					
 					zone_related_layers=Array.new
 					zone_related_layers<<zone_layers.lss_zone_layer
@@ -414,32 +424,53 @@ module LSS_Extensions
 					zone_related_layers<<zone_layers.volume_layer
 					zone_related_layers<<zone_layers.openings_layer
 					
-					if $hidden_layers.length==0
+					if hidden_layers.length==0
+						i=1; tot_cnt=layers.length
+						progr_char="|"; rest_char="_"; scale_coeff=1
+						progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
 						layers.each{|layer|
 							if layer
 								if (layer.deleted?)==false
 									if zone_related_layers.include?(layer)==false
 										if layer.visible?
-											$hidden_layers<<layer
 											layer.visible=false
+											hidden_layers[layer.name]=true if (layer.visible?)==false # Additional check added 26-Oct-13. The point is that active layer may not be invisible.
 										end
 									end
 								end
 							end
+							progr_bar.update(i)
+							i+=1
+							Sketchup.status_text=$lsszoneStrings.GetString("Hiding layers: ") + progr_bar.progr_string
 						}
+						Sketchup.status_text=""
 					else
-						$hidden_layers.each{|layer|
-							layer.visible=true
+						i=1; tot_cnt=hidden_layers.length
+						progr_char="|"; rest_char="_"; scale_coeff=1
+						progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
+						hidden_layers.each_key{|layer_name|
+							layer=layers[layer_name]
+							if layer
+								layer.visible=true if (layer.deleted?)==false
+							end
+							hidden_layers.delete_key(layer_name)
+							progr_bar.update(i)
+							i+=1
+							Sketchup.status_text=$lsszoneStrings.GetString("Unhiding layers: ") + progr_bar.progr_string
 						}
-						$hidden_layers=Array.new
+						Sketchup.status_text=""
 					end
 				}
 				hide_rest_cmd.set_validation_proc {
 					model = Sketchup.active_model
 					layers = model.layers
-					zone_layers=LSS_Zone_Layers.new
-					if $hidden_layers.length>0
-						MF_CHECKED
+					hidden_layers = model.attribute_dictionary("LSS Zone Hidden Layers")
+					if hidden_layers
+						if hidden_layers.length>0
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
 					else
 						MF_UNCHECKED
 					end

@@ -100,18 +100,30 @@ function get_zones_cnt(cnt_str){
 		var floor_refno_row=document.getElementById("floor_refno_row");
 		var ceiling_refno_row=document.getElementById("ceiling_refno_row");
 		var wall_refno_row=document.getElementById("wall_refno_row");
+		
+		var use_height=document.getElementById("use_height");
+		var use_volume=document.getElementById("use_volume");
+		var use_floor_level=document.getElementById("use_floor_level");
+		var use_floor_number=document.getElementById("use_floor_number");
+		var use_floors_count=document.getElementById("use_floors_count");
+		var use_floor_mat=document.getElementById("use_floor_material");
+		var use_ceiling_mat=document.getElementById("use_ceiling_material");
+		var use_wall_mat=document.getElementById("use_wall_material");
+		var use_floor_refno=document.getElementById("use_floor_refno");
+		var use_ceiling_refno=document.getElementById("use_ceiling_refno");
+		var use_wall_refno=document.getElementById("use_wall_refno");
 		// Hide all adjustable properties
-		height_row.style.display="none";
-		volume_row.style.display="none";
-		floor_level_row.style.display="none";
-		floor_number_row.style.display="none";
-		floor_mat_row.style.display="none";
-		ceiling_mat_row.style.display="none";
-		wall_mat_row.style.display="none";
-		floor_refno_row.style.display="none";
-		ceiling_refno_row.style.display="none";
-		wall_refno_row.style.display="none";
-		floors_count_row.style.display="none";
+		if (use_height.checked==false){ height_row.style.display="none";};
+		if (use_volume.checked==false){	volume_row.style.display="none";};
+		if (use_floor_level.checked==false){ floor_level_row.style.display="none";};
+		if (use_floor_number.checked==false){ floor_number_row.style.display="none";};
+		if (use_floor_mat.checked==false){ floor_mat_row.style.display="none";};
+		if (use_ceiling_mat.checked==false){ ceiling_mat_row.style.display="none";};
+		if (use_wall_mat.checked==false){ wall_mat_row.style.display="none";};
+		if (use_floor_refno.checked==false){ floor_refno_row.style.display="none";};
+		if (use_ceiling_refno.checked==false){ ceiling_refno_row.style.display="none";};
+		if (use_wall_refno.checked==false){ wall_refno_row.style.display="none";};
+		if (use_floors_count.checked==false){ floors_count_row.style.display="none";};
 		if (room_cnt!=0) {
 			// Display room related rows
 			height_row.style.display="";
