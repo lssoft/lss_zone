@@ -385,6 +385,7 @@ module LSS_Extensions
 							zone_obj.set_attribute("LSS_Zone_Entity", "floor_refno", @floor_refno) if @floor_refno and @floor_refno.to_s!="..."
 							zone_obj.set_attribute("LSS_Zone_Entity", "wall_refno", @wall_refno) if @wall_refno and @wall_refno.to_s!="..."
 							zone_obj.set_attribute("LSS_Zone_Entity", "ceiling_refno", @ceiling_refno) if @ceiling_refno and @ceiling_refno.to_s!="..."
+							zone_obj.set_attribute("LSS_Zone_Entity", "floors_count", @floors_count) if @floors_count and @floors_count.to_s!="..."
 							progr_bar.update(i)
 							i+=1
 							Sketchup.status_text=$lsszoneStrings.GetString("Applying new properties: ") + progr_bar.progr_string

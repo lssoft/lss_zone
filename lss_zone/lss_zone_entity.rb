@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_entity.rb ver. 1.1.0 beta 25-Oct-13
+# lss_zone_entity.rb ver. 1.1.0 beta 26-Oct-13
 # This file contains the class with Zone Entity
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -123,6 +123,7 @@ module LSS_Extensions
 				end
 				
 				self.clear_dups
+				self.ensure_planar # Added in ver. 1.1.0 26-Oct-13
 				
 				# lss_zone_layer
 				# area_layer
@@ -376,6 +377,13 @@ module LSS_Extensions
 				}
 				@nodal_points=temp_arr
 			end
+			
+			def ensure_planar
+				@floor_level=@nodal_points.first.z
+				@nodal_points.each{|pt|
+					pt.z=@floor_level
+				}
+			end
 		end #class LSS_Zone_Entity
 		
 		# This is a service class, which is used by 'create_zone' method of 'LSS_Zone_Entity' class:
@@ -452,12 +460,14 @@ module LSS_Extensions
 			def create
 				@element_group=@zone_group.entities.add_group
 				bottom_face=@element_group.entities.add_face(@floor_face_points)
+				bottom_face.layer=@zone_layers.lss_zone_layer # Added in ver. 1.1.0 26-Oct-13.
 				ceiling_points=Array.new
 				@floor_face_points.each{|pt|
 					top_pt=Geom::Point3d.new(pt.x, pt.y, pt.z+@height.to_f)
 					ceiling_points<<top_pt
 				}
 				top_face=@element_group.entities.add_face(ceiling_points.reverse)
+				top_face.layer=@zone_layers.lss_zone_layer # Added in ver. 1.1.0 26-Oct-13.
 				for i in 0..@floor_face_points.length-1
 					pt1=@floor_face_points[i-1]
 					pt2=@floor_face_points[i]
