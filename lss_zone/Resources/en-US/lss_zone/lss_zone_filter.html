@@ -224,7 +224,13 @@
 					<input type="checkbox" onclick="condition_change(this)" id="use_zone_type">
 					Zone type
 				</td>
-				<td class="value_cell"><input type="text" id="zone_type" value="room" onchange="send_condition(this)" onkeydown="prevent_enter(this)" onkeyup="cond_key_up(this)" class="value_input"></td>
+				<td class="value_cell">
+					<select id="zone_type" value="room" onchange="send_condition(this)" class="value_input">
+						<option value="room">room</option>
+						<option value="box">box</option>
+						<option value="flat">flat</option>
+					</select>
+				</td>
 			</tr>
 			<tr id="memo_row">
 				<td class="info_img_cell">
@@ -234,7 +240,7 @@
 					<input type="checkbox" onclick="condition_change(this)" id="use_memo">
 					Memo
 				</td>
-				<td class="value_cell"><input type="text" id="memo" value="" onchange="send_condition(this)" onkeydown="prevent_enter(this)" onkeyup="cond_key_up(this)" class="value_input"></td>
+				<td class="value_cell"><input type="text" id="memo" value="" onchange="send_condition(this)" onkeydown="prevent_enter(this)" onkeyup="cond_key_up(this)" class="value_input" title="This condition uses partial text match, so you may enter just a part of text here."></td>
 			</tr>
 			<tr class="splitter_row">
 				<td class="splitter_img_cell">

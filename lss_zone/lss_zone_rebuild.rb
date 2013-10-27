@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_rebuild.rb ver. 1.1.0 beta 25-Oct-13
+# lss_zone_rebuild.rb ver. 1.1.0 beta 27-Oct-13
 # The file, which contains created zone(s) refreshing implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR

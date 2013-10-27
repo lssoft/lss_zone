@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_filter.rb ver. 1.1.0 beta 23-Oct-13
+# lss_zone_filter.rb ver. 1.1.0 beta 27-Oct-13
 # The file, which contains 'Filter' dialog implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -42,6 +42,7 @@ module LSS_Extensions
 				@selection=@model.selection
 				@settings_hash=Hash.new
 				@zoom_selection="true"
+				@names_arr=nil # Array of collected zone names to place in 'autosuggest' widget
 			end
 			
 			def selection_filter
@@ -51,6 +52,7 @@ module LSS_Extensions
 			end
 			
 			def obtain_common_settings
+				@names_arr=Array.new
 				@zone_types_cnt=Hash.new
 				if @zones_arr.length==0
 					return
@@ -87,6 +89,10 @@ module LSS_Extensions
 				progr_char="|"; rest_char="_"; scale_coeff=1
 				progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
 				@zones_arr.each{|zone_obj|
+					zone_name=zone_obj.get_attribute("LSS_Zone_Entity", "name").to_s
+					if @names_arr.include?(zone_name)==false
+						@names_arr<<zone_name
+					end
 					@number="..." if zone_obj.get_attribute("LSS_Zone_Entity", "number").to_s!=@number.to_s
 					@name="..." if zone_obj.get_attribute("LSS_Zone_Entity", "name").to_s!=@name.to_s
 					@height="..." if zone_obj.get_attribute("LSS_Zone_Entity", "height").to_s!=@height.to_s
@@ -245,6 +251,9 @@ module LSS_Extensions
 					if action_name=="get_categories"
 						self.send_categories2dlg
 					end
+					if action_name=="get_names"
+						self.send_names2dlg
+					end
 					if action_name=="refresh_data"
 						self.refresh
 					end
@@ -275,7 +284,11 @@ module LSS_Extensions
 								end
 								@settings_hash[key][0]=dist
 								when "integer"
-								@settings_hash[key][0]=val.to_i
+								if val.include?("-")
+									@settings_hash[key][0]=val
+								else
+									@settings_hash[key][0]=val.to_i
+								end
 								when "area"
 								if val.include?("-")
 									# Handle range value case
@@ -378,8 +391,14 @@ module LSS_Extensions
 									end
 								end
 							else
-								if zone_val!=filter_val
-									new_selection.delete(zone_obj)
+								if key=="memo"
+									if zone_val.include?(filter_val)==false
+										new_selection.delete(zone_obj)
+									end
+								else
+									if zone_val!=filter_val
+										new_selection.delete(zone_obj)
+									end
 								end
 							end
 						end
@@ -517,6 +536,22 @@ module LSS_Extensions
 						js_command = "get_category('" + @category + "')"
 						@filter_dialog.execute_script(js_command) if js_command
 						js_command = "bind_categories()"
+						@filter_dialog.execute_script(js_command) if js_command
+					end
+				end
+			end
+			
+			def send_names2dlg
+				# Send collected list of names to a web-dialog. Added in ver. 1.1.0 beta 27-Oct-13.
+				js_command = "clear_names_arr()"
+				@filter_dialog.execute_script(js_command) if js_command
+				if @names_arr
+					if @names_arr.length>0
+						@names_arr.each{|name|
+							js_command = "get_name('" + name + "')"
+							@filter_dialog.execute_script(js_command) if js_command
+						}
+						js_command = "bind_names()"
 						@filter_dialog.execute_script(js_command) if js_command
 					end
 				end

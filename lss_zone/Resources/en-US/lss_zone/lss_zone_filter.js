@@ -1,4 +1,29 @@
-﻿function condition_change(chk_box){
+﻿var names_arr = new Array ();
+
+function get_name(name_str){
+	names_arr.push(name_str);
+}
+
+function clear_names_arr() {
+	names_arr = new Array ();
+}
+
+function bind_names() {
+	if (document.getElementById("name")){
+		names_autosuggest = new autosuggest("name", names_arr, null, send_auto_name());
+		names_autosuggest.response_time=5;
+		names_autosuggest.limit_start=false;
+	}
+}
+
+function send_auto_name(){
+	var name_field=document.getElementById("name");
+	act_name="obtain_setting"+ delimiter+ name_field.id + delimiter + name_field.value;
+	callRuby(act_name);
+	return false;
+}
+
+function condition_change(chk_box){
 	var cond_name=chk_box.id.replace("use_","");
 	var cond_value=chk_box.checked;
 	var act_name="condition_change"+delimiter+cond_name+delimiter+cond_value;
@@ -168,4 +193,5 @@ function cond_key_up(field) {
 
 function custom_init(){
 	callRuby("get_zones_cnt");
+	callRuby("get_names");
 }

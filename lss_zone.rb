@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone.rb ver. 1.0.0  30-Sep-13
+# lss_zone.rb ver. 1.1.0  27-Oct-13
 # This extension allows to create "zone-objects" or just "zones" in an active model. Each created zone
 # may store geometric (area, perimeter, height, volume) and other (name, number, category etc) properties.
 # It is possible to display any of above properties by turning on labels of "Zones" and what is more
@@ -25,7 +25,7 @@ module LSS_Extensions
 
 		zone_ext.description=$lsszoneStrings.GetString("This extension allows to create 'zone-objects' or just 'zones' in an active model. Each created zone may store geometric and other properties.")
 		zone_ext.copyright="(c)2013, Links' System Software"
-		zone_ext.version="1.0.0 beta 30-Sep-13"
+		zone_ext.version="1.1.0 beta 27-Oct-13"
 		zone_ext.creator="Links' System Software"
 		Sketchup.register_extension(zone_ext, true)
 	end #module LSS_Zone_Extension

@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_props.rb ver. 1.1.0 beta 25-Oct-13
+# lss_zone_props.rb ver. 1.1.0 beta 27-Oct-13
 # The file, which contains 'Zone Properties' dialog implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -490,6 +490,12 @@ module LSS_Extensions
 					if action_name.split(",")[0]=="obtain_setting" # From web-dialog
 						key=action_name.split(",")[1]
 						val=action_name.split(",")[2]
+						# Process nil value of 'memo' property individually. Added in ver. 1.1.0 27-Oct-13.
+						if key=="memo"
+							if val.nil?
+								val=""
+							end
+						end
 						if @settings_hash[key]
 							case @settings_hash[key][1]
 								when "distance"
