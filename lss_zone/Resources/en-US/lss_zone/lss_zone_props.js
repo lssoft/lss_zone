@@ -100,6 +100,9 @@ function get_zones_cnt(cnt_str){
 		var floor_refno_row=document.getElementById("floor_refno_row");
 		var ceiling_refno_row=document.getElementById("ceiling_refno_row");
 		var wall_refno_row=document.getElementById("wall_refno_row");
+		var floor_area_row=document.getElementById("floor_area_row");
+		var ceiling_area_row=document.getElementById("ceiling_area_row");
+		var wall_area_row=document.getElementById("wall_area_row");
 		// Hide all adjustable properties
 		height_row.style.display="none";
 		volume_row.style.display="none";
@@ -112,6 +115,9 @@ function get_zones_cnt(cnt_str){
 		ceiling_refno_row.style.display="none";
 		wall_refno_row.style.display="none";
 		floors_count_row.style.display="none";
+		floor_area_row.style.display="none";
+		ceiling_area_row.style.display="none";
+		wall_area_row.style.display="none";
 		if (room_cnt!=0) {
 			// Display room related rows
 			height_row.style.display="";
@@ -124,6 +130,9 @@ function get_zones_cnt(cnt_str){
 			floor_refno_row.style.display="";
 			ceiling_refno_row.style.display="";
 			wall_refno_row.style.display="";
+			floor_area_row.style.display="";
+			ceiling_area_row.style.display="";
+			wall_area_row.style.display="";
 		}
 		if (box_cnt!=0) {
 			// Display building box related rows

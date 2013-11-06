@@ -12,6 +12,7 @@ function clear_layers() {
 
 function get_label_preview_txt(preview_txt){
 	var preview_container=document.getElementById("preview_container");
+	preview_txt=preview_txt.replace("*", "\'"); // Added 06-Nov-13 it is a fix of unterminated string constant problem when units are set to feet
 	preview_container.value=unescape(preview_txt);
 }
 

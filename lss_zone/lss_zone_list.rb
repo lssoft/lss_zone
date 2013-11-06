@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_list.rb ver. 1.0.2 beta 15-Oct-13
+# lss_zone_list.rb ver. 1.1.1 beta 06-Nov-13
 # The file, which contains report generator implementation.
 # It generates all or selected zones list in an active model.
 
@@ -252,6 +252,17 @@ module LSS_Extensions
 								end
 							when "area"
 								area_str=Sketchup.format_area(value.to_f).to_s
+								# Supress square units patch added in ver. 1.1.1 06-Nov-13.
+								options=Sketchup.active_model.options
+								units_options=options["UnitsOptions"]
+								supress_units=units_options["SuppressUnitsDisplay"]
+								if supress_units
+									if area_str.split(" ")[0]!="~"
+										area_str=area_str.split(" ")[0]
+									else
+										area_str=area_str.split(" ")[1]
+									end
+								end
 								value=area_str
 							when "volume"
 								vol_str=LSS_Math.new.format_volume(value)

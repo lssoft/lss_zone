@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_rebuild.rb ver. 1.1.0 beta 27-Oct-13
+# lss_zone_rebuild.rb ver. 1.1.1 beta 03-Nov-13
 # The file, which contains created zone(s) refreshing implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -64,7 +64,7 @@ module LSS_Extensions
 					new_zones=Array.new
 					@model.start_operation($lsszoneStrings.GetString("Rebuild Zone(s)"), true) if stand_alone
 					# If stand_alone==false, then method is called from another @model.start_operation
-						@selection.each{|ent|
+						@selection.to_a.each{|ent| #to_a was added in order to iterate throug an array instead of collection
 							if ent.is_a?(Sketchup::Group)
 								number=ent.get_attribute("LSS_Zone_Entity", "number")
 								if number

@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_props.rb ver. 1.1.0 beta 27-Oct-13
+# lss_zone_props.rb ver. 1.1.1 beta 06-Nov-13
 # The file, which contains 'Zone Properties' dialog implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -89,6 +89,7 @@ module LSS_Extensions
 				@floors_count=etalon_zone.get_attribute("LSS_Zone_Entity", "floors_count")
 				
 				@area=0; @perimeter=0; @volume=0
+				@floor_area=0; @ceiling_area=0; @wall_area=0 # New geom summary added in ver. 1.1.1 06-Nov-13.
 				i=1; tot_cnt=@zones_arr.length
 				progr_char="|"; rest_char="_"; scale_coeff=1
 				progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
@@ -117,10 +118,11 @@ module LSS_Extensions
 						@volume+=zone_obj.get_attribute("LSS_Zone_Entity", "volume").to_f
 					end
 					# Condition added ver. 1.0.1 beta 09-Oct-13
-					if zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")=="room"
-						@floor_area="..." if zone_obj.get_attribute("LSS_Zone_Entity", "floor_area").to_s!=@floor_area.to_s
-						@ceiling_area="..." if zone_obj.get_attribute("LSS_Zone_Entity", "ceiling_area").to_s!=@ceiling_area.to_s
-						@wall_area="..." if zone_obj.get_attribute("LSS_Zone_Entity", "wall_area").to_s!=@wall_area.to_s
+					if zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")=="room" or zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")==nil
+						# Modified in ver. 1.1.1 beta 06-Nov-13
+						@floor_area+=zone_obj.get_attribute("LSS_Zone_Entity", "floor_area").to_f
+						@ceiling_area+=zone_obj.get_attribute("LSS_Zone_Entity", "ceiling_area").to_f
+						@wall_area+=zone_obj.get_attribute("LSS_Zone_Entity", "wall_area").to_f
 					end
 					if zone_obj.get_attribute("LSS_Zone_Entity", "zone_type")=="box"
 						@floors_count="..." if zone_obj.get_attribute("LSS_Zone_Entity", "floors_count").to_s!=@floors_count.to_s
@@ -320,7 +322,6 @@ module LSS_Extensions
 												if val
 													if val.to_s!="..." and val.to_s!=""
 														ent.set_attribute(dict_name, key, val)
-														puts "#{key}: #{val}"
 													end
 												end
 											}
@@ -358,19 +359,23 @@ module LSS_Extensions
 							Sketchup.status_text=$lsszoneStrings.GetString("Applying new properties: ") + progr_bar.progr_string
 						}
 					else
+						rebuild_str=""
 						@zones_arr.each{|zone_obj|
 							if (zone_obj.transformation.identity?)==false
 								is_selected=true if @selection.include?(zone_obj)
 								if @rebuild_on_apply=="true"
 									lss_zone_rebuild.recalc_floor_level=true
 									lss_zone_rebuild.recalc_height=true
-									zone_obj=lss_zone_rebuild.rebuild(zone_obj)
+									# The second optional parameter is set to 'false' in order to supress
+									# '@model.start_operation' inside 'rebuild' method.
+									zone_obj=lss_zone_rebuild.rebuild(zone_obj, false)
 								end
 								@selection.add(zone_obj) if is_selected
 								number=zone_obj.get_attribute("LSS_Zone_Entity", "number")
 								name=zone_obj.get_attribute("LSS_Zone_Entity", "name")
 								area=zone_obj.get_attribute("LSS_Zone_Entity", "area")
-								puts("#{$lsszoneStrings.GetString("Transformed zone was rebuilded")} #{number}, #{name}, #{Sketchup.format_area(area.to_f)}")
+								# Collect rebuild messages to report string. Added in ver. 1.1.1 beta 03-Nov-13 to avoid hang when 'puts' is called from a loop
+								rebuild_str+=("#{$lsszoneStrings.GetString("Transformed zone was rebuilded")} #{number}, #{name}, #{Sketchup.format_area(area.to_f)}\n")
 							end
 							zone_obj.set_attribute("LSS_Zone_Entity", "name", @name) if @name and @name.to_s!="..."
 							zone_obj.set_attribute("LSS_Zone_Entity", "number", @number) if @number and @number.to_s!="..."
@@ -390,6 +395,11 @@ module LSS_Extensions
 							i+=1
 							Sketchup.status_text=$lsszoneStrings.GetString("Applying new properties: ") + progr_bar.progr_string
 						}
+					end
+					# Puts the whole rebuild report string once in order to avoid hanging when 'puts' is called in a loop.
+					# Changed in ver. 1.1.1 03-Nov-13.
+					if rebuild_str!=""
+						puts(rebuild_str)
 					end
 					Sketchup.status_text=$lsszoneStrings.GetString("New properties applying complete.")
 					js_command = "set_default_state()"
@@ -666,6 +676,17 @@ module LSS_Extensions
 								when "area"
 									if value.to_s!="..."
 										area_str=Sketchup.format_area(value.to_f).to_s
+										# Supress square units patch added in ver. 1.1.1 06-Nov-13.
+										options=Sketchup.active_model.options
+										units_options=options["UnitsOptions"]
+										supress_units=units_options["SuppressUnitsDisplay"]
+										if supress_units
+											if area_str.split(" ")[0]!="~"
+												area_str=area_str.split(" ")[0]
+											else
+												area_str=area_str.split(" ")[1]
+											end
+										end
 										value=area_str
 									end
 								when "volume"
@@ -715,6 +736,17 @@ module LSS_Extensions
 						when "area"
 							if value.to_s!="..."
 								area_str=Sketchup.format_area(value.to_f).to_s
+								# Supress square units patch added in ver. 1.1.1 06-Nov-13.
+								options=Sketchup.active_model.options
+								units_options=options["UnitsOptions"]
+								supress_units=units_options["SuppressUnitsDisplay"]
+								if supress_units
+									if area_str.split(" ")[0]!="~"
+										area_str=area_str.split(" ")[0]
+									else
+										area_str=area_str.split(" ")[1]
+									end
+								end
 								value=area_str
 							end
 						when "volume"

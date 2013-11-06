@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_labels.rb ver. 1.1.0 beta 25-Oct-13
+# lss_zone_labels.rb ver. 1.1.1 beta 06-Nov-13
 # The script, which implements attaching labels with zone attributes to existing zone objects
 # in an active model.
 
@@ -333,7 +333,7 @@ module LSS_Extensions
 			
 			def send_label_preview2dlg(dial)
 				# It is necessary to "double escape" new line characters again before sending to js
-				escaped_text=@label_preview_txt.gsub(/\n/, "\\n")
+				escaped_text=@label_preview_txt.gsub(/\n/, "\\n").gsub("'", "*") # Patch to solve js errors problem with feet and inches. Added in ver. 1.1.1 06-Nov-13.
 				js_command = "get_label_preview_txt('" + escaped_text + "')" if escaped_text
 				dial.execute_script(js_command) if js_command
 			end
@@ -389,11 +389,11 @@ module LSS_Extensions
 			end
 			
 			def write_defaults
-				# Sketchup.write_default("LSS_Zone_Labels", "presets_cnt", @presets_cnt)
+				# Sketchup.write_default("LSS_Zone_Labels", "label_supress_linear", @label_supress_linear)
 			end
 			
 			def read_defaults
-				# @presets_cnt=Sketchup.read_default("LSS_Zone_Labels", "presets_cnt", 0)
+				# @label_supress_linear=Sketchup.read_default("LSS_Zone_Labels", "label_supress_linear", "false")
 			end
 			
 			def draw(view)
@@ -426,6 +426,17 @@ module LSS_Extensions
 							value=dist_str
 						when "area"
 							area_str=Sketchup.format_area(value.to_f).to_s
+							# Supress square units patch added in ver. 1.1.1 06-Nov-13.
+							options=Sketchup.active_model.options
+							units_options=options["UnitsOptions"]
+							supress_units=units_options["SuppressUnitsDisplay"]
+							if supress_units
+								if area_str.split(" ")[0]!="~"
+									area_str=area_str.split(" ")[0]
+								else
+									area_str=area_str.split(" ")[1]
+								end
+							end
 							value=area_str
 						when "volume"
 							vol_str=LSS_Math.new.format_volume(value)

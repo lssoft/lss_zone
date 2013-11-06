@@ -22,5 +22,6 @@ str += "<li><a href='elements.html'>Elements of a Zone</a></li>";
 str += "<li><a href='wrk_flow.html'>Recommended Workflow</a></li>";
 str += "<li><a href='zone_types.html'>Zone Types</a></li>";
 str += "<li><a href='whats_new.html'>What's New</a></li>";
+str += "<li><a href='third_party.html'>Third Party Components</a></li>";
 str += "</ul>";
 div.innerHTML = str;

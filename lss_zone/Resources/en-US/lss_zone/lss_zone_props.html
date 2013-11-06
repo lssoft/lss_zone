@@ -82,21 +82,21 @@
 					<img src="images/area.gif" align="bottom">
 				</td>
 				<td class="name_cell">Area</td>
-				<td class="value_cell"><input type="text" id="area" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" disabled class="value_input"></td>
+				<td class="value_cell"><input type="text" id="area" value="0" disabled class="value_input" title="Cumulative area"></td>
 			</tr>
 			<tr id="perimeter_row">
 				<td class="info_img_cell">
 					<img src="images/perimeter.gif" align="bottom">
 				</td>
 				<td class="name_cell">Perimeter</td>
-				<td class="value_cell"><input type="text" id="perimeter" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" disabled class="value_input"></td>
+				<td class="value_cell"><input type="text" id="perimeter" value="0" disabled class="value_input" title="Cumulative perimeter"></td>
 			</tr>
 			<tr id="volume_row">
 				<td class="info_img_cell">
 					<img src="images/volume.gif" align="bottom">
 				</td>
 				<td class="name_cell">Volume</td>
-				<td class="value_cell"><input type="text" id="volume" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" disabled class="value_input"></td>
+				<td class="value_cell"><input type="text" id="volume" value="0" disabled class="value_input" title="Cumulative volume"></td>
 			</tr>
 			<tr class="splitter_row">
 				<td class="splitter_img_cell">
@@ -175,6 +175,29 @@
 				<td class="name_cell">Walls REFNO</td>
 				<td class="value_cell"><input type="text" id="wall_refno" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input"></td>
 			</tr>
+			
+			<tr id="floor_area_row">
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Floor Area</td>
+				<td class="value_cell"><input type="text" id="floor_area" value="" disabled class="value_input" title="Cumulative area"></td>
+			</tr>
+			<tr id="ceiling_area_row">
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Ceiling Area</td>
+				<td class="value_cell"><input type="text" id="ceiling_area" value="" disabled class="value_input" title="Cumulative area"></td>
+			</tr>
+			<tr id="wall_area_row">
+				<td class="info_img_cell">
+					&nbsp;
+				</td>
+				<td class="name_cell">Walls Area</td>
+				<td class="value_cell"><input type="text" id="wall_area" value="" disabled class="value_input" title="Cumulative area"></td>
+			</tr>
+			
 			<tr class="splitter_row">
 				<td class="splitter_img_cell">
 					&nbsp;

@@ -3,7 +3,7 @@
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
 
-# lss_zone_utils.rb ver. 1.1.0 beta 23-Oct-13
+# lss_zone_utils.rb ver. 1.1.1 beta 03-Nov-13
 # File with some utility classes
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
@@ -45,7 +45,6 @@ module LSS_Extensions
 						if j!=i
 							pt2=poly_pts[j]
 							if pt1==pt2
-								puts "vertex coincidence"
 								return nil
 							end
 						end
@@ -72,7 +71,6 @@ module LSS_Extensions
 								sum_dist2=dist3+dist4
 								if dist1>0 and dist2>0 and dist3>0 and dist4>0
 									if pt1.distance(pt2)==sum_dist1 and pt3.distance(pt4)==sum_dist2
-										puts "self intersection"
 										return nil
 									end
 								end
