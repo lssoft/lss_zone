@@ -1,10 +1,10 @@
+# lss_zone_help.rb ver. 1.1.2 beta 08-Nov-13
+# The file whith the script, which launches help system.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_help.rb ver. 1.0.0 beta 30-Sep-13
-# The file whith the script, which launches help system.
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -12,7 +12,9 @@
 
 module LSS_Extensions
 	module LSS_Zone_Extension
-	
+		
+		# Class wich adds "Help" command to LSS Zone menu and toolbar.
+		
 		class LSS_Zone_Help_Cmd
 			def initialize
 				lss_zone_help_cmd=UI::Command.new($lsszoneStrings.GetString("Help")){

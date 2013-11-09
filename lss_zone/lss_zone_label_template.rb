@@ -1,10 +1,10 @@
+# lss_zone_label_template.rb ver. 1.1.2 beta 08-Nov-13
+# The script, which implements editing label template (template's name and string)
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_label_template.rb ver. 1.0.0 beta 30-Sep-13
-# The script, which implements editing label template (template's name and string)
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -29,16 +29,28 @@ module LSS_Extensions
 				@settings_hash=Hash.new
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method populates @settings_hash with all adjustable parameters (class instance variables)
+			# for further batch processing (for example for sending settings to a web-dialog or for writing
+			# defaults using 'Sketchup.write_default'.
+			
 			def settings2hash
 				@settings_hash["preset_name"]=[@preset_name, "string"]
 				@settings_hash["label_template"]=[@label_template.gsub(/\n/, "\\n"), "string"] # It is important to double escape line breaks.
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method reads values from @settings_hash and sets values of corresponding instance variables.
 			
 			def hash2settings
 				return if @settings_hash.keys.length==0
 				@preset_name=@settings_hash["preset_name"][0]
 				@label_template=@settings_hash["label_template"][0]
 			end
+			
+			# This method creates 'Label Template' web-dialog.
 			
 			def create_web_dial
 				# Create the WebDialog instance
@@ -104,6 +116,10 @@ module LSS_Extensions
 					
 				}
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method performs batch sending of settings to a web-dialog by iterating through a @settings_hash.
 			
 			def send_settings2dlg
 				self.settings2hash

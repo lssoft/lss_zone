@@ -1,10 +1,10 @@
+# lss_zone_list_template.rb ver. 1.1.2 beta 08-Nov-13
+# The file, which contains report template editing dialog (query string, sort and group options etc)
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_list_template.rb ver. 1.0.0 beta 30-Sep-13
-# The file, which contains report template editing dialog (query string, sort and group options etc)
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -21,15 +21,25 @@ module LSS_Extensions
 		# a list.
 		
 		class LSS_Zone_List_Template
+			# Name of list template
 			attr_accessor :list_name
+			# Handle to parent dialog ('List Zones' dialog)
 			attr_accessor :parent
+			# Hash of settings
 			attr_accessor :settings_hash
+			
 			def initialize
 				@list_name=""
 				@parent=nil
 				@settings_hash=Hash.new
 				@charts_arr=Array.new
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method populates @settings_hash with all adjustable parameters (class instance variables)
+			# for further batch processing (for example for sending settings to a web-dialog or for writing
+			# defaults using 'Sketchup.write_default'.
 			
 			def settings2hash
 				@settings_hash["list_name"]=[@list_name, "string"]
@@ -39,6 +49,10 @@ module LSS_Extensions
 				@settings_hash["query_string"]=[@query_string, "string"]
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method reads values from @settings_hash and sets values of corresponding instance variables.
+			
 			def hash2settings
 				return if @settings_hash.keys.length==0
 				@list_name=@settings_hash["list_name"][0]
@@ -47,6 +61,8 @@ module LSS_Extensions
 				@sort_dir=@settings_hash["sort_dir"][0]
 				@query_string=@settings_hash["query_string"][0]
 			end
+			
+			# This method creates 'List Template' web-dialog.
 			
 			def create_web_dial
 				self.hash2settings # Because we get @settings_hash from parent dialog before launching this method
@@ -166,6 +182,17 @@ module LSS_Extensions
 				}
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method performs batch sending of settings to a web-dialog by iterating through a @settings_hash.
+			# Each value of @settings_hash is an array of two values:
+			# 1. value itself
+			# 2. value type
+			# So #send_settings2dlg method uses 'value_type' to format representation of a value in a web-dialog.
+			# The point is that all dimensional data in Sketchup is stored in decimal inches, so it is necessary
+			# to format length, area and volume values in order to represent a value as a string 
+			# in a user-specific format.
+			
 			def send_settings2dlg
 				self.settings2hash
 				@settings_hash.each_key{|key|
@@ -179,6 +206,11 @@ module LSS_Extensions
 					@list_template_dial.execute_script(js_command) if js_command
 				}
 			end
+			
+			# This method sends attribute names, which were found in a @query_string to a web-dialog, which was passed as an argument.
+			# 'List Template' dialog also uses an array of attribute names as a sorce of values for selectors:
+			# - sort by drop-down list
+			# - group by drop-down list
 			
 			def send_fields2dlg(dial)
 				if @query_string.nil? or @query_string==""
@@ -194,6 +226,12 @@ module LSS_Extensions
 					dial.execute_script(js_command)
 				}
 			end
+			
+			# This method collects all available attribute names from selected zones to a @suggest_field_names array.
+			# Then it sends mentioned names to 'List Template' web-dialog.
+			# Auto-suggest widget, which is attached to a text field where query string contents are
+			# to be entered and edited, uses mentioned above array of attribute names in order to allow picking a certain
+			# attribute name from a suggestion list instead of typing it.
 			
 			def send_suggest_fields2dlg
 				selected_zones=@parent.selected_zones

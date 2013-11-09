@@ -1,10 +1,10 @@
+# lss_zone_rebuild.rb ver. 1.1.2 beta 09-Nov-13
+# The file, which contains created zone(s) refreshing implementation
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_rebuild.rb ver. 1.1.1 beta 03-Nov-13
-# The file, which contains created zone(s) refreshing implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -14,7 +14,9 @@ module LSS_Extensions
 	module LSS_Zone_Extension
 		#loads class wich contains Zone Entity
 		require 'lss_zone/lss_zone_entity.rb'
-
+		
+		# This class adds 'Rebuild' command to LSS Zone toolbar and submenu.
+		
 		class LSS_Zone_Rebuild_Cmd
 			def initialize
 				lss_zone_rebuild=LSS_Zone_Rebuild_Tool.new
@@ -38,12 +40,16 @@ module LSS_Extensions
 		end #class LSS_Zone_Rebuild_Cmd
 		
 		# This class contains implementaion of 'Rebuild' tool, which recreates all selected zones 'from scratch' in
-		# order to refresh quantitave attributes and make them corresponded to actual geometry or maybe even
+		# order to refresh quantitave attributes and make them corresponded to an actual geometry or maybe even
 		# refresh geometry in order to make it corresponded to quantitave attributes.
 		
 		class LSS_Zone_Rebuild_Tool
+			# This parameter tells weather to set new floor level according to actual zone group position (z-coordinate of zone's bottom) or not.
 			attr_accessor :recalc_floor_level
+			# This parameter tells is it necessary to change zone's height according to actual distance between floor 
+			# and ceiling elements of a zone or actual height of zone's bounding box
 			attr_accessor :recalc_height
+			# Not in use
 			attr_accessor :tool_nil
 			
 			def initialize
@@ -54,6 +60,9 @@ module LSS_Extensions
 				@tool_nil=true
 			end
 			
+			# This method iterates through an array of entities made of current selection and
+			# calls #rebuild method for each entity in case if it is a zone object and it is not deleted.
+			
 			def process_selection(stand_alone=true)
 				if @selection.length==0
 					UI.messagebox($lsszoneStrings.GetString("It is necessary to select some zone objects before launching 'Rebuild' command."))
@@ -62,8 +71,8 @@ module LSS_Extensions
 					progr_char="|"; rest_char="_"; scale_coeff=1
 					progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
 					new_zones=Array.new
-					@model.start_operation($lsszoneStrings.GetString("Rebuild Zone(s)"), true) if stand_alone
 					# If stand_alone==false, then method is called from another @model.start_operation
+					@model.start_operation($lsszoneStrings.GetString("Rebuild Zone(s)"), true) if stand_alone
 						@selection.to_a.each{|ent| #to_a was added in order to iterate throug an array instead of collection
 							if ent.is_a?(Sketchup::Group)
 								number=ent.get_attribute("LSS_Zone_Entity", "number")
@@ -78,11 +87,25 @@ module LSS_Extensions
 						}
 						Sketchup.status_text=$lsszoneStrings.GetString("Rebuilding complete.")
 						@selection.add(new_zones)
-					@model.commit_operation if stand_alone
 					# If stand_alone==false, then method is called from another @model.start_operation
+					@model.commit_operation if stand_alone
 					Sketchup.active_model.select_tool(nil) if @tool_nil
 				end
 			end
+			
+			# This method rebuilds zone group, which was passed as an argument.
+			# The second optional argument tells is it necessary to perform @model.start_operation or not.
+			# First of all method reads all necessary information from a zone group, which was passed as an argument:
+			# - all basic properties (method recalculates two basic properties: zone's height and/or floor level according to zone's actual position and size
+			# in case if @recalc_height and/or @recalc_floor_level were set to 'true')
+			# - all attached labels
+			# - zone's contour nodal points
+			# - openings
+			# - custom attributes if any
+			# Then method erases the initial zone group, which was passed as an argument.
+			# Then it creates an instance of LSS_Zone_Entity class and passes all data obtained from erased group
+			# to this instance. Then it calls instance method, which creates new zone group and finally
+			# attaches back custom attributes if any.
 			
 			def rebuild(zone_group, stand_alone=true)
 				@zone_group=zone_group
@@ -216,8 +239,9 @@ module LSS_Extensions
 				# Double check if something wrong with @zone_group
 				return if @zone_group.nil?
 				return if @zone_group.deleted?
-				@model.start_operation($lsszoneStrings.GetString("Rebuild Zone"), true) if stand_alone
+				
 				# If stand_alone==false, then method is called from another @model.start_operation
+				@model.start_operation($lsszoneStrings.GetString("Rebuild Zone"), true) if stand_alone
 					@zone_group.erase!
 					
 					@zone_entity=LSS_Zone_Entity.new
@@ -273,8 +297,8 @@ module LSS_Extensions
 							}
 						end
 					}
-				@model.commit_operation if stand_alone
 				# If stand_alone==false, then method is called from another @model.start_operation
+				@model.commit_operation if stand_alone
 				
 				#Return created zone group
 				new_zone_group

@@ -1,11 +1,11 @@
+# lss_zone_labels.rb ver. 1.1.2 beta 08-Nov-13
+# The script, which implements attaching labels with zone attributes to existing zone objects
+# in an active model.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_labels.rb ver. 1.1.1 beta 06-Nov-13
-# The script, which implements attaching labels with zone attributes to existing zone objects
-# in an active model.
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -15,6 +15,8 @@ module LSS_Extensions
 	module LSS_Zone_Extension
 	
 		require 'lss_zone/lss_zone_label_template.rb'
+		
+		# This class adds 'Attach Labels' command to LSS Zone menu and toolbar.
 		
 		class LSS_Zone_Labels_Cmd
 			def initialize
@@ -61,6 +63,7 @@ module LSS_Extensions
 			
 			# In case if current selection contains some irrelevant objects (not only zone objects) it is
 			# necessary to filter selection and store selected zones in an array for further processing.
+			
 			def filter_selection
 				@field_names=Array.new
 				@selected_zones=Array.new
@@ -97,6 +100,8 @@ module LSS_Extensions
 					@zone_labels_dialog.execute_script(js_command) if js_command
 				end
 			end
+			
+			# This class creates 'Labels' web-dialog.
 			
 			def create_web_dial
 				self.read_defaults
@@ -182,7 +187,20 @@ module LSS_Extensions
 				}
 			end
 			
-			# The main method, which adds text objects inside each of selected zone group.
+			# The main method, which attaches labels to each of selected zone group.
+			# It iterates through @selected_zones array and attaches new attribute to each zone.
+			# The attribute has the following information:
+			# - label preset name
+			# - label template
+			# - label layer
+			# Then it calls 'process_selection' method of LSS_Zone_Rebuild_Tool, which
+			# iterates through selected zones and rebuilds each zone. Method, which rebuilds
+			# each zone, reads all attributes (including information about attached labels)
+			# from an existing zone, then erases existing zone, then creates new zone using
+			# settings obtained from attributes. Method, which creates new zone iterates through
+			# array of labels (which has new label as well) and finally adds text objects
+			# inside newly created zone group.
+			
 			def attach_labels
 				rebuild_tool=LSS_Zone_Rebuild_Tool.new
 				dict_name="zone_label: "+@preset_name
@@ -212,7 +230,9 @@ module LSS_Extensions
 				js_command = "set_default_state()"
 				@zone_labels_dialog.execute_script(js_command) if js_command
 			end
-
+			
+			# This method reads label template from a file with a name equal to @preset_file_name
+			
 			def read_template_from_file
 				return if @preset_name.nil? or @preset_name==""
 				@preset_file_name=@preset_names[@preset_name]
@@ -246,16 +266,34 @@ module LSS_Extensions
 				@label_template.gsub!("</label_template>", "")
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method populates @settings_hash with all adjustable parameters (class instance variables)
+			# for further batch processing (for example for sending settings to a web-dialog or for writing
+			# defaults using 'Sketchup.write_default'.
+			
 			def settings2hash
 				@settings_hash["preset_name"]=[@preset_name, "string"]
 				@settings_hash["label_layer"]=[@label_layer, "string"]
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method reads values from @settings_hash and sets values of corresponding instance variables.
 			
 			def hash2settings
 				return if @settings_hash.keys.length==0
 				@preset_name=@settings_hash["preset_name"][0]
 				@label_layer=@settings_hash["label_layer"][0]
 			end
+			
+			# This method deletes preset with name equals to @preset_name.
+			# Note that @preset_file_name is not equal to @preset_name.
+			# Preset name is stored inside a file in a line, which starts with "label_name=".
+			# Method iterates through all files stored in "#{resource_dir}/label_presets/"
+			# and searches for a file which has the same contents after "label_name=" as @preset_name value does,
+			# then deletes such file in case of its presense.
+			# This method is called after clicking 'delete preset' button of 'Labels' dialog.
 			
 			def delete_preset
 				resource_dir=LSS_Dirs.new.resource_path
@@ -290,7 +328,9 @@ module LSS_Extensions
 				self.refresh
 			end
 			
-			# Create instance of LSS_Zone_Label_Template, which has implementation of 'Label Template' dialog
+			# Create instance of LSS_Zone_Label_Template, which has implementation of 'Label Template' dialog.
+			# This method is called after clicking 'edit' button of 'Labels' dialog.
+			
 			def edit_preset
 				template_inst=LSS_Zone_Label_Template.new
 				template_inst.preset_name=@preset_name
@@ -298,6 +338,14 @@ module LSS_Extensions
 				template_inst.labels_tool=self
 				template_inst.create_web_dial
 			end
+			
+			# This method adds new preset. First of all it iterates through files in "#{resource_dir}/label_presets/" directory
+			# in order to find out the minimum file number, which is not yet in use, then creates new file with 'lbl'
+			# extension and 'label_<file number>' file name.
+			# Initial preset name is also automatically generated ("New Label Template <file number>") and method
+			# puts this name to a newly created file after "label_name=".
+			# Immideately after creation of a new label template file this method calls #edit_preset method, so
+			# it is possible to assign a meaningful name to a new template and create template contents last.
 			
 			def add_preset
 				resource_dir=LSS_Dirs.new.resource_path
@@ -326,10 +374,16 @@ module LSS_Extensions
 				self.edit_preset
 			end
 			
+			# This method refreshes web-dialog contents by calling custom initialization function
+			# of its java-script part.
+			
 			def refresh
 				js_command = "custom_init()"
 				@zone_labels_dialog.execute_script(js_command) if js_command
 			end
+			
+			# This method sends generated sample label text stored in @label_preview_txt to a web-dialog,
+			# so user may observe a sample of selected label before performing batch labels attaching.
 			
 			def send_label_preview2dlg(dial)
 				# It is necessary to "double escape" new line characters again before sending to js
@@ -337,6 +391,12 @@ module LSS_Extensions
 				js_command = "get_label_preview_txt('" + escaped_text + "')" if escaped_text
 				dial.execute_script(js_command) if js_command
 			end
+			
+			# This method iterates through all files stored in "#{resource_dir}/label_presets/" directory and
+			# reads preset name from each file and put it into @preset_names hash.
+			# Then it iterates through @preset_names hash and send each obtained name to a web-dialog.
+			# All names get to an array of preset names which is a sorce of values for preset name selector
+			# (drop-down list of names) of web-dialog.
 			
 			def send_presets2dlg
 				@preset_names=Hash.new
@@ -374,6 +434,10 @@ module LSS_Extensions
 				self.read_template_from_file
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method performs batch sending of settings to a web-dialog by iterating through a @settings_hash.
+			
 			def send_settings2dlg
 				self.settings2hash
 				@settings_hash.each_key{|key|
@@ -396,9 +460,13 @@ module LSS_Extensions
 				# @label_supress_linear=Sketchup.read_default("LSS_Zone_Labels", "label_supress_linear", "false")
 			end
 			
+			# This method calls label preview drawing method.
+			
 			def draw(view)
 				self.draw_label_preview(view)
 			end
+			
+			# This method draws label preview text right in the center of screen in a current model.
 			
 			def draw_label_preview(view)
 				return if @preset_name.nil? or @preset_name==""
@@ -407,6 +475,10 @@ module LSS_Extensions
 				status = view.draw_text(txt_pt, preview_text)
 				status = view.draw_text(txt_pt, preview_text)
 			end
+			
+			# This method generates label preview text. It processes only one zone from @selected_zones array.
+			# Later this text becomes observable by a user within 'Labels' dialog and right in the center of
+			# the screen.
 			
 			def generate_label_preview_txt
 				if @label_template.nil? or @label_template==""
@@ -448,6 +520,8 @@ module LSS_Extensions
 				}
 			end
 			
+			# This method saves template to a corresponding label template file.
+			
 			def save_template
 				resource_dir=LSS_Dirs.new.resource_path
 				presets_dir="#{resource_dir}/label_presets/"
@@ -459,6 +533,11 @@ module LSS_Extensions
 				preset_file.close
 			end
 			
+			# This method sends attribute names to a web-dialog, which was passed as an argument.
+			# Auto-suggest widget, which is attached to a text field where label template contents are
+			# to be entered and edited, uses an array of attribute names in order to pick certain
+			# attribute name from a suggestion list instead of typing it.
+			
 			def send_fields2dlg(dial)
 				js_command="clear_fields()"
 				dial.execute_script(js_command)
@@ -468,6 +547,16 @@ module LSS_Extensions
 					dial.execute_script(js_command)
 				}
 			end
+			
+			# This method sends layers to 'Labels' dialog. An array of labels is a sorce of
+			# layer names for 'Layers' selector of 'Labels' dialog.
+			# The idea is that later labels have to be placed on a specified layer (not just an
+			# active layer, but a certain layer where this particular laber have to be).
+			# This approach allows to attach multiple labels to a zone or to a set of zones and
+			# make those labels visible on certain scenes without overlapping, which helps to prepare model
+			# for 'LayOut'.
+			# For example one set of labels may be visible at a floor plan only, another set of labels may be visible
+			# at ceiling plan only, next one at furniture layout etc.
 			
 			def send_layers2dlg
 				layers=@model.layers
@@ -479,6 +568,8 @@ module LSS_Extensions
 					@zone_labels_dialog.execute_script(js_command)
 				}
 			end
+			
+			# This method displays custom content within 'Instructor' floater.
 			
 			def getInstructorContentDirectory
 				resource_dir=LSS_Dirs.new.resource_path

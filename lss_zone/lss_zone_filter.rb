@@ -1,10 +1,10 @@
+# lss_zone_filter.rb ver. 1.1.2 beta 07-Nov-13
+# The file, which contains 'Filter' dialog implementation
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_filter.rb ver. 1.1.0 beta 27-Oct-13
-# The file, which contains 'Filter' dialog implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -12,7 +12,9 @@
 
 module LSS_Extensions
 	module LSS_Zone_Extension
-
+		
+		# This class adds "Filter" command to LSS Zone menu and to LSS Zone toolbar.
+		
 		class LSS_Zone_Filter_Cmd
 			def initialize
 				lss_zone_filter_cmd=UI::Command.new($lsszoneStrings.GetString("Filter")){
@@ -33,7 +35,7 @@ module LSS_Extensions
 			end
 		end #class LSS_Zone_Filter_Cmd
 		
-		# This class contains implementation of 'Properties' dialog.
+		# This class contains implementation of 'Filter' dialog.
 		
 		class LSS_Zone_Filter
 			attr_accessor :category
@@ -44,12 +46,23 @@ module LSS_Extensions
 				@zoom_selection="true"
 				@names_arr=nil # Array of collected zone names to place in 'autosuggest' widget
 			end
+
+			# This method collects only zone objects from current selection set and
+			# puts collected zone groups to @zones_arr for further processing.
 			
 			def selection_filter
 				@zones_arr=Array.new
 				selected_groups=@selection.select{|ent| ent.is_a?(Sketchup::Group)}
 				@zones_arr=selected_groups.select{|grp| not(grp.get_attribute("LSS_Zone_Entity", "number").nil?)}
 			end
+			
+			# This method reads attributes from 'etalon zone' first, then iterates through
+			# all zones stored in @zones_arr and checks if each attribute is the same as 'etalon zone' has, then
+			# assigns "..." value to an attribute if no or leaves the initial value of an attribute if yes.
+			# So all common attributes have the same value, which 'etalon zone' has and all uncommon ones
+			# have "..." value.
+			# This method also counts how many zones actually present in a current selection set and
+			# stores zones count for each zone type individually in @zone_types_cnt hash.
 			
 			def obtain_common_settings
 				@names_arr=Array.new
@@ -138,8 +151,14 @@ module LSS_Extensions
 				self.settings2hash
 			end
 			
+			# This method activates 'Filter' dialog in case if it is not already active:
+			# - reads defaults
+			# - filters selection (collects zone objects from current selection set)
+			# - obtains settings, which are common to zone objects in a selection set
+			# - creates 'Filter' dialog
+			
 			def activate
-				return if $filter_dial_is_active
+				return if $filter_dial_is_active # This check prevents dialog duplication.
 				self.read_defaults
 				self.selection_filter
 				self.obtain_common_settings
@@ -148,11 +167,21 @@ module LSS_Extensions
 				$filter_dial_is_active=true
 			end
 			
+			# This method refreshes data inside 'Filter' dialog. Usually it is called by selection observer
+			# after detecting changes of current selection.
+			# It is also called from 'Filter' dialog itself after filter condition changes.
+			
 			def refresh
 				@filter_dialog.close
 				lss_zone_filter=LSS_Zone_Filter.new
 				lss_zone_filter.activate
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method populates @settings_hash with all adjustable parameters (class instance variables)
+			# for further batch processing (for example for sending settings to a web-dialog or for writing
+			# defaults using 'Sketchup.write_default').
 			
 			def settings2hash
 				@settings_hash["number"]=[@number, "string"]
@@ -184,6 +213,10 @@ module LSS_Extensions
 				@settings_hash["zone_type"]=[@zone_type, "string"]
 				@settings_hash["floors_count"]=[@floors_count, "integer"]
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and a web-dialog.
+			# This method reads values from @settings_hash and sets values of corresponding instance variables.
 			
 			def hash2settings
 				return if @settings_hash.keys.length==0
@@ -218,6 +251,11 @@ module LSS_Extensions
 				@zone_type=@settings_hash["zone_type"][0]
 				@floors_count=@settings_hash["floors_count"][0]
 			end
+			
+			# This method creates 'Filter' web-dialog.
+			# It also starts selection observer in order to refresh dialog's content in case if selection is changed
+			# or cleared.
+			# Selection observer terminates after dialog is closed.
 			
 			def create_web_dial
 				
@@ -367,6 +405,15 @@ module LSS_Extensions
 				}
 			end
 			
+			# This method contains the main logic.
+			# First of all it makes 'new_selection' array, which is actually a copy of @zones_arr
+			# (array of initially selected zone objects).
+			# Then it iterates through @zones_arr and removes any corresponding item from 'new_selection' array
+			# in case if it doesn't meet filter conditions stored in @conditions_hash.
+			# Then it clears selection and adds to selection what's left in 'new_selection' array.
+			# Then it zooms to changed selection if @zoom_selection=="true".
+			# Then it updates selected zones counter and sends counter values to the 'Filter' dialog.
+			
 			def apply_filter
 				return if @zones_arr.nil?
 				new_selection=Array.new(@zones_arr)
@@ -458,13 +505,32 @@ module LSS_Extensions
 				value
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method reads default values of settings using 'Sketchup.read_default'.
+			
 			def read_defaults
 				@zoom_selection=Sketchup.read_default("LSS_Zone", "zoom_selection", "true")
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method writes default values of settings using 'Sketchup.write_default'.
+			
 			def write_defaults
 				Sketchup.write_default("LSS_Zone", "zoom_selection", @zoom_selection)
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and a web-dialog.
+			# This method performs batch sending of settings to a web-dialog by iterating through a @settings_hash.
+			# Each value of @settings_hash is an array of two values:
+			# 1. value itself
+			# 2. value type
+			# So #send_settings2dlg method uses 'value_type' to format representation of a value in a web-dialog.
+			# The point is that all dimensional data in Sketchup is stored in decimal inches, so it is necessary
+			# to format length, area and volume values in order to represent a value as a string 
+			# in a model-specific format.
 			
 			def send_settings2dlg
 				self.settings2hash
@@ -496,6 +562,10 @@ module LSS_Extensions
 				}
 			end
 			
+			# This method sends material names, which are present in an active model
+			# to a web-dialog.
+			# It helps to populate material selectors (drop-down lists) with material names in a web-dialog.
+			
 			def send_materials2dlg
 				# Send list of materials from an active model to a web-dialog
 				js_command = "clear_mats_arr()"
@@ -512,6 +582,14 @@ module LSS_Extensions
 				js_command = "build_mat_list()"
 				@filter_dialog.execute_script(js_command) if js_command
 			end
+			
+			# This method sends category names, which are present in a current model to a web-dialog.
+			# All categories are stored in an active model's attribute dictionary called 'LSS Zone Categories',
+			# since each time, when new category is created its name instantly adds to the mentioned above
+			# dictionary.
+			# So method iterates through this dictionary and sends its keys to a web-dialog.
+			# There is an 'auto-suggest' widget in a dialog, which uses an array of category names
+			# for more comfortable filling out of a 'Category' field.
 			
 			def send_categories2dlg
 				# Send list of categories from an active model to a web-dialog
@@ -541,6 +619,10 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method sends collected list of names to a web-dialog.
+			# 'Name' field has an 'auto-suggest' widget, which helps to pick certain name
+			# from suggestion list instead of typing it.
+			
 			def send_names2dlg
 				# Send collected list of names to a web-dialog. Added in ver. 1.1.0 beta 27-Oct-13.
 				js_command = "clear_names_arr()"
@@ -558,10 +640,19 @@ module LSS_Extensions
 			end
 		end #class LSS_Zone_Filter
 		
+		# This class contains implementation of a service tool, which performs no actions, but only
+		# displays the initial selection set by showing red dotted bounding boxes of initially selected
+		# zones.
+		
 		class LSS_Show_Filter_Set_Tool
+		
+			# Initializes array of initially selected zones
+			
 			def initialize(zones_arr)
 				@zones_arr=zones_arr
 			end
+			
+			# Perform checks of @zones_arr then call draw bounding boxes method of all zones, which are in @zones_arr.
 			
 			def draw(view)
 				return if @zones_arr.nil?
@@ -569,6 +660,8 @@ module LSS_Extensions
 					self.draw_bnds(view)
 				end
 			end
+			
+			# Draw bounding boxes of all zones, which are in @zones_arr.
 			
 			def draw_bnds(view)
 				pts_arr=Array.new
@@ -632,6 +725,8 @@ module LSS_Extensions
 				@zones_arr=nil
 				view.invalidate
 			end
+			
+			# This method displays custom content within 'Instructor'
 			
 			def getInstructorContentDirectory
 				locale=Sketchup.get_locale 

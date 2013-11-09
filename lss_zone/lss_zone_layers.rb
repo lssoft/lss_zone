@@ -1,11 +1,10 @@
+# lss_zone_layers.rb ver. 1.1.2 beta 08-Nov-13
+# The script, which contains a class, wich makes layers to store all necessary zone elements in an active model
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_layers.rb ver. 1.0.2 beta 15-Oct-13
-# The script, which contains a class wich makes layers to store all necessary zone elements in an active model
-
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -14,7 +13,7 @@
 module LSS_Extensions
 	module LSS_Zone_Extension
 		
-		# This class provides access to layers for zone object and for all its internal elements
+		# This is a service class, which provides access to layers for zone object and for all its internal elements.
 		
 		class LSS_Zone_Layers
 			attr_accessor :lss_zone_layer

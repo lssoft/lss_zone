@@ -1,9 +1,12 @@
+# lss_zone_loader.rb ver. 1.1.2 beta 08-Nov-13
+# This file contains a script, which loads all available LSS Zone tools a commands.
+# Order of lines in this file matters it is basically the same as an order of
+# buttons in LSS Zone toolbar and an order of menu items in LSS Zone sub-menu.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_loader.rb ver. 1.0.1 beta 08-Oct-13
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED

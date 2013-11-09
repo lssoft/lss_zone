@@ -1,10 +1,10 @@
+# lss_zone_tool.rb ver. 1.1.2 beta 09-Nov-13
+# The main file, which contains LSS Zone Tool implementation.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_tool.rb ver. 1.1.0 beta 25-Oct-13
-# The main file, which contains the main logic.
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -14,7 +14,9 @@ module LSS_Extensions
 	module LSS_Zone_Extension
 		#loads class wich contains Zone Entity
 		require 'lss_zone/lss_zone_entity.rb'
-
+		
+		# This class adds 'LSS Zone' command to LSS Zone toolbar and LSS Zone submenu.
+		
 		class LSS_Zone_Tool_Cmd
 			def initialize
 				@su_tools=Sketchup.active_model.tools
@@ -52,8 +54,8 @@ module LSS_Extensions
 		end #class LSS_Zone_Tool_Cmd
 		
 		# This class contains implementation of main extension's tool.
-		# It displays tool's dialog wich allows to draw new zone contour, pick a face, which represents
-		# zone's contour, then set zone's attributes and finally generate new zone object.
+		# It displays 'LSS Zone' tool's dialog wich allows to draw new zone contour or pick a face, which represents
+		# zone's contour, then set zone's attributes and finally generate new zone object in an active model.
 		
 		class LSS_Zone_Tool
 			def initialize
@@ -142,6 +144,16 @@ module LSS_Extensions
 				@const_pts_arr=Array.new
 			end
 			
+			# Set cursor to indicate current tool's state:
+			# - 'pick_face' state allows to pick any face to use its contour as a contour of a future zone
+			# - 'draw_contour' state allows to draw contour of a zone vertex-by-vertex
+			# - 'specify_height' state allows to set zone's height
+			# - 'eye_dropper' state allows to pick a material by single-clicking on a face in an active model
+			# - 'over_obj' state becomes active when cursor is over nodal point of zone's contour or center point of a segment
+			# or height adjustment point
+			# - 'cut_opening' state allows to add new opening(s) to selected zone
+			# - nil state allows to select any existing zone in an active model.
+			
 			def onSetCursor
 				case @pick_state
 					when "pick_face"
@@ -169,6 +181,10 @@ module LSS_Extensions
 				end
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method reads default values of settings using 'Sketchup.read_default'.
+			
 			def read_defaults
 				@number=Sketchup.read_default("LSS_Zone", "number", "001")
 				@name=Sketchup.read_default("LSS_Zone", "name", "Room")
@@ -190,6 +206,12 @@ module LSS_Extensions
 				@floors_count=Sketchup.read_default("LSS_Zone", "floors_count", 1)
 				self.settings2hash
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method populates @settings_hash with all adjustable parameters (class instance variables)
+			# for further batch processing (for example for sending settings to a web-dialog or for writing
+			# defaults using 'Sketchup.write_default').
 			
 			def settings2hash
 				@settings_hash["number"]=[@number, "string"]
@@ -231,6 +253,10 @@ module LSS_Extensions
 				Sketchup.write_default("LSS Zone Data Types", "ceiling_int_ops_area", "area")
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and a web-dialog.
+			# This method reads values from @settings_hash and sets values of corresponding instance variables.
+			
 			def hash2settings
 				return if @settings_hash.keys.length==0
 				@number=@settings_hash["number"][0]
@@ -252,12 +278,18 @@ module LSS_Extensions
 				@floors_count=@settings_hash["floors_count"][0]
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method writes default values of settings using 'Sketchup.write_default'.
+			
 			def write_defaults
 				self.settings2hash
 				@settings_hash.each_key{|key|
 					Sketchup.write_default("LSS_Zone", key, @settings_hash[key][0].to_s)
 				}
 			end
+			
+			# This method creates 'LSS Zone' web-dialog.
 			
 			def create_web_dial
 				# Read defaults
@@ -434,6 +466,11 @@ module LSS_Extensions
 				}
 			end
 			
+			# This method checks if a category name passed as an argument is already present in an active model's
+			# dictionary called 'LSS Zone Categories' and returns 'true' if no or 'false' if yes.
+			# Usually this method is called after changing 'Category' field in 'LSS Zone' dialog and this
+			# method helps to figure out if it is necessary to create new category or not.
+			
 			def cat_is_new?(chk_cat)
 				cat_is_new=true
 				categories=@model.attribute_dictionary("LSS Zone Categories")
@@ -447,6 +484,11 @@ module LSS_Extensions
 				end
 				cat_is_new
 			end
+			
+			# This method creates new category with a name equals to a passed argument.
+			# It also adds new material with the same name as new category name.
+			# Method sets the color of new material automatically (it can be adjusted any time
+			# later using native SU tools).
 			
 			def add_new_category(new_category_name)
 				return if new_category_name.nil?
@@ -481,6 +523,11 @@ module LSS_Extensions
 				end
 			end
 			
+			# 'LSS Zone' tool activation takes place here:
+			# - re-initialize parameters, which have to be fresh each time, when tool becomes active
+			# - call web-dialog creation
+			# - re-initialize arrays
+			
 			def activate
 				@model=Sketchup.active_model
 				@ip = Sketchup::InputPoint.new
@@ -500,6 +547,9 @@ module LSS_Extensions
 				# Drawing helpers
 				@const_pts_arr=Array.new
 			end
+			
+			# This method creates new instance of LSS_Zone_Entity class, then passes
+			# all necessary parameters using attribute accessors of created instance.
 			
 			def create_zone_entity
 				return if @nodal_points.length<3
@@ -535,6 +585,9 @@ module LSS_Extensions
 				@zone_entity.floors_count=@floors_count
 			end
 			
+			# This method is a must have for each tool.
+			# It helps to avoid graphics clipping while drawing something using tool's #draw method.
+			
 			def getExtents
 				if @nodal_points.length>0
 					bb=Sketchup.active_model.bounds
@@ -543,6 +596,17 @@ module LSS_Extensions
 					}
 				end
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and a web-dialog.
+			# This method performs batch sending of settings to a web-dialog by iterating through a @settings_hash.
+			# Each value of @settings_hash is an array of two values:
+			# 1. value itself
+			# 2. value type
+			# So #send_settings2dlg method uses 'value_type' to format representation of a value in a web-dialog.
+			# The point is that all dimensional data in Sketchup is stored in decimal inches, so it is necessary
+			# to format length, area and volume values in order to represent a value as a string 
+			# in a model-specific format.
 			
 			def send_settings2dlg
 				@category=$lsszoneStrings.GetString("#Default") if @category.nil? or @category=="" # Find out where @category becomes nil and get rid of this line
@@ -554,6 +618,17 @@ module LSS_Extensions
 							setting_pair_str= key.to_s + "|" + dist_str.gsub("'", "*") # Patch to solve js errors problem with feet and inches
 						when "area"
 							area_str=Sketchup.format_area(@settings_hash[key][0].to_f).to_s
+							# Supress square units patch added in ver. 1.1.2 09-Nov-13.
+							options=Sketchup.active_model.options
+							units_options=options["UnitsOptions"]
+							supress_units=units_options["SuppressUnitsDisplay"]
+							if supress_units
+								if area_str.split(" ")[0]!="~"
+									area_str=area_str.split(" ")[0]
+								else
+									area_str=area_str.split(" ")[1]
+								end
+							end
 							setting_pair_str= key.to_s + "|" + area_str.gsub("'", "*") # Patch to solve js errors problem with feet and inches
 						when "volume"
 							vol_str=LSS_Math.new.format_volume(@settings_hash[key][0].to_f)
@@ -565,6 +640,10 @@ module LSS_Extensions
 					@zone_dialog.execute_script(js_command) if js_command
 				}
 			end
+			
+			# This method sends material names, which are present in an active model
+			# to a web-dialog.
+			# It helps to populate material selectors (drop-down lists) with material names in a web-dialog.
 			
 			def send_materials2dlg
 				# Send list of materials from an active model to a web-dialog
@@ -582,6 +661,14 @@ module LSS_Extensions
 				js_command = "build_mat_list()"
 				@zone_dialog.execute_script(js_command) if js_command
 			end
+			
+			# This method sends category names, which are present in a current model to a web-dialog.
+			# All categories are stored in an active model's attribute dictionary called 'LSS Zone Categories',
+			# since each time, when new category is created its name instantly gets to the mentioned above
+			# dictionary.
+			# So method iterates through this dictionary and sends its keys to a web-dialog.
+			# There is an 'auto-suggest' widget in a dialog, which uses an array of category names
+			# for more comfortable filling out of a 'Category' field.
 			
 			def send_categories2dlg
 				# Send list of categories from an active model to a web-dialog
@@ -602,6 +689,19 @@ module LSS_Extensions
 					@zone_dialog.execute_script(js_command) if js_command
 				end
 			end
+			
+			# This method handles mouse moving event, while the tool is active. It has different handling cases depending
+			# on tool state:
+			# - 'pick_face' looks for face under cursor position and uses it for generating @nodal_points array from its vertices
+			# - 'draw_contour' uses input point position to set the last nodal point coordinate of zone's contour, while contour drawing is in progress
+			# - 'specify_height' uses z-coordinate of input point position to set zone's height
+			# - 'insert_new_node' becomes active after hitting 'Ins' key when cursor is over center of zone's contour segment
+			# - 'eye_dropper' looks for a face under cursor and reads its material
+			# - 'over_obj' if @drag_state==true moves an object under cursor to a position of an input point
+			# (types of draggable object: nodal point, height adjustment point, center of segment)
+			# - 'cut_opening' uses input point position to set the last coordinate of an opening's contour
+			# - nil state looks at object under cursor in order to find out if it is a zone object or not
+			# (for further highlighting zone object under cursor).
 			
 			def onMouseMove(flags, x, y, view)
 				@ip1.pick(view, x, y)
@@ -964,6 +1064,13 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method calculates positions for points, which represent centers of segments of zone contour
+			# using positions of zone contour's nodal points.
+			# Method re-initializes array of middle points, then calculates coordinates of each segment center
+			# and add a point with calculated coordinates into this array.
+			# It is usually called after changes of @nodal_points array, which may take place after dragging a
+			# nodal point, or during drawing a new zone's contour etc.
+			
 			def refresh_mid_points
 				@mid_points=Array.new
 				x=0; y=0; z=0
@@ -978,6 +1085,9 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method handles mouse left button down event.
+			# It sets @drag_state to true.
+			
 			def onLButtonDown(flags, x, y, view)
 				@drag_state=true
 				@clicked_pt=@ip.position
@@ -985,6 +1095,19 @@ module LSS_Extensions
 					@clicked_pt=Geom::Point3d.new(@mid_points[@over_mid_pt_ind]) if @mid_points[@over_mid_pt_ind]
 				end
 			end
+			
+			# This method handles mouse left button up event.
+			# It has various handling for each different tool's state:
+			# - 'pick_face' chooses clicked face (if any) as a sorce for new zone contour
+			# - 'draw_contour' adds new nodal point or finish drawing if position of the first nodal point was clicked
+			# - 'specify_height' confirms new height
+			# - 'insert_new_node' confirms new inserted node position
+			# - 'eye_dropper' picks material of a face under cursor if any
+			# - 'over_obj' drops draggable objects
+			# (types of draggable objects: nodal point, height adjustment point, center of segment)
+			# - 'cut_opening' adds new point to an opening's contour
+			# - nil state selects zone under cursor
+			# And finally method sets @drag_state to false.
 			
 			def onLButtonUp(flags, x, y, view)
 				ph=view.pick_helper
@@ -1157,6 +1280,8 @@ module LSS_Extensions
 				@ip_prev.copy!(@ip)
 			end
 			
+			# This method resets tool's parameters without resetting zone settings.
+			
 			def small_reset
 				@selected_zone=nil
 				@labels_arr=nil
@@ -1181,6 +1306,13 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method erases selected zone (selected by LSS Zone tool, not by native SU selection tool),
+			# then calls #create_zone_entity in order to create new instance of LSS_Zone_Entity class,
+			# then actually create new zone object and send parameters of newly created zone to a dialog.
+			# This method is called for example after dragging a nodal point of selected zone's contour, because it is
+			# necessary to recreate a zone with new contour or after changing any setting of selected zone
+			# in a dialog.
+			
 			def recreate_zone
 				@model.start_operation($lsszoneStrings.GetString("Recreate Zone"), true)
 					@selected_zone.erase!
@@ -1199,6 +1331,9 @@ module LSS_Extensions
 					@pick_state=nil
 				@model.commit_operation
 			end
+			
+			# This method reads attributes from selected zone (selected by LSS Zone tool, not by native SU selection tool).
+			# It also reads information about openings and attached labels.
 			
 			def read_settings_from_zone
 				@number=@selected_zone.get_attribute("LSS_Zone_Entity", "number")
@@ -1273,6 +1408,12 @@ module LSS_Extensions
 					end
 				}
 			end
+			
+			# This method draws preview of a zone and some accessory graphics, such as:
+			# - color material sample, when 'eye_dropper' tool state is active
+			# - opening plane, when 'cut_opening' tool state is active
+			# - bounds of a zone under cursor, when tool state is nil
+			# and so on.
 			
 			def draw(view)
 				if @ip.valid?
@@ -1381,6 +1522,8 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method draws contours of zone's openings and shows plane of new opening, which is cut at the moment. 
+			
 			def draw_openings(view)
 				openings2d=Array.new
 				@openings_arr.each_index{|ind|
@@ -1474,6 +1617,12 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method tries to figure out type of an opening depends on its normal vector direction.
+			# Types are:
+			# - wall opening
+			# - floor opening
+			# - ceiling opening
+			
 			def guess_op_type(norm)
 				if norm.length>0
 					z_vec=Geom::Vector3d.new(0, 0, 1)
@@ -1495,6 +1644,8 @@ module LSS_Extensions
 				end
 				op_type
 			end
+			
+			# This method shows geometry summary of a zone while tool is active.
 			
 			def draw_geom_summary(view)
 				summary_text=""
@@ -1520,11 +1671,17 @@ module LSS_Extensions
 				status = view.draw_text(txt_pt, summary_text)
 			end
 			
+			# This method draws points at the centers of segments of zone's contour.
+			
 			def draw_mid_points(view)
 				return if @mid_points.length<1
 				view.line_width=1
 				view.draw_points(@mid_points, 8, 6, "black")
 			end
+			
+			# This method draws small square near cursor position, which has the same color as a material of
+			# a face under cursor position. #draw method calls this method, when 'eye_dropper' tool state
+			# is active.
 			
 			def draw_mat_color_sample(view)
 				pt1=view.screen_coords(@ip.position) + [24, 0]
@@ -1539,6 +1696,14 @@ module LSS_Extensions
 				view.drawing_color="black"
 				view.draw2d(GL_LINE_STRIP, [pt1, pt2, pt3, pt4, pt1])
 			end
+			
+			# This method draws a contour of a zone.
+			# It also performs calculation of zone's geometry summary (area, perimeter, volume)
+			# and sends calculated values to 'LSS Zone' dialog.
+			# Calculation takes place when @show_geom_summary==true.
+			# The point is that calculation slows down drawing process so it is possible to turn it off
+			# in order to make drawing process more smooth, but geometry summary won't be updated instantly
+			# while drawing in that case.
 			
 			def draw_contour(view)
 				return if @nodal_points.length<2
@@ -1614,6 +1779,8 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method draws vertical lines, which represent zone's corner edges.
+			
 			def draw_vert_lines(view)
 				return if @nodal_points.length<2 or @height.to_f==0
 				view.drawing_color="DarkGray"
@@ -1624,6 +1791,8 @@ module LSS_Extensions
 					view.draw2d(GL_LINES, [floor_pt, ceiling_pt])
 				}
 			end
+			
+			# This method draws contour of zone's ceiling.
 			
 			def draw_ceiling(view)
 				return if @nodal_points.length<2 or @height.to_f==0
@@ -1637,6 +1806,9 @@ module LSS_Extensions
 				view.line_width=1
 				view.draw_points(@nodal_points, 6, 2, "black")
 			end
+			
+			# This method draws nodal points of zone's contour.
+			# It highlights nodal point, when cursor is over it as well.
 			
 			def draw_nodal_points(view)
 				return if @nodal_points.length<1
@@ -1662,6 +1834,12 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method draws a line between input point position and a current nodal point of a zone contour.
+			# The point is that all nodal points have the same z-coordinate obviously (which equals to @floor_level)
+			# and each new nodal point is forced to have it too, but z-coordinate of input point position may differ from
+			# @floor_level. So this 'project line' is kind of a visual helper, which helps to figure out positions of 
+			# new nodal point and current input point.
+			
 			def draw_proj_line(view)
 				return if @nodal_points.last.nil?
 				return if @nodal_points.last==@ip.position
@@ -1673,11 +1851,16 @@ module LSS_Extensions
 				view.draw_points(@ip.position, 4, 7, "black")
 			end
 			
+			# This method highlights corners of a bounding box of a zone under cursor,
+			# while tool state is nil.
+			
 			def draw_zone_under_cur(view)
 				return if @zone_under_cur.deleted?
 				bnds=@zone_under_cur.bounds
 				self.draw_bounds(view, bnds, 6, 1, "green", 2)
 			end
+			
+			# This method draws points of a bounding box passed as an argument.
 			
 			def draw_bounds(view, bnds, pt_size, pt_type, pt_col, line_wdt)
 				# pt_type 1 = open square, 2 = filled square, 3 = "+", 4 = "X", 5 = "*", 6 = open triangle, 7 = filled triangle.
@@ -1689,6 +1872,10 @@ module LSS_Extensions
 				view.line_width = line_wdt
 				view.draw_points(pts, pt_size, pt_type, pt_col)
 			end
+			
+			# This method resets 'LSS Zone' tool.
+			# It performs #small_reset, which resets only tool's parameters (without affecting zone's settings),
+			# then it calls #read_defaults, which finally resets zone's settings to default values.
 			
 			def reset(view)
 				@ip.clear
@@ -1704,11 +1891,15 @@ module LSS_Extensions
 				self.read_defaults
 				self.send_settings2dlg
 			end
+			
+			# This method is called in case of 'LSS Zone' tool deactivation.
 
 			def deactivate(view)
 				@zone_dialog.close
 				self.reset(view)
 			end
+			
+			# This method increments zone number.
 			
 			def increment_number
 				if @number.to_i>0
@@ -1728,9 +1919,18 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method enables value box of SU.
+			
 			def enableVCB?
 				return true
 			end
+			
+			# This method processes values entered by user into a value box, while tool is active.
+			# Two tool states uses parsed value of a value box:
+			# - 'draw_contour' tool state
+			# - 'cut_opening' tool state
+			# It is possible to enter the exact distance for the next nodal point of a zone contour while its drawing or
+			# for the next point of an opening being cut at the moment.
 			
 			def onUserText(text, view)
 				case @pick_state
@@ -1786,7 +1986,9 @@ module LSS_Extensions
 				end
 			end
 			
-			# Handle some hot-key strokes while the tool is active
+			# Handle pressed key while tool is active.
+			# Enable inference lock by Shift key pressing.
+			
 			def onKeyDown(key, repeat, flags, view)
 				if key==VK_SHIFT
 					case @pick_state
@@ -1818,7 +2020,9 @@ module LSS_Extensions
 					end
 				end
 			end
-
+			
+			# Handle some hot-key strokes while the tool is active
+			
 			def onKeyUp(key, repeat, flags, view)
 				
 				if key==VK_DELETE
@@ -2155,6 +2359,12 @@ module LSS_Extensions
 				end
 			end
 			
+			# Handle Esc key press while tool is active.
+			# - get back to nil tool state from any other state
+			# - when state is nil, unselect zone if any by performing #small_reset
+			# - cancel new node insertion if it was initialized
+			# - cancel cutting a new opening
+			
 			def onCancel(reason, view)
 				if @pick_state=="draw_contour" or @pick_state=="pick_face" or @pick_state=="specify_height"
 					@pick_state=nil
@@ -2182,6 +2392,8 @@ module LSS_Extensions
 				self.onSetCursor
 				view.invalidate
 			end
+			
+			# Display custom content within 'Instructor' floater.
 			
 			def getInstructorContentDirectory
 				locale=Sketchup.get_locale 

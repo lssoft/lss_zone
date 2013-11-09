@@ -1,10 +1,14 @@
+# lss_zone_entity.rb ver. 1.1.2 beta 07-Nov-13
+# This file contains LSS_Zone_Entity class, LSS_Element_Group class and LSS_Volume_Group class.
+# LSS_Zone_Entity class is the main one. It is actively used by other methods.
+# LSS_Element_Group and LSS_Volume_Group are service classes and #create_zone method
+# uses them for populating created zone group with elements (such as walls, floor, ceiling,
+# volume and openings).
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_entity.rb ver. 1.1.0 beta 26-Oct-13
-# This file contains the class with Zone Entity
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -23,32 +27,31 @@ module LSS_Extensions
 		# - call 'create_zone' method of created instance
 		
 		class LSS_Zone_Entity
-			# Identification
 			attr_accessor :number
 			attr_accessor :name
-			# Geometry
+			
 			attr_accessor :area
 			attr_accessor :perimeter
 			attr_accessor :height
 			attr_accessor :volume
-			# Additional
+			
 			attr_accessor :floor_level
 			attr_accessor :floor_number
 			attr_accessor :category
 			attr_accessor :memo
-			# Materials
+			
 			attr_accessor :floor_material
 			attr_accessor :wall_material
 			attr_accessor :ceiling_material
-			# Elements' Areas
+			
 			attr_accessor :floor_area
 			attr_accessor :wall_area
 			attr_accessor :ceiling_area
-			# Elements' Types
+			
 			attr_accessor :floor_refno
 			attr_accessor :wall_refno
 			attr_accessor :ceiling_refno
-			# Labels
+			
 			attr_accessor :labels_arr
 			attr_accessor :default_label
 			# Zone type
@@ -64,6 +67,9 @@ module LSS_Extensions
 			
 			# Result
 			attr_accessor :zone_group
+			
+			# Initializes all parameters (listed in attribute accessors).
+			# Initializes @model and @entities.
 			
 			def initialize
 				# Identification
@@ -113,10 +119,12 @@ module LSS_Extensions
 				@entities=@model.active_entities
 			end
 			
-			# This is a main method, which generates zone group in an active model
+			# This is a main method, which generates zone group in an active model.
+			# It has the optional argument 'stand_alone'.
+			# Set stand_alone to 'false' in case if you call this method from another @model.start_operation wrapper.
 			
 			def create_zone(stand_alone=true)
-				# If stand_alone==false, then method is called from another @model.start_operation
+				# If stand_alone==false, then method is called from another @model.start_operation wrapper.
 				if @nodal_points.length==0
 					UI.messagebox($lsszoneStrings.GetString("There is no nodal points to create zone object from..."))
 					return
@@ -319,6 +327,17 @@ module LSS_Extensions
 									value=dist_str
 								when "area"
 									area_str=Sketchup.format_area(value.to_f).to_s
+									# Supress square units patch added in ver. 1.1.2 09-Nov-13.
+									options=Sketchup.active_model.options
+									units_options=options["UnitsOptions"]
+									supress_units=units_options["SuppressUnitsDisplay"]
+									if supress_units
+										if area_str.split(" ")[0]!="~"
+											area_str=area_str.split(" ")[0]
+										else
+											area_str=area_str.split(" ")[1]
+										end
+									end
 									value=area_str
 								when "volume"
 									vol_str=LSS_Math.new.format_volume(value)
@@ -348,7 +367,8 @@ module LSS_Extensions
 				# If stand_alone==false, then method is called from another @model.start_operation
 			end
 			
-			# This method erases duplicated points from @nodal_points array.
+			# This is a service method, which is called from #create_zone method.
+			# It erases duplicated points from @nodal_points array.
 			# It is necessary, because sometimes initial @nodal_points array may
 			# contain such points and it is not possible to add area, floor or
 			# ceiling face using an array of points, which contains duplicated
@@ -378,6 +398,11 @@ module LSS_Extensions
 				@nodal_points=temp_arr
 			end
 			
+			# This is a service method, which is called from #create_zone method.
+			# It ensures that all nodal points are located on the same plane by
+			# setting the same value, which equals to @floor_lever
+			# to 'z' coordinate of each point.
+			
 			def ensure_planar
 				@floor_level=@nodal_points.first.z
 				@nodal_points.each{|pt|
@@ -386,7 +411,7 @@ module LSS_Extensions
 			end
 		end #class LSS_Zone_Entity
 		
-		# This is a service class, which is used by 'create_zone' method of 'LSS_Zone_Entity' class:
+		# This is a service class, which is used by #create_zone method of 'LSS_Zone_Entity' class:
 		# 'create_zone' method makes new instance of 'LSS_Element_Group' each time when it is necessary
 		# to add new element to a zone group (floor, ceiling, wall etc).
 		
@@ -402,6 +427,12 @@ module LSS_Extensions
 			
 			attr_accessor :assign_material2group
 			
+			# Initializes the following parameters:
+			# - face_points
+			# - type - element type (area, floor, wall, ceiling etc)
+			# - material - element's material
+			# - zone_group - parent group, where new element is to be placed
+			
 			def initialize(face_points, type, material, zone_group)
 				@face_points=face_points
 				@type=type
@@ -416,6 +447,11 @@ module LSS_Extensions
 					@zone_layers.create_layers
 				end
 			end
+			
+			# This method creates new element group, adds a face into it,
+			# assigns materials, sets some attributes,
+			# updates quantitative information stored in 'area' and 'perimeter' attribute accessors
+			# and finally returns created element group.
 			
 			def create
 				@element_group=@zone_group.entities.add_group
@@ -444,6 +480,13 @@ module LSS_Extensions
 		# when it is necessary to add 'volume' element.
 		
 		class LSS_Volume_Group
+		
+			# Initializes the following parameters:
+			# - floor_face_points - array of zone's contour nodal points
+			# - height - zone's height
+			# - material - material name, which is equal to zone's category name
+			# - zone_group - parent group, where volume element is to be placed
+			
 			def initialize(floor_face_points, height, material, zone_group)
 				@floor_face_points=floor_face_points
 				@height=height
@@ -456,6 +499,11 @@ module LSS_Extensions
 					@zone_layers.create_layers
 				end
 			end
+			
+			# This method creates new volume element group, populates it with faces,
+			# which represent zone's volume,
+			# assigns material, which name is equal to zone category name, sets some attributes
+			# and finally returns created volume element group.
 			
 			def create
 				@element_group=@zone_group.entities.add_group

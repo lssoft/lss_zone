@@ -1,10 +1,12 @@
+# lss_zone_recalc.rb ver. 1.1.2 beta 09-Nov-13
+# The file, which contains implementation of recalculation of quantitative
+# attributes of an existing zone. It may be used to make quantitative attributes
+# match actual geometry of a zone without affecting geometry itself.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_recalc.rb ver. 1.1.0 beta 25-Oct-13
-# The file, which contains created zone(s) refreshing implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -14,7 +16,9 @@ module LSS_Extensions
 	module LSS_Zone_Extension
 		#loads class wich contains Zone Entity
 		require 'lss_zone/lss_zone_entity.rb'
-
+		
+		# This method adds 'Recalculate' command to LSS Zone toolbar and submenu.
+		
 		class LSS_Zone_Recalc_Cmd
 			def initialize
 				lss_zone_recalc=LSS_Zone_Recalc_Tool.new
@@ -38,13 +42,19 @@ module LSS_Extensions
 		end #class LSS_Zone_Recalc_Cmd
 		
 		# This class contains implementation of a tool, which refreshes quantitave attributes of selected zones
-		# in order to make them corresponded to an actual geometry of a zone an its internal elements.
+		# in order to make them corresponded to an actual geometry of a zone and its internal elements.
 		
 		class LSS_Zone_Recalc_Tool
+			
+			# Initialize @model and @selection.
+			
 			def initialize
 				@model=Sketchup.active_model
 				@selection=@model.selection
 			end
+			
+			# This method iterates through an array of entities made of current selection and
+			# calls #recalc method for each entity in case if it is a zone object and it is not deleted.
 			
 			def process_selection(stand_alone=true)
 				if @selection.length==0
@@ -55,12 +65,12 @@ module LSS_Extensions
 						i=1; tot_cnt=@selection.length
 						progr_char="|"; rest_char="_"; scale_coeff=1
 						progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
-						@selection.each{|ent|
+						@selection.to_a.each{|ent|
 							if ent.is_a?(Sketchup::Group)
 								number=ent.get_attribute("LSS_Zone_Entity", "number")
 								if number
 									# Set the second optional parameter to 'false' so 'recalc' method does not perform '@model.start_operation'
-									self.recalc(ent, false)
+									self.recalc(ent, false) if (ent.deleted?)==false
 								end
 							end
 							progr_bar.update(i)
@@ -73,6 +83,18 @@ module LSS_Extensions
 					Sketchup.active_model.select_tool(nil)
 				end
 			end
+			
+			# This method recalculates quantitative attributes of a zone passed as an argument:
+			# - area
+			# - perimeter
+			# - floor area (might differ from room's area in case of holes or steps for example)
+			# - ceiling area (might differ from room's area in case of sloped or curved ceiling)
+			# - wall area
+			# - internal and external areas of openings in all surfaces (floor, walls, ceiling)
+			# Method analyses contens of zone group and sets new values for all mentioned above
+			# attributes of a zone according to actual size of zone's elements.
+			# Finally method refreshes labels attached to a zone in order to ensure, that
+			# labels display recalculated attributes.
 			
 			def recalc(zone_group, stand_alone=true)
 				@zone_group=zone_group
@@ -231,6 +253,17 @@ module LSS_Extensions
 									value=dist_str
 								when "area"
 									area_str=Sketchup.format_area(value.to_f).to_s
+									# Supress square units patch added in ver. 1.1.2 09-Nov-13.
+									options=Sketchup.active_model.options
+									units_options=options["UnitsOptions"]
+									supress_units=units_options["SuppressUnitsDisplay"]
+									if supress_units
+										if area_str.split(" ")[0]!="~"
+											area_str=area_str.split(" ")[0]
+										else
+											area_str=area_str.split(" ")[1]
+										end
+									end
 									value=area_str
 								when "volume"
 									vol_str=LSS_Math.new.format_volume(value)

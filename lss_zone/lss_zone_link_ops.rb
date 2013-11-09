@@ -1,10 +1,13 @@
+# lss_zone_link_ops.rb ver. 1.1.2 beta 08-Nov-13
+# The script, which contains 'Link Openings Tool' implementation.
+# This tool searches for adjacent openings among selected zones
+# and marks adjucent openings as internal.
+# It provides ability to generate links graph in an active model as well.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_link_ops.rb ver. 1.0.0 beta 30-Sep-13
-# The script, which loads extension's official link_ops-page in a default browser.
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -12,7 +15,9 @@
 
 module LSS_Extensions
 	module LSS_Zone_Extension
-
+		
+		# This class adds 'Link Openings Tool' command to LSS Zone menu and toolbar.
+		
 		class LSS_Zone_Link_Ops_Cmd
 			def initialize
 				# Add Link Openings command
@@ -54,10 +59,19 @@ module LSS_Extensions
 		# This class contains implementation of a tool, which searches for adjacent openings among selected zones.
 		
 		class LSS_Zone_Link_Ops_Tool
+			
+			# Initialize tool's settings
+			
 			def initialize
+				# If the distance between centers of two openings is less, than @check_dist, then openings are adjacent ones.
 				@check_dist=12.0
+				# The size of spheres, which represent graph nodes, and thickness of cylinders, which represent links between nodes
+				# may represent area of a zone and area of opening respectively in case if this setting is set to "true".
 				@weightened_graph="true"
+				# Hash of settings is a common parameter for all LSS tools and tool-like classes, where lots of settings
+				# are to be transferred between tool (tool-like class) and a web-dialog.
 				@settings_hash=Hash.new
+				# Array of openings of selected zones.
 				@openings_arr=Array.new
 			end
 			
@@ -66,6 +80,12 @@ module LSS_Extensions
 				@weightened_graph=Sketchup.read_default("LSS_Zone", "weightened_graph", "true")
 				self.settings2hash
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method populates @settings_hash with all adjustable parameters (class instance variables)
+			# for further batch processing (for example for sending settings to a web-dialog or for writing
+			# defaults using 'Sketchup.write_default'.
 			
 			def settings2hash
 				@settings_hash["check_dist"]=[@check_dist, "distance"]
@@ -76,11 +96,19 @@ module LSS_Extensions
 				}
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method reads values from @settings_hash and sets values of corresponding instance variables.
+			
 			def hash2settings
 				return if @settings_hash.keys.length==0
 				@check_dist=@settings_hash["check_dist"][0]
 				@weightened_graph=@settings_hash["weightened_graph"][0]
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method writes default values of settings using 'Sketchup.write_default'.
 			
 			def write_defaults
 				self.settings2hash
@@ -88,6 +116,13 @@ module LSS_Extensions
 					Sketchup.write_default("LSS_Zone", key, @settings_hash[key][0].to_s)
 				}
 			end
+			
+			# This method creates 'Link Openings' dialog.
+			# This dialog lets to set the value of @check_dist and provides the ability to 
+			# start linking process.
+			# Links preview area of a dialog allows to observe linking process.
+			# It is possible to generate links graph in an active model after linking is finished
+			# by clicking an appropriate command button on a dialog.
 			
 			def create_web_dial
 				# Read defaults
@@ -181,6 +216,11 @@ module LSS_Extensions
 				}
 			end
 			
+			# Initialize @model.
+			# Initialize input points and @selection.
+			# Perform selection filtering in order to select only zone objects from selection set.
+			# Create 'Link Openings' web-dialog.
+			
 			def activate
 				@model=Sketchup.active_model
 				@ip = Sketchup::InputPoint.new
@@ -189,6 +229,9 @@ module LSS_Extensions
 				self.filter_selection
 				self.create_web_dial
 			end
+			
+			# This method collects only zone objects from current selection set and
+			# puts collected zone groups to @selected_zones array for further processing.
 			
 			def filter_selection
 				@selected_zones=Array.new
@@ -199,6 +242,17 @@ module LSS_Extensions
 					@selected_zones=selected_groups.select{|grp| not(grp.get_attribute("LSS_Zone_Entity", "number").nil?)}
 				end
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method performs batch sending of settings to a web-dialog by iterating through a @settings_hash.
+			# Each value of @settings_hash is an array of two values:
+			# 1. value itself
+			# 2. value type
+			# So #send_settings2dlg method uses 'value_type' to format representation of a value in a web-dialog.
+			# The point is that all dimensional data in Sketchup is stored in decimal inches, so it is necessary
+			# to format length, area and volume values in order to represent a value as a string 
+			# in a user-specific format.
 			
 			def send_settings2dlg
 				self.settings2hash
@@ -223,6 +277,7 @@ module LSS_Extensions
 			
 			# Read categories colors and send them to dialog in order to display nodes of a graph
 			# using zone's category color.
+			
 			def send_cat_colors2dlg
 				# Send list of categories from an active model to a web-dialog
 				js_command = "clear_cats_arr()"
@@ -239,6 +294,8 @@ module LSS_Extensions
 					}
 				end
 			end
+			
+			# Draw links, nodes and highlight internal openings.
 			
 			def draw(view)
 				if @links_arr
@@ -314,8 +371,9 @@ module LSS_Extensions
 				}
 			end
 			
-			# The main method, which checks distance between each opening and marks another opening as adjacent in case
+			# The main method, which checks distance between centers of openings and marks openings as internal in case
 			# if checked distance is less, than a value specified in a dialog (@check_dist)
+			
 			def link_openings
 				view=Sketchup.active_model.active_view
 				js_command = "clear_nodes_and_links()"
@@ -500,6 +558,7 @@ module LSS_Extensions
 			
 			# This method updates zone's openings area information: decreases external openings area and
 			# increases internal openings area by an area of an opening passed as an argument.
+			
 			def recalc_openings(zone, op, area)
 				is_internal=op.get_attribute("LSS_Zone_Element", "is_internal")
 				case op.get_attribute("LSS_Zone_Element", "type")
@@ -528,6 +587,7 @@ module LSS_Extensions
 			end
 			
 			# This method build a graph, which illustrates links between adjacent zones.
+			
 			def build_graph
 				graph_group=@model.entities.add_group
 				etalon_len=Sketchup.parse_length("1000mm")
@@ -627,6 +687,8 @@ module LSS_Extensions
 				@model.commit_operation
 			end
 			
+			# This method resets 'Link Openings' tool and web-dialog.
+			
 			def reset(view)
 				@ip.clear
 				@ip1.clear
@@ -638,11 +700,15 @@ module LSS_Extensions
 				self.read_defaults
 				self.send_settings2dlg
 			end
+			
+			# This method closes 'Link Openings' dialog in case of tool deactivation.
 
 			def deactivate(view)
 				@link_ops_dialog.close
 				self.reset(view)
 			end
+			
+			# This method stops linking process in case of cancelling by hitting Esc key.
 			
 			def onCancel(reason, view)
 				# Stop linking process if any
@@ -662,10 +728,16 @@ module LSS_Extensions
 		# It might be useful after user moved some graph nodes.
 		
 		class LSS_Zone_Refresh_Graph
+			
+			# Initialize @model and @selection
+			
 			def initialize
 				@model=Sketchup.active_model
 				@selection=@model.selection
 			end
+			
+			# Filters selection first, then refreshes selected graphs iterating through @selected_graph array and
+			# calling #refresh_graph.
 			
 			def process_selection
 				self.filter_selection
@@ -678,6 +750,8 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method Filter selection in order to select only link graphs.
+			
 			def filter_selection
 				@selected_graphs=Array.new
 				if @selection.length==0
@@ -687,6 +761,8 @@ module LSS_Extensions
 					@selected_graphs=selected_groups.select{|grp| grp.get_attribute("LSS_Zone_Graph", "graph_group")}
 				end
 			end
+			
+			# This method refreshes given graph group.
 			
 			def refresh_graph(graph_group)
 				@model.start_operation($lsszoneStrings.GetString("Refresh Graph"), true)

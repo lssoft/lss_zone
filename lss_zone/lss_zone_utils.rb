@@ -1,10 +1,18 @@
+# lss_zone_utils.rb ver. 1.1.2 beta 09-Nov-13
+# File with some utility classes:
+# - LSS_Geom
+# - LSS_Math
+# - LSS_Progr_Bar
+# - LSS_Dirs
+# - LSS_Color
+# - LSS_Zone_Tools_Observer
+# - LSS_Zone_Selection_Observer
+# - LSS_Zone_App_Observer
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_utils.rb ver. 1.1.1 beta 03-Nov-13
-# File with some utility classes
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -12,6 +20,7 @@
 
 module LSS_Extensions
 	module LSS_Zone_Extension
+	
 		# This is a class, which contains some geometric calculation methods
 
 		class LSS_Geom
@@ -35,6 +44,7 @@ module LSS_Extensions
 				[r*Math.cos(a_ang)*Math.sin(b_ang), r*Math.sin(a_ang)*Math.sin(b_ang), r*Math.cos(b_ang)]
 			end
 			
+			# Split 2D boundary, which was passed as an array of points, into triangles
 			def triangulate_poly(pts)
 				poly_pts=pts.uniq
 				
@@ -164,6 +174,7 @@ module LSS_Extensions
 				triangles
 			end
 			
+			# Check if the given point is inside or outside a triangle
 			def is_inside_triangle?(pt, pts)
 				vec1=pt.vector_to(pts[0])
 				vec2=pt.vector_to(pts[1])
@@ -180,6 +191,7 @@ module LSS_Extensions
 				is_inside
 			end
 			
+			# Return an array of 12 2D points, which lie on a circle r=1.0 and center at [0, 0]
 			def circle_pts12
 				pt1=[1.0, 0]
 				pt2=[0.87, 0.5]
@@ -412,6 +424,7 @@ module LSS_Extensions
 		
 		# This class contains implementation of selection observer which becomes active, when 'Properties' dialog is opened.
 		# This observer sends information about selection changes to 'Properties' dialog, so dialog displays relevant information.
+		# 'Filter Zones' dialog also uses this class the same way as 'Properties' dialog.
 		
 		class LSS_Zone_Selection_Observer < Sketchup::SelectionObserver # Moved to lss_zone_utils.rb in ver. 1.1.0 22-Oct-13.
 			def initialize(web_dial)

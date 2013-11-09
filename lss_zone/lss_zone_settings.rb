@@ -1,10 +1,11 @@
+# lss_zone_settings.rb ver. 1.1.2 beta 09-Nov-13
+# The file, which contains 'Global Settings' dialog implementation
+# Not in use for now.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_settings.rb ver. 1.0.0 beta 30-Sep-13
-# The file, which contains 'Global Settings' dialog implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -14,7 +15,10 @@ module LSS_Extensions
 	module LSS_Zone_Extension
 		#loads class wich contains Zone Entity
 		require 'lss_zone/lss_zone_entity.rb'
-
+		
+		# This class adds 'Global Settings' command.
+		# Not in use for now.
+		
 		class LSS_Zone_Settings_Cmd
 			def initialize
 				lss_zone_settings_cmd=UI::Command.new($lsszoneStrings.GetString("Global Settings")){

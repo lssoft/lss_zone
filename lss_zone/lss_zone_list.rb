@@ -1,11 +1,12 @@
+# lss_zone_list.rb ver. 1.1.2 beta 08-Nov-13
+# The file, which contains report generator implementation.
+# It generates selected zones list for further saving
+# it to an HTML file.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_list.rb ver. 1.1.1 beta 06-Nov-13
-# The file, which contains report generator implementation.
-# It generates all or selected zones list in an active model.
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -15,6 +16,8 @@ module LSS_Extensions
 	module LSS_Zone_Extension
 		
 		require 'lss_zone/lss_zone_list_template.rb'
+		
+		# This class adds 'List Zones' command to LSS Zone menu and toolbar.
 		
 		class LSS_Zone_List_Cmd
 			def initialize
@@ -38,10 +41,24 @@ module LSS_Extensions
 		# This class contains implementation of a dialog for building lists of selected zones.
 		
 		class LSS_Zone_List
+			# Hash of settings, which are transfered between class and web-dialog.
 			attr_accessor :settings_hash
+			# Array of selected zone objects.
 			attr_accessor :selected_zones
+			# Array of zone attribute names aliases (for example 'floor_level' attribute name may have 'Floor Level' alias).
+			# Report generator uses name aliases for report column headers.
+			# In case of blank alias report generator uses attribute name as a column header.
 			attr_accessor :name_aliases
+			# Array of charts attached to selected zone list template.
 			attr_accessor :charts_arr
+			
+			# Initialize
+			# - @query_string - string, which contains attribute names mentions prefixed by "@" sign
+			# - @sort_by - attribute name, which has to be used for sorting of generated list of zones
+			# - @sort_dir - sort direction (ascending/descending)
+			# - @group_by - attribute name, which has to be used for grouping of generated list
+			# - @list_name - list template name
+			
 			def initialize
 				@model=Sketchup.active_model
 				@selected_zones=nil
@@ -56,6 +73,9 @@ module LSS_Extensions
 				@charts_arr=Array.new
 			end
 			
+			# This method collects only zone objects from current selection set and
+			# puts collected zone groups to @selected_zones array for further processing.
+			
 			def filter_selection
 				@selected_zones=Array.new
 				if @selection.length==0
@@ -65,6 +85,9 @@ module LSS_Extensions
 					@selected_zones=selected_groups.select{|grp| not(grp.get_attribute("LSS_Zone_Entity", "number").nil?)}
 				end
 			end
+			
+			# This method is the first one to be called.
+			# It filters selection, then collects data from selected zones, then creates 'List Zones' dialog
 			
 			def list_dial
 				@selection=@model.selection
@@ -89,6 +112,9 @@ module LSS_Extensions
 				self.create_list_dial
 				Sketchup.status_text=$lsszoneStrings.GetString("Data collection complete.")
 			end
+			
+			# This method iterates through @collected_data array and generates @query_result array
+			# according to @query_string content and @sort_by, @group_by settings.
 			
 			def run_query
 				if @query_string.nil? or @query_string==""
@@ -281,6 +307,8 @@ module LSS_Extensions
 				@zone_list_dial.execute_script(js_command) if js_command
 			end
 			
+			# This method creates 'List Zones' dialog.
+			
 			def create_list_dial
 				# Create the WebDialog instance
 				@zone_list_dial = UI::WebDialog.new($lsszoneStrings.GetString("List Zones"), true, "LSS List Zones", 450, 500, 200, 200, true)
@@ -343,6 +371,21 @@ module LSS_Extensions
 				}
 			end
 			
+			# This method reads list template from a file located at "#{resource_dir}/list_presets/" with a name equal to @preset_file_name
+			# Method parses file content and puts obtained information to:
+			# - @settings_hash
+			# - @name_aliases hash
+			# - @charts_arr array
+			# Method recognises object inside file content when it preceeded by <"object name"> 'tag-line'. Closing 'tag-line' in a
+			# file tells that object section is finished.
+			# There are two types of objects for now:
+			# - chart
+			# - name alias
+			# Method interprets other lines inside a list template file as settings.
+			# Setting line format is 'setting name'='setting value'
+			# Method fills out @settings_hash using 'setting name' as a key and 'setting value' as a value after processing setting line
+			# of list template file.
+			
 			def read_template_from_file
 				return if @list_name.nil? or @list_name==""
 				@preset_file_name=@list_names[@list_name]
@@ -391,6 +434,13 @@ module LSS_Extensions
 				self.hash2settings
 			end
 			
+			# This method deletes preset with name equals to @list_name.
+			# List name is stored inside a file in a line, which starts with "list_name=".
+			# Method iterates through all files stored in "#{resource_dir}/list_presets/"
+			# and searches for a file which has the same contents after "list_name=" as @list_name value does,
+			# then deletes such file in case of its presense.
+			# This method is called after clicking 'delete preset' button of 'List Zones' dialog.
+			
 			def delete_preset
 				resource_dir=LSS_Dirs.new.resource_path
 				presets_dir="#{resource_dir}/list_presets/"
@@ -424,6 +474,9 @@ module LSS_Extensions
 				self.refresh
 			end
 			
+			# Create instance of LSS_Zone_List_Template, which has implementation of 'List Template' dialog.
+			# This method is called after clicking 'edit' button of 'List Zones' dialog.
+			
 			def edit_preset
 				template_inst=LSS_Zone_List_Template.new
 				self.read_template_from_file
@@ -431,6 +484,14 @@ module LSS_Extensions
 				template_inst.parent=self
 				template_inst.create_web_dial
 			end
+			
+			# This method adds new list preset. First of all it iterates through files in "#{resource_dir}/list_presets/" directory
+			# in order to find out the minimum file number, which is not yet in use, then creates new file with 'lst'
+			# extension and 'list_<file number>' file name.
+			# Initial preset name is also automatically generated ("New List Template <file number>") and method
+			# puts this name to a newly created file after "list_name=".
+			# Immideately after creation of a new list template file this method calls #edit_preset method, so
+			# it is possible to assign a meaningful name to a new template and adjust query string and other list settings.
 			
 			def add_preset
 				@query_string=""
@@ -465,6 +526,12 @@ module LSS_Extensions
 				self.refresh
 				self.edit_preset
 			end
+			
+			# This method iterates through all files stored in "#{resource_dir}/list_presets/" directory and
+			# reads preset name from each file and put it into @list_names hash.
+			# Then it iterates through @list_names hash and send each obtained name to a web-dialog.
+			# All names get to an array of preset names which is a sorce of values for preset name selector
+			# (drop-down list of names) of web-dialog.
 			
 			def send_presets2dlg
 				@list_names=Hash.new
@@ -502,6 +569,11 @@ module LSS_Extensions
 				self.read_template_from_file
 			end
 			
+			# This method sends field names, which were found in a @query_string to a web-dialog, which was passed as an argument.
+			# 'List Template' dialog uses an array of attribute names as a sorce of values for selectors:
+			# - sort by drop-down list
+			# - group by drop-down list
+			
 			def send_fields2dlg(dial)
 				if @query_string.nil? or @query_string==""
 					self.read_template_from_file
@@ -514,6 +586,9 @@ module LSS_Extensions
 					dial.execute_script(js_command)
 				}
 			end
+			
+			# This method runs query to generate @query_result, then iterates through @query_result
+			# and sends data record-by-record to a given dialog.
 			
 			def send_zones_data2dlg(dial)
 				if @query_string.nil? or @query_string==""
@@ -550,6 +625,10 @@ module LSS_Extensions
 				dial.execute_script(js_command) if js_command
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method performs batch sending of settings to a web-dialog by iterating through a @settings_hash.
+			
 			def send_settings2dlg
 				self.settings2hash
 				@settings_hash.each_key{|key|
@@ -564,6 +643,8 @@ module LSS_Extensions
 				}
 			end
 			
+			# This method iterates through @name_aliases hash and sends attribute name aliases to a given dialog.
+			
 			def send_name_aliases2dlg(dial)
 				js_command="clear_name_aliases()"
 				dial.execute_script(js_command) if js_command
@@ -573,6 +654,8 @@ module LSS_Extensions
 					dial.execute_script(js_command) if js_command
 				}
 			end
+			
+			# This method sends information about charts from @charts_arr array to a given web-dialog.
 			
 			def send_charts2dlg(dial)
 				js_command="clear_charts()"
@@ -587,6 +670,12 @@ module LSS_Extensions
 				}
 			end
 			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method populates @settings_hash with all adjustable parameters (class instance variables)
+			# for further batch processing (for example for sending settings to a web-dialog or for writing
+			# defaults using 'Sketchup.write_default'.
+			
 			def settings2hash
 				@settings_hash["list_name"]=[@list_name, "string"]
 				@settings_hash["sort_by"]=[@sort_by, "string"]
@@ -594,6 +683,10 @@ module LSS_Extensions
 				@settings_hash["sort_dir"]=[@sort_dir, "string"]
 				@settings_hash["query_string"]=[@query_string, "string"]
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method reads values from @settings_hash and sets values of corresponding instance variables.
 			
 			def hash2settings
 				return if @settings_hash.keys.length==0
@@ -604,10 +697,14 @@ module LSS_Extensions
 				@query_string=@settings_hash["query_string"][0]
 			end
 			
+			# This method refreshes 'List Zones' dialog by performing custom initialization of it.
+			
 			def refresh
 				js_command = "custom_init()"
 				@zone_list_dial.execute_script(js_command) if js_command
 			end
+			
+			# This method saves list template to a corresponding list template file.
 			
 			def save_template
 				resource_dir=LSS_Dirs.new.resource_path
@@ -649,6 +746,11 @@ module LSS_Extensions
 				end
 				preset_file.close
 			end
+			
+			# This method asks to specify an HTML file name to store a list using 'UI.savepanel' method, which
+			# displays standard OS 'Save File' dialog.
+			# Then method creates a file with specified name and opens it for writing.
+			# Then method runs query and builds a simple table, which contains query results (ie zones list).
 			
 			def generate_list
 				title=$lsszoneStrings.GetString("Save List of Zones to HTML File")

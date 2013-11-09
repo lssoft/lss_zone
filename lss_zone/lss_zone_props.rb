@@ -1,10 +1,10 @@
+# lss_zone_props.rb ver. 1.1.2 beta 09-Nov-13
+# The file, which contains 'Zone Properties' dialog implementation.
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_props.rb ver. 1.1.1 beta 06-Nov-13
-# The file, which contains 'Zone Properties' dialog implementation
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -14,7 +14,9 @@ module LSS_Extensions
 	module LSS_Zone_Extension
 		#loads class wich contains Zone Entity
 		require 'lss_zone/lss_zone_entity.rb'
-
+		
+		# This class adds 'View/Edit Properties' command to LSS Zone toolbar and submenu.
+		
 		class LSS_Zone_Props_Cmd
 			def initialize
 				lss_zone_props_cmd=UI::Command.new($lsszoneStrings.GetString("View/Edit Properties")){
@@ -53,11 +55,20 @@ module LSS_Extensions
 				@zone_types_cnt=Hash.new
 			end
 			
+			# This method performs filtering of selection in order to choose only zone objects from
+			# selection and put all of them into @zones_arr.
+			
 			def selection_filter
 				@zones_arr=Array.new
 				selected_groups=@selection.select{|ent| ent.is_a?(Sketchup::Group)}
 				@zones_arr=selected_groups.select{|grp| not(grp.get_attribute("LSS_Zone_Entity", "number").nil?)}
 			end
+			
+			# This method reads attributes from selected zones.
+			# First of all it reads attributes (properties) from the first zone in @zones_arr array, then
+			# iterates through @zones_arr and checks each other zone's attributes. It leaves the initial
+			# value of each attribute if it is the same as other zone's attribute and sets the value of an
+			# attribute to '...' string if no.
 			
 			def obtain_common_settings
 				@zone_types_cnt=Hash.new
@@ -146,6 +157,18 @@ module LSS_Extensions
 				self.settings2hash
 			end
 			
+			# This method activates 'Properties' dialog if it's not active. The check of active/inactive status
+			# of a dialog is necessary to prevent duplication of a dialog.
+			# First of all this method reads default dialog settings. The main setting is @props_list_content and
+			# it responsible for dialog's display mode:
+			# - 'zone only' mode displays only basic properties related to zone object
+			# - 'all' mode displays all attributes attached to a zone group in alphabetical order
+			# Depending on this setting method reads all attributes or obtains common settings, then calls web-dialog
+			# creation.
+			# Then it re-initializes arrays and hashes, which are necessary for performing add/edit/erase properties
+			# operations, which may be launched from a web-dialog when it is in 'all' mode by clicking appropriate
+			# buttons.
+			
 			def activate
 				return if $props_dial_is_active
 				self.read_defaults
@@ -165,6 +188,11 @@ module LSS_Extensions
 				$props_dial_is_active=true
 			end
 			
+			# This method refreshes contents of a web-dialog and re-initializes arrays and hashes, which are necessary
+			# for performing add/edit/erase property operations.
+			# Usually this method is called by selection observer, which constantly runs while 'Properties' dialog is active
+			# and observer calls this method in case of selection changing or clearing.
+			
 			def refresh
 				if @props_list_content=="zone_only"
 					self.selection_filter
@@ -178,6 +206,12 @@ module LSS_Extensions
 				@dict_new_names=Hash.new
 				@new_attrs=Array.new
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and web-dialog.
+			# This method populates @settings_hash with all adjustable parameters (class instance variables)
+			# for further batch processing (for example for sending settings to a web-dialog or for writing
+			# defaults using 'Sketchup.write_default').
 			
 			def settings2hash
 				@settings_hash["number"]=[@number, "string"]
@@ -208,6 +242,10 @@ module LSS_Extensions
 				@settings_hash["zone_type"]=[@zone_type, "string"]
 				@settings_hash["floors_count"]=[@floors_count, "integer"]
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and a web-dialog.
+			# This method reads values from @settings_hash and sets values of corresponding instance variables.
 			
 			def hash2settings
 				return if @settings_hash.keys.length==0
@@ -241,8 +279,10 @@ module LSS_Extensions
 				@floors_count=@settings_hash["floors_count"][0]
 			end
 			
-			# This method sets new attributes to all selected zones (or maybe other objects in case if @props_list_content=="all").
-			# Then it performs zones rebuilding in case if @rebuild_on_apply=="true"
+			# This is a main method.
+			# It sets new attributes to all selected zones.
+			# Then it performs zones rebuilding in case if @rebuild_on_apply=="true".
+			
 			def batch_props_apply
 				@model.start_operation($lsszoneStrings.GetString("Adjust Properties of the Zone(s)"), true)
 					lss_zone_rebuild=LSS_Zone_Rebuild_Tool.new
@@ -416,6 +456,11 @@ module LSS_Extensions
 				js_command="refresh_data()"
 				@props_dialog.execute_script(js_command)
 			end
+			
+			# This method creates 'Properties' dialog.
+			# It also starts selection observer in order to refresh dialog's content in case if selection is changed
+			# or cleared.
+			# Selection observer terminates after dialog is closed.
 			
 			def create_web_dial
 				
@@ -609,7 +654,9 @@ module LSS_Extensions
 				}
 			end
 			
+			# This method reads all properties of selected zones (not only zone's basic properties as #obtain_common_settings does).
 			# This method works when @props_list_content=="all"
+			
 			def read_all_attributes
 				# Clear properties
 				js_command = "clear_dicts()"
@@ -712,15 +759,37 @@ module LSS_Extensions
 				@props_dialog.execute_script(js_command) if js_command
 			end
 			
+			# This method reads 'Properties' dialog defaults:
+			# - @props_list_content - sets type of properties list to be displayed in a dialog
+			# - @rebuild_on_apply - tells wheather rebuild selected zones after properties changing or not
+			# There are two types (modes) of properties list representation:
+			# - 'zone_only' - displays only basic zone's properties
+			# - 'all' - displays all attributes attached to a zone group
+			
 			def read_defaults
 				@props_list_content=Sketchup.read_default("LSS_Zone", "props_list_content", "zone_only") # Alternative representation is 'all'
 				@rebuild_on_apply=Sketchup.read_default("LSS_Zone", "rebuild_on_apply", "true")
 			end
 			
+			# This method writes 'Properties' dialog defaults:
+			# - @props_list_content - sets type of properties list to be displayed in a dialog
+			# - @rebuild_on_apply - tells wheather rebuild selected zones after properties changing or not
+			
 			def write_defaults
 				Sketchup.write_default("LSS_Zone", "props_list_content", @props_list_content)
 				Sketchup.write_default("LSS_Zone", "rebuild_on_apply", @rebuild_on_apply)
 			end
+			
+			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
+			# and lots of settings have to be sent back and forth between tool (or tool-like class) and a web-dialog.
+			# This method performs batch sending of settings to a web-dialog by iterating through a @settings_hash.
+			# Each value of @settings_hash is an array of two values:
+			# 1. value itself
+			# 2. value type
+			# So #send_settings2dlg method uses 'value_type' to format representation of a value in a web-dialog.
+			# The point is that all dimensional data in Sketchup is stored in decimal inches, so it is necessary
+			# to format length, area and volume values in order to represent a value as a string 
+			# in a model-specific format.
 			
 			def send_settings2dlg
 				self.settings2hash
@@ -763,6 +832,10 @@ module LSS_Extensions
 				}
 			end
 			
+			# This method sends material names, which are present in an active model
+			# to a web-dialog.
+			# It helps to populate material selectors (drop-down lists) with material names in a web-dialog.
+			
 			def send_materials2dlg
 				# Send list of materials from an active model to a web-dialog
 				js_command = "clear_mats_arr()"
@@ -779,6 +852,14 @@ module LSS_Extensions
 				js_command = "build_mat_list()"
 				@props_dialog.execute_script(js_command) if js_command
 			end
+			
+			# This method sends category names, which are present in a current model to a web-dialog.
+			# All categories are stored in an active model's attribute dictionary called 'LSS Zone Categories',
+			# since each time, when new category is created its name instantly gets to the mentioned above
+			# dictionary.
+			# So method iterates through this dictionary and sends its keys to a web-dialog.
+			# There is an 'auto-suggest' widget in a dialog, which uses an array of category names
+			# for more comfortable filling out of a 'Category' field.
 			
 			def send_categories2dlg
 				# Send list of categories from an active model to a web-dialog
@@ -808,6 +889,11 @@ module LSS_Extensions
 				end
 			end
 			
+			# This method checks if a category name passed as an argument is already present in an active model's
+			# dictionary called 'LSS Zone Categories' and returns 'true' if no or 'false' if yes.
+			# Usually this method is called after changing 'Category' field in 'Properties' dialog and this
+			# method helps to figure out if it is necessary to create new category or not.
+			
 			def cat_is_new?(chk_cat)
 				cat_is_new=true
 				categories=@model.attribute_dictionary("LSS Zone Categories")
@@ -821,6 +907,11 @@ module LSS_Extensions
 				end
 				cat_is_new
 			end
+			
+			# This method creates new category with a name equals to a passed argument.
+			# It also adds new material with the same name as new category name.
+			# Method sets the color of new material automatically (it can be adjusted any time
+			# later using native SU tools).
 			
 			def add_new_category(new_category_name)
 				return if new_category_name.nil?

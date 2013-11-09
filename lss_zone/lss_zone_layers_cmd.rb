@@ -1,11 +1,10 @@
+# lss_zone_layers_cmd.rb ver. 1.1.2 beta 08-Oct-13
+# The script, which contains a class, wich contains 'Zone Layers' toolbar implementation
+
 # (C) 2013, Links System Software
 # Feedback information
 # E-mail1: designer@ls-software.ru
 # E-mail2: kirill2007_77@mail.ru (search this e-mail to add skype contact)
-
-# lss_zone_layers_cmd.rb ver. 1.0.2 beta 15-Oct-13
-# The script, which contains a class, wich contains 'Zone Layers' toolbar implementation
-
 
 # THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
@@ -14,9 +13,23 @@
 module LSS_Extensions
 	module LSS_Zone_Extension
 		
-		# This class contains 'Zone Layers' toolbar implementation
+		# This class contains 'Zone Layers' toolbar implementation.
 		
 		class LSS_Zone_Layers_Cmd
+		
+			# This method creates 'Zone Layers' toolbar first and adds a command, which
+			# toggles this toolbar visibility, to LSS Zone menu and toolbar.
+			# Then method populates created toolbar with commands, which toggles the following
+			# layers visibility:
+			# - LSS Zone layer (main layer for LSS Zone objects)
+			# - area layer
+			# - ceiling layer
+			# - walls layer
+			# - floor layer
+			# - volume layer
+			# - openings layer
+			# Finally it adds a command, which hides all other layers except related to LSS Zone ones.
+			
 			def initialize
 				zone_layers_toolbar=UI::Toolbar.new($lsszoneStrings.GetString("Zone Layers"))
 				zone_layers_cmd=UI::Command.new($lsszoneStrings.GetString("Zone Layers Toolbar")){
