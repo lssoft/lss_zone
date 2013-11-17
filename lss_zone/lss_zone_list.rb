@@ -51,6 +51,8 @@ module LSS_Extensions
 			attr_accessor :name_aliases
 			# Array of charts attached to selected zone list template.
 			attr_accessor :charts_arr
+			# Array of nested elements names
+			attr_accessor :nested_elements_names
 			
 			# Initialize
 			# - @query_string - string, which contains attribute names mentions prefixed by "@" sign
@@ -71,6 +73,8 @@ module LSS_Extensions
 				@settings_hash=Hash.new
 				@name_aliases=Hash.new
 				@charts_arr=Array.new
+				# Child dialog uses this array for auto-suggest widget
+				@nested_elements_names=Array.new
 			end
 			
 			# This method collects only zone objects from current selection set and
@@ -103,6 +107,86 @@ module LSS_Extensions
 					attr_dict=zone_entity.attribute_dictionary("LSS_Zone_Entity")
 					attr_dict.each_key{|key|
 						attr_hash[key]=attr_dict[key]
+					}
+					# Read information about nested elements. Added in ver. 1.1.2 10-Nov-13.
+					zone_entity.entities.each{|elt|
+						elt_type=elt.get_attribute("LSS_Zone_Element","type")
+						if elt_type=="wall" or elt_type=="floor" or elt_type=="ceiling"
+							elt_faces_arr=elt.entities.to_a.select{|ent| ent.is_a?(Sketchup::Face)}
+							elt_faces_arr.each{|elt_face|
+								if elt_face.material
+									material=elt_face.material.name.to_s
+								else
+									material=""
+								end
+								area=elt_face.area
+								key=elt_type+"_elements"
+								@nested_elements_names<<key if @nested_elements_names.include?(key)==false
+								if attr_hash[key].nil?
+									val=Hash.new
+									val[material]=area
+									attr_hash[key]=val
+								else
+									val=attr_hash[key]
+									old_area=val[material]
+									if old_area
+										new_area=old_area+area
+										val[material]=new_area
+									else
+										val[material]=area
+									end
+									attr_hash[key]=val
+								end
+							}
+						else
+							if elt_type
+								if elt_type.include?("opening")
+									op_faces_arr=elt.entities.to_a.select{|ent| ent.is_a?(Sketchup::Face)}
+									op_face=op_faces_arr[0]
+									area=op_face.area
+									key="openings"
+									@nested_elements_names<<key if @nested_elements_names.include?(key)==false
+									if attr_hash[key].nil?
+										val=Array.new
+										op_name=elt_type
+										val<<[op_name, area]
+									else
+										val=attr_hash[key]
+										op_name=elt_type
+										val<<[op_name, area]
+									end
+									attr_hash[key]=val
+								end
+							else
+								elt_name=nil
+								elt_name=elt.name if elt.respond_to?("name")
+								if elt_name.nil? or elt_name==""
+									if elt.respond_to?("definition")
+										elt_definition=elt.definition
+										elt_name=elt_definition.name
+									end
+								end
+								if elt_name
+									key="nested_elements"
+									@nested_elements_names<<key if @nested_elements_names.include?(key)==false
+									if attr_hash[key].nil?
+										val=Hash.new
+										val[elt_name]=1
+										attr_hash[key]=val
+									else
+										val=attr_hash[key]
+										old_cnt=val[elt_name]
+										if old_cnt
+											new_cnt=old_cnt+1
+											val[elt_name]=new_cnt
+										else
+											val[elt_name]=1
+										end
+										attr_hash[key]=val
+									end
+								end
+							end
+						end
 					}
 					@collected_data<<attr_hash
 					progr_bar.update(i)
@@ -233,7 +317,7 @@ module LSS_Extensions
 											when "volume"
 												new_record[key]+=grp_rec[key]
 											when "string"
-												new_record[key]+=", " + grp_rec[key].to_s if (new_record[key].include?(grp_rec[key].to_s))==false
+												new_record[key]+="; " + grp_rec[key].to_s if (new_record[key].include?(grp_rec[key].to_s))==false
 											when "boolean"
 												new_record[key]="..."
 											else
@@ -294,7 +378,52 @@ module LSS_Extensions
 								vol_str=LSS_Math.new.format_volume(value)
 								value=vol_str
 							else
-								
+								if value.is_a?(Hash) or value.is_a?(Array)
+									val_str=""
+									if key.include?("wall") or key.include?("floor") or key.include?("ceiling")
+										value.each_key{|nested_elt_key|
+											elt_area=value[nested_elt_key]
+											area_str=Sketchup.format_area(elt_area).to_s
+											# Supress square units patch
+											options=Sketchup.active_model.options
+											units_options=options["UnitsOptions"]
+											supress_units=units_options["SuppressUnitsDisplay"]
+											if supress_units
+												if area_str.split(" ")[0]!="~"
+													area_str=area_str.split(" ")[0]
+												else
+													area_str=area_str.split(" ")[1]
+												end
+											end
+											val_str+=nested_elt_key+": "+area_str+"\n"
+										}
+									else
+										if key.include?("opening")
+											value.each{|op_arr|
+												elt_area=op_arr[1]
+												area_str=Sketchup.format_area(elt_area).to_s
+												# Supress square units patch
+												options=Sketchup.active_model.options
+												units_options=options["UnitsOptions"]
+												supress_units=units_options["SuppressUnitsDisplay"]
+												if supress_units
+													if area_str.split(" ")[0]!="~"
+														area_str=area_str.split(" ")[0]
+													else
+														area_str=area_str.split(" ")[1]
+													end
+												end
+												val_str+=op_arr[0]+": "+area_str+"\n"
+											}
+										else
+											value.each_key{|nested_elt_key|
+												elt_cnt=value[nested_elt_key].to_s
+												val_str+=nested_elt_key+": "+elt_cnt+"\n"
+											}
+										end
+									end
+									value=val_str
+								end
 						end
 						record[key]=value
 					}

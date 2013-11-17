@@ -244,6 +244,15 @@ module LSS_Extensions
 						end
 					}
 				}
+				# Add nested elements names. Added in ver. 1.1.2 10-Nov-13.
+				nested_elements_names=@parent.nested_elements_names
+				if nested_elements_names
+					if nested_elements_names.length>0
+						nested_elements_names.each{|elt_name|
+							@suggest_field_names<<elt_name
+						}
+					end
+				end
 				js_command="clear_suggest_fields()"
 				@list_template_dial.execute_script(js_command)
 				@suggest_field_names.each{|field_name|

@@ -354,6 +354,10 @@ function pick_face() {
 	callRuby("pick_face");
 }
 
+function int_pt() {
+	callRuby("pick_int_pt");
+}
+
 function specify_height() {
 	callRuby("specify_height");
 }

@@ -65,20 +65,27 @@ function send_query_string(txt_box){
 }
 
 function query_str_key_up(txt_box){
-	// if (event.keyCode==32) {
-		send_query_string(txt_box);
-	// }
+	// Suppress enter key pressing and get rid of new line and carriage return characters
+	// Added in ver. 1.1.2 12-Nov-13.
+	if(event.keyCode == 13)
+	{
+		txt_box.value=txt_box.value.replace(/[\n\r]/g, "");
+		return false;
+	}
+	send_query_string(txt_box);
 }
 
 // Added in ver. 1.0.1 08-Oct-13
 function setCaretPosition(elemId, caretPos) {
     var elem = document.getElementById(elemId);
     if(elem != null) {
+		// IE support
         if(elem.createTextRange) {
             var range = elem.createTextRange();
             range.move('character', caretPos);
             range.select();
         }
+		// Other browsers
         else {
             if(elem.selectionStart) {
                 elem.focus();
@@ -96,12 +103,13 @@ function get_caret_pos(txt_box) {
 	// IE Support
 	if (document.selection) {
 		txt_box.focus ();
-		// To get cursor position, get empty selection range
-		var sel = document.selection.createRange ();
-		// Move selection start to 0 position
-		sel.moveStart ('character', -txt_box.value.length);
-		// The caret position is selection length
-		caret_pos = sel.text.length;
+		// Changed in ver. 1.1.2 12-Nov-13.
+		var range=document.selection.createRange();
+		var whole_range=document.body.createTextRange();
+		var txt_box_range=txt_box.createTextRange();
+		var start_pos=whole_range.text.lastIndexOf(txt_box_range.text);
+		range.moveStart("character", -whole_range.text.length);
+		caret_pos=range.text.length-start_pos;
 	}
 	// Firefox support
 	else if (txt_box.selectionStart || txt_box.selectionStart == '0') {

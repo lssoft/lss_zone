@@ -1,4 +1,4 @@
-# lss_zone_tool.rb ver. 1.1.2 beta 09-Nov-13
+# lss_zone_tool.rb ver. 1.2.0 beta 17-Nov-13
 # The main file, which contains LSS Zone Tool implementation.
 
 # (C) 2013, Links System Software
@@ -77,6 +77,8 @@ module LSS_Extensions
 				@cut_opening_cur_id=UI.create_cursor(cut_opening_path, 0, 0)
 				default_path=Sketchup.find_support_file("default_cur.png", "Plugins/lss_zone/cursors/")
 				@default_cur_id=UI.create_cursor(default_path, 0, 0)
+				pick_int_pt_path=Sketchup.find_support_file("pick_int_pt_cur.png", "Plugins/lss_zone/cursors/")
+				@pick_int_pt_cur_id=UI.create_cursor(pick_int_pt_path, 13, 10)
 				@pick_state=nil # Indicates cursor type while the tool is active
 				
 				# Identification
@@ -142,11 +144,15 @@ module LSS_Extensions
 				
 				# Drawing helpers
 				@const_pts_arr=Array.new
+				
+				# Internal point check height
+				@int_pt_chk_hgt=100.0
 			end
 			
 			# Set cursor to indicate current tool's state:
 			# - 'pick_face' state allows to pick any face to use its contour as a contour of a future zone
 			# - 'draw_contour' state allows to draw contour of a zone vertex-by-vertex
+			# - 'pick_int_pt' state allows to pick an internal point inside a room (added in ver. 1.2.0, 13-Nov-13)
 			# - 'specify_height' state allows to set zone's height
 			# - 'eye_dropper' state allows to pick a material by single-clicking on a face in an active model
 			# - 'over_obj' state becomes active when cursor is over nodal point of zone's contour or center point of a segment
@@ -164,6 +170,9 @@ module LSS_Extensions
 					else
 						UI.set_cursor(@draw_contour_cur_id)
 					end
+					# Added in ver. 1.2.0, 13-Nov-13.
+					when "pick_int_pt"
+					UI.set_cursor(@pick_int_pt_cur_id)
 					when "specify_height"
 					UI.set_cursor(@specify_height_cur_id)
 					when "eye_dropper"
@@ -345,6 +354,18 @@ module LSS_Extensions
 						end
 						
 						@pick_state="draw_contour"
+						self.onSetCursor
+					end
+					if action_name=="pick_int_pt"
+						self.small_reset
+						@ip.clear
+						@ip1.clear
+						if( view )
+							view.tooltip = nil
+							view.invalidate
+						end
+						
+						@pick_state="pick_int_pt"
 						self.onSetCursor
 					end
 					if action_name.split(",")[1]=="floor_eye_dropper"
@@ -1156,6 +1177,9 @@ module LSS_Extensions
 							self.send_settings2dlg
 							self.refresh_mid_points
 						end
+					# Added in ver. 1.2.0, 13-Nov-13.
+					when "pick_int_pt"
+						self.create_zone_from_int_pt(@ip.position)
 					when "specify_height"
 						if @ip.position.z>@floor_level.to_f
 							@height=@ip.position.z-@floor_level.to_f
@@ -1280,6 +1304,18 @@ module LSS_Extensions
 				@ip_prev.copy!(@ip)
 			end
 			
+			# This method makes zone contour from a boundary of objects, which surround a given point in an active model.
+			# Added in ver. 1.2.0 17-Nov-13.
+			
+			def create_zone_from_int_pt(int_pt)
+				# 
+				@floor_level=int_pt.z
+				@nodal_points=Array.new
+				@trace_cont=LSS_Zone_Trace_Cont.new(int_pt, @int_pt_chk_hgt)
+				@trace_cont.nodal_points=@nodal_points
+				@trace_cont.trace
+			end
+			
 			# This method resets tool's parameters without resetting zone settings.
 			
 			def small_reset
@@ -1315,6 +1351,19 @@ module LSS_Extensions
 			
 			def recreate_zone
 				@model.start_operation($lsszoneStrings.GetString("Recreate Zone"), true)
+					
+					# Read custom attributes attached to a zone if any and store to a dicts_hash. Added in ver. 1.1.2 11-Nov-13.
+					attr_dicts=@selected_zone.attribute_dictionaries
+					dicts_hash=Hash.new
+					attr_dicts.each{|dict|
+						setting_hash=Hash.new
+						dict.each_key{|key|
+							val=dict[key]
+							setting_hash[key]=val
+						}
+						dicts_hash[dict.name]=setting_hash
+					}
+					
 					@selected_zone.erase!
 					@selected_zone=nil
 					@zone_under_cur=nil
@@ -1325,7 +1374,30 @@ module LSS_Extensions
 					self.create_zone_entity
 					# If the optional parameter==false, then "create_zone" method does not perform @model.start_operation
 					@zone_entity.create_zone(false)
-					@selected_zone=@zone_entity.zone_group
+					
+					new_zone_group=@zone_entity.zone_group
+					
+					# Attach back custom attributes to a new_zone_group. Added in ver. 1.1.2 11-Nov-13.
+					dicts_hash.each_key{|dict_name|
+						if new_zone_group.attribute_dictionaries[dict_name]
+							dict_hash=dicts_hash[dict_name]
+							dict_hash.each_key{|key|
+								chk_val=new_zone_group.get_attribute(dict_name, key)
+								if chk_val.nil?
+									val=dict_hash[key]
+									new_zone_group.set_attribute(dict_name, key, val)
+								end
+							}
+						else
+							dict_hash=dicts_hash[dict_name]
+							dict_hash.each_key{|key|
+								val=dict_hash[key]
+								new_zone_group.set_attribute(dict_name, key, val)
+							}
+						end
+					}
+					
+					@selected_zone=new_zone_group
 					self.read_settings_from_zone
 					self.send_settings2dlg
 					@pick_state=nil
@@ -2045,6 +2117,7 @@ module LSS_Extensions
 					end
 					# Delete particular nodal point of selected zone
 					if @pick_state=="over_obj"
+						@ip.clear # This is incredibly important statement. If it is missing, then recreation of a zone causes SU crash. Fixed in ver. 1.1.2 13-Nov-13.
 						if @selected_zone
 							if @over_pt_ind
 								del_pt=@nodal_points.delete_at(@over_pt_ind)
@@ -2076,6 +2149,7 @@ module LSS_Extensions
 					
 					# Delete opening under cursor
 					if @pick_state.nil?
+						@ip.clear # This is incredibly important statement. If it is missing, then recreation of a zone causes SU crash. Fixed in ver. 1.1.2 13-Nov-13.
 						if @opening_under_cur_ind
 							@openings_arr.delete_at(@opening_under_cur_ind)
 							@opening_under_cur_ind=nil
@@ -2104,6 +2178,7 @@ module LSS_Extensions
 							self.create_zone_entity
 							if @zone_entity
 								if @selected_zone
+									@ip.clear # This is incredibly important statement. If it is missing, then recreation of a zone causes SU crash. Fixed in ver. 1.1.2 13-Nov-13.
 									self.recreate_zone
 								else
 									@zone_entity.create_zone
@@ -2181,6 +2256,7 @@ module LSS_Extensions
 						@openings_arr[@openings_arr.length-1]=@new_opening
 						@new_opening=nil
 						@over_first_pt=false
+						@ip.clear # This is incredibly important statement. If it is missing, then recreation of a zone causes SU crash. Fixed in ver. 1.1.2 13-Nov-13.
 						self.recreate_zone
 						@pick_state=@last_state
 						self.onSetCursor
@@ -2283,6 +2359,7 @@ module LSS_Extensions
 								@openings_arr[@openings_arr.length-1]=@new_opening
 								@new_opening=nil
 								@over_first_pt=false
+								@ip.clear # This is incredibly important statement. If it is missing, then recreation of a zone causes SU crash. Fixed in ver. 1.1.2 13-Nov-13.
 								self.recreate_zone
 								@pick_state=@last_state
 								@last_state=nil
@@ -2315,6 +2392,7 @@ module LSS_Extensions
 							@model.commit_operation
 							if @selected_zone
 								self.read_settings_from_zone
+								@ip.clear # This is incredibly important statement. If it is missing, then recreation of a zone causes SU crash. Fixed in ver. 1.1.2 13-Nov-13.
 								self.recreate_zone
 							end
 						}
@@ -2388,6 +2466,12 @@ module LSS_Extensions
 					@new_opening=nil
 					@openings_arr.pop
 					view.invalidate
+				end
+				# Added in ver. 1.2.0 17-Nov-13.
+				if @pick_state=="pick_int_pt"
+					if @trace_cont
+						@trace_cont.stop_tracing
+					end
 				end
 				self.onSetCursor
 				view.invalidate

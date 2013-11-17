@@ -20,6 +20,9 @@ module LSS_Extensions
 		
 		#loads the script, which adds some utility classes
 		require 'lss_zone/lss_zone_utils.rb'
+		
+		#loads the script, which contains contour tracing implementation
+		require 'lss_zone/lss_zone_trace_cont.rb'
 
 		#loads the script, which adds 'LSS Zone' command to the menu and to the toolbar
 		require 'lss_zone/lss_zone_tool.rb'
