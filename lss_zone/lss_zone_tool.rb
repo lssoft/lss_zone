@@ -147,6 +147,9 @@ module LSS_Extensions
 				
 				# Internal point check height
 				@int_pt_chk_hgt=100.0
+				
+				# Handler to trace contour
+				@trace_cont=nil
 			end
 			
 			# Set cursor to indicate current tool's state:
@@ -364,7 +367,9 @@ module LSS_Extensions
 							view.tooltip = nil
 							view.invalidate
 						end
-						
+						@trace_cont=LSS_Zone_Trace_Cont.new
+						@nodal_points=Array.new
+						@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
 						@pick_state="pick_int_pt"
 						self.onSetCursor
 					end
@@ -866,6 +871,21 @@ module LSS_Extensions
 						end
 						@nodal_points[@nodal_points.length-1]=pt
 						self.refresh_mid_points
+					# New handler added in ver. 1.2.0 17-Nov-13.
+					when "pick_int_pt"
+						if @trace_cont
+							if @trace_cont.is_tracing==false
+								if @trace_cont.is_ready
+									@last_state=@pick_state
+									@pick_state=nil
+									self.onSetCursor
+									@ready4apply=true
+								else
+									@trace_cont.int_pt=@ip.position
+									@trace_cont.init_check
+								end
+							end
+						end
 					when "specify_height"
 						if @ip.position.z>@floor_level.to_f
 							@height=@ip.position.z-@floor_level.to_f
@@ -1308,11 +1328,10 @@ module LSS_Extensions
 			# Added in ver. 1.2.0 17-Nov-13.
 			
 			def create_zone_from_int_pt(int_pt)
-				# 
 				@floor_level=int_pt.z
-				@nodal_points=Array.new
-				@trace_cont=LSS_Zone_Trace_Cont.new(int_pt, @int_pt_chk_hgt)
-				@trace_cont.nodal_points=@nodal_points
+				@trace_cont.int_pt=int_pt
+				@trace_cont.init_check
+				@trace_cont.aperture_pts=@aperture_pts
 				@trace_cont.trace
 			end
 			
@@ -1340,6 +1359,7 @@ module LSS_Extensions
 					@model.entities.erase_entities(@const_pts_arr)
 					@const_pts_arr=Array.new
 				end
+				@trace_cont=nil
 			end
 			
 			# This method erases selected zone (selected by LSS Zone tool, not by native SU selection tool),
@@ -1592,6 +1612,44 @@ module LSS_Extensions
 					view.line_width=1
 					view.drawing_color="black"
 				end
+				if @pick_state=="pick_int_pt"
+					self.draw_pick_int_pt(view)
+				end
+			end
+			
+			def draw_pick_int_pt(view)
+				return if @trace_cont.nil?
+				@nodal_points=@trace_cont.nodal_points
+				if @trace_cont.is_tracing
+					view.line_width=1
+				else
+					view.line_width=2
+				end
+				init_pt=@trace_cont.init_pt
+				return if init_pt.nil?
+				chk_pt=@trace_cont.chk_pt
+				int_pt=@trace_cont.int_pt
+				view.line_stipple="."
+				view.drawing_color="black"
+				view.draw_line(int_pt, chk_pt)
+				view.draw_line(chk_pt, init_pt)
+				view.line_stipple=""
+				pt_size=6; pt_type=1; pt_col="black"
+				view.draw_points(chk_pt, pt_size, pt_type, pt_col)
+				pt_size=6; pt_type=1; pt_col="red"
+				view.draw_points(init_pt, pt_size, pt_type, pt_col)
+				aperture_pts=@trace_cont.aperture_pts
+				return if aperture_pts.nil?
+				return if aperture_pts.length==0
+				ap_pts2d=Array.new
+				aperture_pts.each{|pt|
+					ap_pts2d<<view.screen_coords(pt)
+				}
+				ap_pts2d<<view.screen_coords(aperture_pts.first)
+				view.line_width=1
+				view.drawing_color="black"
+				view.draw2d(GL_LINE_STRIP, ap_pts2d)
+				
 			end
 			
 			# This method draws contours of zone's openings and shows plane of new opening, which is cut at the moment. 
@@ -2470,7 +2528,12 @@ module LSS_Extensions
 				# Added in ver. 1.2.0 17-Nov-13.
 				if @pick_state=="pick_int_pt"
 					if @trace_cont
-						@trace_cont.stop_tracing
+						if @trace_cont.is_tracing
+							@trace_cont.stop_tracing
+						else
+							@pick_state=nil
+							self.small_reset
+						end
 					end
 				end
 				self.onSetCursor
