@@ -1,4 +1,4 @@
-# lss_zone_trace_cont.rb ver. 1.2.0 alpha 17-Nov-13
+# lss_zone_trace_cont.rb ver. 1.2.0 alpha 18-Nov-13
 # The script, which contains a class with contour tracing implementation.
 
 # (C) 2013, Links System Software
@@ -33,7 +33,7 @@ module LSS_Extensions
 				@chk_pt.z=@floor_level+@int_pt_chk_hgt.to_f
 				@init_pt=nil
 				@init_ent=nil
-				@aperture_size=2.0
+				@aperture_size=4.0
 				@model=Sketchup.active_model
 				@apertrue_pts=Array.new
 				@is_tracing=false
@@ -109,8 +109,12 @@ module LSS_Extensions
 				new_ent=new_res[1].last
 				if new_ent==@init_ent and new_init_pt.distance(@init_pt)<=@aperture_size and first_step==false
 					UI.stop_timer(@tracing_timer_id)
+					@nodal_points.pop
 					@is_tracing=false
 					@is_ready=true
+					view=Sketchup.active_model.active_view
+					view.invalidate
+					return
 				end
 				if new_ent!=@prev_ent
 					if new_ent.is_a?(Sketchup::Face)
@@ -128,6 +132,8 @@ module LSS_Extensions
 							nodal_pt=Geom::Point3d.new(new_init_pt)
 						end
 						nodal_pt.z=@floor_level
+						@nodal_points.pop
+						@nodal_points<<nodal_pt
 						@nodal_points<<nodal_pt
 						@move_res=self.check_point(new_init_pt, new_norm, @prev_ent)
 						@prev_init_pt=Geom::Point3d.new(new_init_pt)

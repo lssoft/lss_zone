@@ -1,4 +1,4 @@
-# lss_zone_tool.rb ver. 1.2.0 beta 17-Nov-13
+# lss_zone_tool.rb ver. 1.2.0 beta 18-Nov-13
 # The main file, which contains LSS Zone Tool implementation.
 
 # (C) 2013, Links System Software
