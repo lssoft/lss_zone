@@ -1,0 +1,72 @@
+<html>
+<head>
+<title>Settings</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="lss_zone.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<script type="text/javascript" src="autosuggest/autosuggest.js"></script>
+</head>
+<script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
+<body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<table id="zone_settings_table" class="settings_list">
+		<tbody id="settings_body">
+			<tr>
+				<td class="info_img_cell">
+					<img src="images/buttons/settings_32.png" align="bottom"></div>
+				</td>
+				<td class="tbl_hdr" colspan="2">
+					&nbsp;Settings
+				</td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Aperture size</td>
+				<td class="value_cell"><input type="text" id="aperture_size" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Check height</td>
+				<td class="value_cell"><input type="text" id="int_pt_chk_hgt" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Minimal wall offset</td>
+				<td class="value_cell"><input type="text" id="min_wall_offset" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Opening tracing offset</td>
+				<td class="value_cell"><input type="text" id="op_trace_offset" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Trace openings</td>
+				<td class="value_cell"><input type="checkbox" id="trace_openings" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="dock_right"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell">Use materials</td>
+				<td class="value_cell"><input type="checkbox" id="use_materials" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="dock_right"></td>
+			</tr>
+			<tr class="splitter_row">
+				<td class="splitter_img_cell">
+					&nbsp;
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+	<table id="bottom_tbl" class="bottom_tbl">
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td align="right">
+				<input type="button" onclick="apply_settings()" value="Apply" />
+				<input type="button" onclick="cancel_changes()" value="Cancel"/>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

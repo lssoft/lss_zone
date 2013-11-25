@@ -1,4 +1,4 @@
-# lss_zone_tool.rb ver. 1.2.0 beta 18-Nov-13
+# lss_zone_tool.rb ver. 1.2.0 alpha 24-Nov-13
 # The main file, which contains LSS Zone Tool implementation.
 
 # (C) 2013, Links System Software
@@ -150,6 +150,17 @@ module LSS_Extensions
 				
 				# Handler to trace contour
 				@trace_cont=nil
+				
+				sample_size=12.0
+				pt1=Geom::Point3d.new(sample_size, sample_size, 0)
+				pt2=Geom::Point3d.new(sample_size, -sample_size, 0)
+				pt3=Geom::Point3d.new(-sample_size, -sample_size, 0)
+				pt4=Geom::Point3d.new(-sample_size, sample_size, 0)
+				# Array of points representing square (for material color sample)
+				@square_pts=[pt1, pt2, pt3, pt4]
+				
+				@picked_floor_mat=nil
+				@picked_wall_mat=nil
 			end
 			
 			# Set cursor to indicate current tool's state:
@@ -299,6 +310,8 @@ module LSS_Extensions
 				@settings_hash.each_key{|key|
 					Sketchup.write_default("LSS_Zone", key, @settings_hash[key][0].to_s)
 				}
+				# Trace contour settings
+				Sketchup.write_default("LSS Zone Defaults", "int_pt_chk_hgt", @int_pt_chk_hgt)
 			end
 			
 			# This method creates 'LSS Zone' web-dialog.
@@ -328,6 +341,12 @@ module LSS_Extensions
 								@zone_entity.create_zone
 								self.small_reset
 								@pick_state=@last_state
+								# Special case handling added in ver. 1.2.0 19-Nov-13.
+								if @last_state=="pick_int_pt"
+									@trace_cont=LSS_Zone_Trace_Cont.new
+									@nodal_points=Array.new
+									@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
+								end
 								self.onSetCursor
 								@last_state=nil
 								self.increment_number
@@ -368,10 +387,13 @@ module LSS_Extensions
 							view.invalidate
 						end
 						@trace_cont=LSS_Zone_Trace_Cont.new
+						self.set_trace_cont_defaults
 						@nodal_points=Array.new
 						@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
 						@pick_state="pick_int_pt"
 						self.onSetCursor
+						Sketchup.vcb_label=$lsszoneStrings.GetString("Offset height: ")
+						Sketchup.vcb_value=Sketchup.format_length(@int_pt_chk_hgt.to_f)
 					end
 					if action_name.split(",")[1]=="floor_eye_dropper"
 						@pick_state="eye_dropper"
@@ -492,6 +514,22 @@ module LSS_Extensions
 				}
 			end
 			
+			def set_trace_cont_defaults
+				@int_pt_chk_hgt=Sketchup.read_default("LSS Zone Defaults","int_pt_chk_hgt", 100.0)
+				@aperture_size=Sketchup.read_default("LSS Zone Defaults","aperture_size", 4.0)
+				@trace_openings=Sketchup.read_default("LSS Zone Defaults","trace_openings", "true")
+				@use_materials=Sketchup.read_default("LSS Zone Defaults","use_materials", "true")
+				@min_wall_offset=Sketchup.read_default("LSS Zone Defaults","min_wall_offset", 12.0)
+				@op_trace_offset=Sketchup.read_default("LSS Zone Defaults","op_trace_offset", 2.0)
+				@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
+				@trace_cont.aperture_size=@aperture_size
+				@trace_cont.trace_openings=@trace_openings
+				@trace_cont.use_materials=@use_materials
+				@trace_cont.min_wall_offset=@min_wall_offset
+				@trace_cont.op_trace_offset=@op_trace_offset
+				@trace_cont.room_height=@height if @zone_type=="room"
+			end
+			
 			# This method checks if a category name passed as an argument is already present in an active model's
 			# dictionary called 'LSS Zone Categories' and returns 'true' if no or 'false' if yes.
 			# Usually this method is called after changing 'Category' field in 'LSS Zone' dialog and this
@@ -609,6 +647,19 @@ module LSS_Extensions
 				
 				@zone_entity.zone_type=@zone_type
 				@zone_entity.floors_count=@floors_count
+				
+				# Internal point section (added in ver. 1.2.0 19-Nov-13)
+				if @trace_cont or @int_pt_crds
+					@zone_entity.int_pt_chk_hgt=@int_pt_chk_hgt
+					@zone_entity.aperture_size=@aperture_size
+					@zone_entity.trace_openings=@trace_openings
+					@zone_entity.use_materials=@use_materials
+					if @trace_cont.nil?
+						@zone_entity.int_pt_crds=@int_pt_crds
+					else
+						@zone_entity.int_pt_crds=@trace_cont.int_pt.to_a.join("|")
+					end
+				end
 			end
 			
 			# This method is a must have for each tool.
@@ -1333,6 +1384,13 @@ module LSS_Extensions
 				@trace_cont.init_check
 				@trace_cont.aperture_pts=@aperture_pts
 				@trace_cont.trace
+				if @trace_cont.use_materials
+					@floor_material=@picked_floor_mat
+					@wall_material=@picked_wall_mat
+					self.send_settings2dlg
+					js_command = "refresh_colors()"
+					@zone_dialog.execute_script(js_command) if js_command
+				end
 			end
 			
 			# This method resets tool's parameters without resetting zone settings.
@@ -1360,6 +1418,14 @@ module LSS_Extensions
 					@const_pts_arr=Array.new
 				end
 				@trace_cont=nil
+				# Tracing settings
+				@int_pt_chk_hgt=Sketchup.read_default("LSS Zone Defaults", "int_pt_chk_hgt", 100.0)
+				@aperture_size=Sketchup.read_default("LSS Zone Defaults", "aperture_size", 4.0)
+				@trace_openings=Sketchup.read_default("LSS Zone Defaults", "trace_openings", "true")
+				@use_materials=Sketchup.read_default("LSS Zone Defaults", "use_materials", "true")
+				
+				@picked_floor_mat=nil
+				@picked_wall_mat=nil
 			end
 			
 			# This method erases selected zone (selected by LSS Zone tool, not by native SU selection tool),
@@ -1383,6 +1449,26 @@ module LSS_Extensions
 						}
 						dicts_hash[dict.name]=setting_hash
 					}
+					
+					# Read information about internal point (added in ver. 1.2.0 19-Nov-13)
+					@int_pt_crds=""
+					comp_inst_arr=@selected_zone.entities.to_a.select{|ent| (ent.is_a?(Sketchup::ComponentInstance))}
+					if comp_inst_arr.length>0
+						int_pt_inst=comp_inst_arr.select{|ent| (ent.definition.name=="lss_zone_int_pt")}[0]
+						if int_pt_inst
+							pos=int_pt_inst.bounds.min.transform(@selected_zone.transformation)
+							@int_pt_crds=pos.to_a.join("|")
+							@int_pt_chk_hgt=@selected_zone.get_attribute("LSS_Zone_Entity", "int_pt_chk_hgt")
+							@aperture_size=@selected_zone.get_attribute("LSS_Zone_Entity", "aperture_size")
+							@trace_openings=@selected_zone.get_attribute("LSS_Zone_Entity", "trace_openings")
+							@use_materials=@selected_zone.get_attribute("LSS_Zone_Entity", "use_materials")
+							# Read default in case if @zone_grop does not have corresponding attributes
+							@int_pt_chk_hgt=Sketchup.read_default("LSS Zone Defaults", "int_pt_chk_hgt", 100.0) if @int_pt_chk_hgt.nil?
+							@aperture_size=Sketchup.read_default("LSS Zone Defaults", "aperture_size", 100.0) if @aperture_size.nil?
+							@trace_openings=Sketchup.read_default("LSS Zone Defaults", "trace_openings", 100.0) if @trace_openings.nil?
+							@use_materials=Sketchup.read_default("LSS Zone Defaults", "use_materials", 100.0) if @use_materials.nil?
+						end
+					end
 					
 					@selected_zone.erase!
 					@selected_zone=nil
@@ -1612,6 +1698,13 @@ module LSS_Extensions
 					view.line_width=1
 					view.drawing_color="black"
 				end
+				if @trace_cont
+					if @trace_cont.openings_arr
+						if @trace_cont.openings_arr.length>0
+							self.draw_openings(view)
+						end
+					end
+				end
 				if @pick_state=="pick_int_pt"
 					self.draw_pick_int_pt(view)
 				end
@@ -1620,6 +1713,7 @@ module LSS_Extensions
 			def draw_pick_int_pt(view)
 				return if @trace_cont.nil?
 				@nodal_points=@trace_cont.nodal_points
+				@openings_arr=@trace_cont.openings_arr
 				if @trace_cont.is_tracing
 					view.line_width=1
 				else
@@ -1641,15 +1735,66 @@ module LSS_Extensions
 				aperture_pts=@trace_cont.aperture_pts
 				return if aperture_pts.nil?
 				return if aperture_pts.length==0
+				if @trace_cont.use_materials=="true"
+					self.draw_floor_wall_mats(int_pt, init_pt, view)
+				end
 				ap_pts2d=Array.new
 				aperture_pts.each{|pt|
 					ap_pts2d<<view.screen_coords(pt)
+					# view.draw_text(view.screen_coords(pt), aperture_pts.index(pt).to_s)
 				}
 				ap_pts2d<<view.screen_coords(aperture_pts.first)
 				view.line_width=1
 				view.drawing_color="black"
 				view.draw2d(GL_LINE_STRIP, ap_pts2d)
-				
+			end
+			
+			def draw_floor_wall_mats(floor_pt, wall_pt, view)
+				view.line_width=1
+				floor_tr=Geom::Transformation.new(floor_pt)
+				wall_norm=@trace_cont.norm
+				if wall_norm
+					wall_pos_tr=Geom::Transformation.new(wall_pt)
+					wall_norm_tr=Geom::Transformation.new(Geom::Point3d.new(0,0,0), wall_norm)
+					wall_mat=@trace_cont.wall_mat
+				end
+				floor_pts=Array.new
+				wall_pts=Array.new
+				@square_pts.each{|pt|
+					floor_pts<<view.screen_coords(pt.transform(floor_tr))
+					wall_pts<<view.screen_coords(pt.transform(wall_norm_tr).transform(wall_pos_tr)) if wall_norm
+				}
+				ph=view.pick_helper
+				floor_xy=view.screen_coords(floor_pt)
+				ph.do_pick(floor_xy.x,floor_xy.y)
+				floor_mat=nil
+				ph.all_picked.each_index{|ind|
+					ent=ph.leaf_at(ind)
+					if ent.respond_to?("material")
+						floor_mat=ent.material
+						break
+					end
+				}
+				if floor_mat
+					col=floor_mat.color
+					view.drawing_color=col
+					view.draw2d(GL_QUADS, floor_pts)
+				end
+				floor_pts<<floor_pts.first
+				view.drawing_color="black"
+				view.draw2d(GL_LINE_STRIP, floor_pts)
+				if wall_norm
+					if wall_mat
+						col=wall_mat.color
+						view.drawing_color=col
+						view.draw2d(GL_QUADS, wall_pts)
+					end
+					wall_pts<<wall_pts.first
+					view.drawing_color="black"
+					view.draw2d(GL_LINE_STRIP, wall_pts)
+				end
+				@picked_floor_mat=floor_mat.name if floor_mat
+				@picked_wall_mat=wall_mat.name if wall_mat and wall_norm
 			end
 			
 			# This method draws contours of zone's openings and shows plane of new opening, which is cut at the moment. 
@@ -1671,7 +1816,7 @@ module LSS_Extensions
 					end
 				}
 				if openings2d.length>0
-					view.line_width=4
+					view.line_width=6
 					view.drawing_color="black"
 					openings2d.each_index{|ind|
 						pts2d=openings2d[ind]
@@ -1849,7 +1994,11 @@ module LSS_Extensions
 				view.line_width=3
 				view.draw2d(GL_LINE_STRIP, @floor_pts2d)
 				@triangles=nil; tri_took_place=false
-				if (@nodal_points!=@nodal_points1 and @show_geom_summary and @over_first_pt==false and @nodal_points.length>2) or @pick_state=="pick_face"
+				is_tracing=false
+				if @trace_cont
+					is_tracing=true if @trace_cont.is_tracing
+				end
+				if (@nodal_points!=@nodal_points1 and @show_geom_summary and @over_first_pt==false and @nodal_points.length>2 and is_tracing==false) or @pick_state=="pick_face"
 					tri_took_place=true
 					@triangles=LSS_Geom.new.triangulate_poly(@nodal_points)
 					@nodal_points1=Array.new(@nodal_points)
@@ -2096,23 +2245,45 @@ module LSS_Extensions
 							if pts.length>1
 								len=nil
 								len=Sketchup.parse_length(text)
-								prev_pt=pts[pts.length-2]
-								curr_pt=pts[pts.length-1]
-								vec=prev_pt.vector_to(curr_pt)
-								vec.length=len
-								new_pt=prev_pt.offset(vec)
-								pts.pop
-								pts<<new_pt
-								pts<<curr_pt
-								@new_opening["points"]=pts
-								@openings_arr[@openings_arr.length-1]=@new_opening
-								view.invalidate
-								const_pt=@model.entities.add_cpoint(new_pt)
-								@const_pts_arr<<const_pt
-								scr_pt=view.screen_coords(new_pt)
-								@ip_prev.pick(view,scr_pt.x, scr_pt.y)
+								if len # Condition added in ver. 1.2.0 19-Nov-13
+									if len>0 # Condition added in ver. 1.2.0 19-Nov-13
+										prev_pt=pts[pts.length-2]
+										curr_pt=pts[pts.length-1]
+										vec=prev_pt.vector_to(curr_pt)
+										vec.length=len
+										new_pt=prev_pt.offset(vec)
+										pts.pop
+										pts<<new_pt
+										pts<<curr_pt
+										@new_opening["points"]=pts
+										@openings_arr[@openings_arr.length-1]=@new_opening
+										view.invalidate
+										const_pt=@model.entities.add_cpoint(new_pt)
+										@const_pts_arr<<const_pt
+										scr_pt=view.screen_coords(new_pt)
+										@ip_prev.pick(view,scr_pt.x, scr_pt.y)
+									end
+								end
 							end
 						end
+					when "pick_int_pt"
+						if @trace_cont
+							if @trace_cont.is_tracing
+								@trace_cont.stop_tracing
+							end
+							hgt=Sketchup.parse_length(text)
+							if hgt
+								@int_pt_chk_hgt=hgt
+							end
+							@trace_cont=LSS_Zone_Trace_Cont.new
+							@nodal_points=Array.new
+							@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
+							@trace_cont.int_pt=@ip.position
+							@trace_cont.init_check
+							view.invalidate
+						end
+					else
+					# Default pick state handling
 				end
 			end
 			
@@ -2242,6 +2413,11 @@ module LSS_Extensions
 									@zone_entity.create_zone
 									self.small_reset
 									@pick_state=@last_state
+									if @last_state=="pick_int_pt"
+										@trace_cont=LSS_Zone_Trace_Cont.new
+										@nodal_points=Array.new
+										@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
+									end
 									self.onSetCursor
 									@last_state=nil
 									self.increment_number

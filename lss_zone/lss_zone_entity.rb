@@ -1,4 +1,4 @@
-# lss_zone_entity.rb ver. 1.1.2 beta 07-Nov-13
+# lss_zone_entity.rb ver. 1.2.0 alpha 19-Nov-13
 # This file contains LSS_Zone_Entity class, LSS_Element_Group class and LSS_Volume_Group class.
 # LSS_Zone_Entity class is the main one. It is actively used by other methods.
 # LSS_Element_Group and LSS_Volume_Group are service classes and #create_zone method
@@ -65,6 +65,15 @@ module LSS_Extensions
 			# Openings
 			attr_accessor :openings_arr
 			
+			# Trace contour settings (added in ver. 1.2.0 19-Nov-13)
+			attr_accessor :int_pt_chk_hgt
+			attr_accessor :aperture_size
+			attr_accessor :trace_openings
+			attr_accessor :use_materials
+			attr_accessor :min_wall_offset
+			attr_accessor :op_trace_offset
+			attr_accessor :int_pt_crds
+			
 			# Result
 			attr_accessor :zone_group
 			
@@ -114,6 +123,14 @@ module LSS_Extensions
 				@zone_type="room"
 				# Box type settings
 				@floors_count=1
+				# Trace contour settings
+				@int_pt_chk_hgt=100.0
+				@aperture_size=4.0
+				@min_wall_offset=5.0
+				@op_trace_offset=2.0
+				@trace_openings="true"
+				@use_materials="true"
+				@int_pt_crds=""
 			
 				@model=Sketchup.active_model
 				@entities=@model.active_entities
@@ -362,6 +379,31 @@ module LSS_Extensions
 					
 					# Assign name to group. Added in ver. 1.1.0 22-Oct-13.
 					@zone_group.name="LSS Zone"
+					
+					# Add internal point in case if internal point coordinates are detected
+					if @int_pt_crds
+						if @int_pt_crds!=""
+							definitions=@model.definitions
+							int_pt_path=Sketchup.find_support_file("lss_zone_int_pt.skp","Plugins/lss_zone/support/")
+							int_pt_def=definitions.load(int_pt_path)
+							crds_arr=@int_pt_crds.split("|")
+							crds_arr.map!{|crd| crd.to_f}
+							pos=Geom::Point3d.new(crds_arr)
+							pos_tr=Geom::Transformation.new(pos)
+							int_pt_inst=@zone_group.entities.add_instance(int_pt_def, pos_tr)
+							int_pt_layer=@zone_layers.int_pt_layer
+							@zone_layers.create_layers if int_pt_layer.nil?
+							int_pt_layer=@zone_layers.int_pt_layer
+							int_pt_inst.layer=int_pt_layer
+						end
+						@zone_group.set_attribute("LSS_Zone_Entity", "int_pt_chk_hgt", @int_pt_chk_hgt)
+						@zone_group.set_attribute("LSS_Zone_Entity", "aperture_size", @aperture_size)
+						@zone_group.set_attribute("LSS_Zone_Entity", "min_wall_offset", @min_wall_offset)
+						@zone_group.set_attribute("LSS_Zone_Entity", "op_trace_offset", @op_trace_offset)
+						@zone_group.set_attribute("LSS_Zone_Entity", "trace_openings", @trace_openings)
+						@zone_group.set_attribute("LSS_Zone_Entity", "use_materials", @use_materials)
+						@zone_group.set_attribute("LSS_Zone_Entity", "int_pt_crds", @int_pt_crds)
+					end
 					
 				@model.commit_operation if stand_alone
 				# If stand_alone==false, then method is called from another @model.start_operation

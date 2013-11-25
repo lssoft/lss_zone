@@ -23,6 +23,7 @@ module LSS_Extensions
 			attr_accessor :ceiling_layer
 			attr_accessor :volume_layer
 			attr_accessor :openings_layer
+			attr_accessor :int_pt_layer
 			
 			# Initialize layers. Initialization will return 'nil' values in case if there is no layers structure in an active model.
 			def initialize
@@ -35,6 +36,7 @@ module LSS_Extensions
 				@ceiling_layer=@layers[$lsszoneStrings.GetString("LSS Zone Ceiling")]
 				@volume_layer=@layers[$lsszoneStrings.GetString("LSS Zone Volume")]
 				@openings_layer=@layers[$lsszoneStrings.GetString("LSS Zone Openings")]
+				@int_pt_layer=@layers[$lsszoneStrings.GetString("LSS Zone Internal Point")] # Added in ver. 1.2.0 20-Nov-13.
 			end
 			
 			# Method which creates layers structure
@@ -54,6 +56,7 @@ module LSS_Extensions
 				@ceiling_layer=@layers.add($lsszoneStrings.GetString("LSS Zone Ceiling"))
 				@volume_layer=@layers.add($lsszoneStrings.GetString("LSS Zone Volume"))
 				@openings_layer=@layers.add($lsszoneStrings.GetString("LSS Zone Openings"))
+				@int_pt_layer=@layers.add($lsszoneStrings.GetString("LSS Zone Internal Point")) # Added in ver. 1.2.0 20-Nov-13.
 				# @area_layer.visible=false
 				@wall_layer.visible=false if wall_exist==false
 				@floor_layer.visible=false if floor_exist==false

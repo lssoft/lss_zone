@@ -1,4 +1,4 @@
-# lss_zone_loader.rb ver. 1.1.2 beta 08-Nov-13
+# lss_zone_loader.rb ver. 1.2.0 alpha 19-Nov-13
 # This file contains a script, which loads all available LSS Zone tools a commands.
 # Order of lines in this file matters it is basically the same as an order of
 # buttons in LSS Zone toolbar and an order of menu items in LSS Zone sub-menu.
@@ -50,6 +50,9 @@ module LSS_Extensions
 		
 		#loads the script, which contains 'Zone Layers' toolbar implementation. Added 08-Oct-13.
 		require 'lss_zone/lss_zone_layers_cmd.rb'
+		
+		#loads the script, whith 'Settings' dialog implementation Added 19-Nov-13.
+		require 'lss_zone/lss_zone_settings.rb'
 		
 		#loads the script, which launches help system
 		require 'lss_zone/lss_zone_help.rb'

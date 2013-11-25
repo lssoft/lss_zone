@@ -1,4 +1,4 @@
-# lss_zone_settings.rb ver. 1.1.2 beta 09-Nov-13
+# lss_zone_settings.rb ver. 1.2.0 alpha 24-Nov-13
 # The file, which contains 'Global Settings' dialog implementation
 # Not in use for now.
 
@@ -21,8 +21,9 @@ module LSS_Extensions
 		
 		class LSS_Zone_Settings_Cmd
 			def initialize
+				settings=LSS_Zone_Settings.new
 				lss_zone_settings_cmd=UI::Command.new($lsszoneStrings.GetString("Global Settings")){
-					
+					settings.create_web_dial
 				}
 				su_ver=Sketchup.version
 				if su_ver.split(".")[0].to_i>=13
@@ -38,6 +39,144 @@ module LSS_Extensions
 			end
 
 		end #class LSS_Zone_Settings_Cmd
+		
+		class LSS_Zone_Settings
+			def initialize
+				@int_pt_chk_hgt=100.0
+				@aperture_size=4.0
+				@trace_openings="true"
+				@use_materials="true"
+				@min_wall_offset=12.0
+				@op_trace_offset=2.0
+				
+				@settings_hash=Hash.new
+				self.settings2hash
+				$lss_settings_dial_is_active=false
+			end
+			
+			def settings2hash
+				@settings_hash["int_pt_chk_hgt"]=[@int_pt_chk_hgt, "distance"]
+				@settings_hash["aperture_size"]=[@aperture_size, "distance"]
+				@settings_hash["trace_openings"]=[@trace_openings, "boolean"]
+				@settings_hash["use_materials"]=[@use_materials, "boolean"]
+				@settings_hash["min_wall_offset"]=[@min_wall_offset, "distance"]
+				@settings_hash["op_trace_offset"]=[@op_trace_offset, "distance"]
+				
+				# Store data types
+				@settings_hash.each_key{|key|
+					Sketchup.write_default("LSS Zone Data Types", key, @settings_hash[key][1])
+				}
+			end
+			
+			def hash2settings
+				@int_pt_chk_hgt=@settings_hash["int_pt_chk_hgt"][0]
+				@aperture_size=@settings_hash["aperture_size"][0]
+				@trace_openings=@settings_hash["trace_openings"][0]
+				@use_materials=@settings_hash["use_materials"][0]
+				@min_wall_offset=@settings_hash["min_wall_offset"][0]
+				@op_trace_offset=@settings_hash["op_trace_offset"][0]
+			end
+			
+			def read_defaults
+				@settings_hash.each_key{|key|
+					default_value=Sketchup.read_default("LSS Zone Defaults", key, @settings_hash[key][0])
+					default_data_type=Sketchup.read_default("LSS Zone Data Types", key, @settings_hash[key][1])
+					@settings_hash[key]=[default_value, default_data_type]
+				}
+				self.hash2settings
+			end
+			
+			def write_defaults
+				self.settings2hash
+				@settings_hash.each_key{|key|
+					Sketchup.write_default("LSS Zone Defaults", key, @settings_hash[key][0].to_s)
+				}
+			end
+			
+			def create_web_dial
+				return if $lss_settings_dial_is_active
+				$lss_settings_dial_is_active=true
+				# Read defaults
+				self.read_defaults
+				
+				# Create the WebDialog instance
+				@settings_dialog = UI::WebDialog.new($lsszoneStrings.GetString("LSS Zone"), true, "LSS Zone Settings", 350, 350, 200, 200, true)
+				@settings_dialog.max_width=450
+				@settings_dialog.min_width=280
+			
+				# Attach an action callback
+				@settings_dialog.add_action_callback("get_data") do |web_dialog,action_name|
+					if action_name=="apply_settings"
+						self.write_defaults
+					end
+					if action_name=="get_settings" # From Ruby to web-dialog
+						self.send_settings2dlg
+					end
+					if action_name.split(",")[0]=="obtain_setting" # From web-dialog
+						key=action_name.split(",")[1]
+						val=action_name.split(",")[2]
+						if @settings_hash[key]
+							case @settings_hash[key][1]
+								when "distance"
+								dist=Sketchup.parse_length(val)
+								if dist.nil?
+									dist=Sketchup.parse_length(val.gsub(".",","))
+								end
+								@settings_hash[key][0]=dist
+								when "integer"
+								@settings_hash[key][0]=val.to_i
+								else
+								@settings_hash[key][0]=val
+							end
+						end
+						self.hash2settings
+					end
+					if action_name=="cancel"
+						@settings_dialog.close
+					end
+				end
+				resource_dir=LSS_Dirs.new.resource_path
+				dial_path="#{resource_dir}/lss_zone/lss_zone_settings.html"
+				@settings_dialog.set_file(dial_path)
+				@settings_dialog.show()
+				@settings_dialog.set_on_close{
+					self.write_defaults
+					$lss_settings_dial_is_active=false
+				}
+			end
+			
+			def send_settings2dlg
+				self.settings2hash
+				@settings_hash.each_key{|key|
+					case @settings_hash[key][1]
+						when "distance"
+							dist_str=Sketchup.format_length(@settings_hash[key][0].to_f).to_s
+							setting_pair_str= key.to_s + "|" + dist_str.gsub("'", "*") # Patch to solve js errors problem with feet and inches
+						when "area"
+							area_str=Sketchup.format_area(@settings_hash[key][0].to_f).to_s
+							# Supress square units patch added in ver. 1.1.2 09-Nov-13.
+							options=Sketchup.active_model.options
+							units_options=options["UnitsOptions"]
+							supress_units=units_options["SuppressUnitsDisplay"]
+							if supress_units
+								if area_str.split(" ")[0]!="~"
+									area_str=area_str.split(" ")[0]
+								else
+									area_str=area_str.split(" ")[1]
+								end
+							end
+							setting_pair_str= key.to_s + "|" + area_str.gsub("'", "*") # Patch to solve js errors problem with feet and inches
+						when "volume"
+							vol_str=LSS_Math.new.format_volume(@settings_hash[key][0].to_f)
+							setting_pair_str= key.to_s + "|" + vol_str
+						else
+							setting_pair_str= key.to_s + "|" + @settings_hash[key][0].to_s
+					end
+					js_command = "get_setting('" + setting_pair_str + "')" if setting_pair_str
+					@settings_dialog.execute_script(js_command) if js_command
+				}
+			end
+		end #class LSS_Zone_Settings
 
 		if( not file_loaded?("lss_zone_settings.rb") )
 			LSS_Zone_Settings_Cmd.new

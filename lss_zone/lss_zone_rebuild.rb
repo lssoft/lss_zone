@@ -1,4 +1,4 @@
-# lss_zone_rebuild.rb ver. 1.1.2 beta 09-Nov-13
+# lss_zone_rebuild.rb ver. 1.2.0 alpha 24-Nov-13
 # The file, which contains created zone(s) refreshing implementation
 
 # (C) 2013, Links System Software
@@ -236,6 +236,48 @@ module LSS_Extensions
 				zone_was_selected=true if @selection.include?(@zone_group)
 				@selection.remove(@zone_group) if zone_was_selected
 				
+				# Read information about internal point (added in ver. 1.2.0 19-Nov-13)
+				@int_pt_crds=""
+				comp_inst_arr=@zone_group.entities.to_a.select{|ent| (ent.is_a?(Sketchup::ComponentInstance))}
+				if comp_inst_arr.length>0
+					int_pt_inst=comp_inst_arr.select{|ent| (ent.definition.name=="lss_zone_int_pt")}[0]
+					if int_pt_inst
+						pos=int_pt_inst.bounds.center.transform(@zone_group.transformation)
+						@int_pt_crds=pos.to_a.join("|")
+						@int_pt_chk_hgt=@zone_group.get_attribute("LSS_Zone_Entity", "int_pt_chk_hgt")
+						@aperture_size=@zone_group.get_attribute("LSS_Zone_Entity", "aperture_size")
+						@min_wall_offset=@zone_group.get_attribute("LSS_Zone_Entity", "min_wall_offset")
+						@trace_openings=@zone_group.get_attribute("LSS_Zone_Entity", "trace_openings")
+						@use_materials=@zone_group.get_attribute("LSS_Zone_Entity", "use_materials")
+						# Read default in case if @zone_grop does not have corresponding attributes
+						@int_pt_chk_hgt=Sketchup.read_default("LSS Zone Defaults", "int_pt_chk_hgt", 100.0) if @int_pt_chk_hgt.nil?
+						@aperture_size=Sketchup.read_default("LSS Zone Defaults", "aperture_size", 4.0) if @aperture_size.nil?
+						@min_wall_offset=Sketchup.read_default("LSS Zone Defaults", "min_wall_offset", 4.0) if @min_wall_offset.nil?
+						@trace_openings=Sketchup.read_default("LSS Zone Defaults", "trace_openings", "true") if @trace_openings.nil?
+						@use_materials=Sketchup.read_default("LSS Zone Defaults", "use_materials", "true") if @use_materials.nil?
+						# Perform contour tracing in order to refresh @nodal_points array
+						@trace_cont=LSS_Zone_Trace_Cont.new
+						@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
+						@trace_cont.aperture_size=@aperture_size
+						@trace_cont.min_wall_offset=@min_wall_offset
+						@trace_cont.trace_openings=@trace_openings
+						@trace_cont.use_materials=@use_materials
+						@trace_cont.int_pt=pos
+						@trace_cont.init_check
+						@trace_cont.hidden_trace
+						if @trace_cont.nodal_points
+							if @trace_cont.nodal_points.length>0
+								@nodal_points=@trace_cont.nodal_points
+							end
+						end
+						if @trace_cont.openings_arr
+							if @trace_cont.openings_arr.length>0
+								@openings_arr=@trace_cont.openings_arr
+							end
+						end
+					end
+				end
+				
 				# Double check if something wrong with @zone_group
 				return if @zone_group.nil?
 				return if @zone_group.deleted?
@@ -273,6 +315,15 @@ module LSS_Extensions
 					@zone_entity.openings_arr=@openings_arr
 					# Zone Type
 					@zone_entity.zone_type=@zone_type # Added in ver. 1.1.0 22-Oct-13
+					
+					# Trace contour case handling (added in ver. 1.2.0 19-Nov-13).
+					if @int_pt_crds!=""
+						@zone_entity.int_pt_chk_hgt=@int_pt_chk_hgt
+						@zone_entity.aperture_size=@aperture_size
+						@zone_entity.trace_openings=@trace_openings
+						@zone_entity.use_materials=@use_materials
+						@zone_entity.int_pt_crds=@int_pt_crds
+					end
 					
 					# If the optional parameter==false, then "create_zone" method does not perform @model.start_operation
 					@zone_entity.create_zone(false)
