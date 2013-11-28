@@ -10,6 +10,11 @@ function image_over(image){
 	pop_up_div.appendChild(big_img);
 	var img_real_wdt=big_img.width;
 	var img_real_hgt=big_img.height;
+	// Chrome support
+	if (image.naturalWidth){
+		img_real_wdt=image.naturalWidth;
+		img_real_hgt=image.naturalHeight;
+	}
 	var bnds=image.getBoundingClientRect();
 	var top=bnds.top;
 	var left=bnds.left;
@@ -57,6 +62,11 @@ function image_out(image){
 	pop_up_div.appendChild(big_img);
 	var img_real_wdt=big_img.width;
 	var img_real_hgt=big_img.height;
+	// Chrome support
+	if (image.naturalWidth){
+		img_real_wdt=image.naturalWidth;
+		img_real_hgt=image.naturalHeight;
+	}
 	var width=image.offsetWidth;
 	var height=image.offsetHeight;
 	var dw=img_real_wdt+15-width;
@@ -104,6 +114,11 @@ function thumb_div_over(thumb_div){
 	pop_up_div.appendChild(big_img);
 	var img_real_wdt=big_img.width;
 	var img_real_hgt=big_img.height;
+	// Chrome support
+	if (image.naturalWidth){
+		img_real_wdt=image.naturalWidth;
+		img_real_hgt=image.naturalHeight;
+	}
 	var bnds=thumb_div.getBoundingClientRect();
 	var top=bnds.top;
 	var left=bnds.left;
@@ -152,6 +167,11 @@ function thumb_div_out(thumb_div){
 	pop_up_div.appendChild(big_img);
 	var img_real_wdt=big_img.width;
 	var img_real_hgt=big_img.height;
+	// Chrome support
+	if (image.naturalWidth){
+		img_real_wdt=image.naturalWidth;
+		img_real_hgt=image.naturalHeight;
+	}
 	var width=thumb_div.offsetWidth;
 	var height=thumb_div.offsetHeight;
 	var dw=img_real_wdt+15-width;

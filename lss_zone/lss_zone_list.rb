@@ -166,6 +166,11 @@ module LSS_Extensions
 										elt_name=elt_definition.name
 									end
 								end
+								
+								# Ignore component instance, which represents zone's internal point.
+								# Added in ver. 1.2.0 (28-Nov-13).
+								elt_name=nil if elt_name=="lss_zone_int_pt"
+								
 								if elt_name
 									key="nested_elements"
 									@nested_elements_names<<key if @nested_elements_names.include?(key)==false

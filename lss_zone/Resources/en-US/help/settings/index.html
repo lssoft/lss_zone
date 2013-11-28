@@ -1,0 +1,89 @@
+<html>
+<head>
+<title>Settings</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+    <table class="specification_tbl" cellspacing="0" cellpadding="0">
+		<caption class="blacksubheader">List of Settings</caption>
+		<tbody>
+			<tr>
+				<td class="specif_tbl_sub_hdr" align="center" colspan="5">Zone's Contour Tracing Settings</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val" width="200px">
+				Aperture Size<br>
+				<img src="images/aperture_size.png" width="110" onmouseover="image_over(this)" onmouseout="image_out(this)">
+			  </td>
+			  <td class="specif_tbl_data">
+				The size of a square range, which searches for contour's corners during zone's contour tracing.<br>
+				The lesser the size of an aperture, the higher the sensitivity of a contour tracing and the longer the tracing time.<br>
+				'Tracing Sensitivity' means here the ability to detect contour's small details. Tracing procedure obviously ignores
+				twist's and turns of a contour being traced in case if the size of those twists and turns is less than an aperture size.
+			  </td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">
+				Check Height<br>
+				<img src="images/check_height.png" width="110" onmouseover="image_over(this)" onmouseout="image_out(this)">
+			  </td>
+			  <td class="specif_tbl_data">
+				The height above picked floor level, at which zone's contour tracing have to take place.<br>
+				This height should be above the highest opening of a closed space being traced, but below ceiling level of a mentioned space.
+			  </td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">
+				Minimal Wall Offset<br>
+				<img src="images/min_wall_offset.png" width="110" onmouseover="image_over(this)" onmouseout="image_out(this)">
+			  </td>
+			  <td class="specif_tbl_data">
+				This setting allows to find empty openings in a wall being traced at the moment.<br>
+				In case if the wall is not completely flat, the value of offset should be greater
+				than wall's maximum surface offset and less than or equal to a minimal assumable distance
+				to a closest 'oposite' wall.<br>
+				This setting is needed only if openings tracing is enabled.
+			  </td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">
+				Opening Tracing Offset<br>
+				<img src="images/op_trace_offset.png" width="110" onmouseover="image_over(this)" onmouseout="image_out(this)">
+			  </td>
+			  <td class="specif_tbl_data">
+				The value of offset from wall's internal surface inside wall's body.<br>
+				This value is used for openings tracing only.<br>
+				Openings tracing procedure offsets from wall's surface, then 'looks' down from this position
+				seaching for possible intersections with opening's bounding faces.
+			  </td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">Trace Openings</td>
+			  <td class="specif_tbl_data">This option enables/disables openings tracing during tracing of zone's contour</td>
+			</tr>
+			<tr>
+			  <td class="specif_tbl_val">Use Materials</td>
+			  <td class="specif_tbl_data">
+				This option allows to use materials obtained from elements in an active model as zone's floor and wall materials.<br>
+				When this option is enabled, 'Zone Tool' uses material of an element under pointer position as zone's floor material and
+				material of a first successfully detected vertical face as zone's wall material.
+				This feature is enabled only when 'pick internal point' mode of 'LSS Zone Tool' is active.
+			  </td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

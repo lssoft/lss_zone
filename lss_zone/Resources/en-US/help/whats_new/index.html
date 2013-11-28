@@ -46,5 +46,27 @@ function send_size(){
 		<li>an error fixed in 'Attach Labels' dialog if a label has a length value measured in feet and inches
 		(appeared in a model with feet and inches)</li>
 	</ul>
+	
+	<p><a href="index.html"><span class="blackheader">Version 1.2.0</span></a></p>
+	<br>
+	<img src="../images/lss_zone_new_1_2.png"><br><br>
+	<img src="../images/lss_zone_layers_1_2.png">
+	<p><span class="blacksubheader">New Features</span></p>
+	<ul>
+		<li>automatic zone's contour tracing feature added</li>
+		<li>'Settings' dialog added (it contains settings only for automatic tracing for now)</li>
+		<li>ability to list nested elements of zone group(s) added to zone's list generator</li>
+		<li>supressing of area units now affects 'LSS Zone' tool dialog as well</li>
+	</ul>
+	<p><span class="blacksubheader">Fixes</span></p>
+	<ul>
+		<li>'List Template' dialog restores caret position properly after refreshing of query results</li>
+		<li>
+			'Floors count' property removed from 'LSS Zone' dialog, when 'room' zone type is active at an initial launch of a dialog
+			(it is visible now only for 'box' zone type as intended)
+		</li>
+		<li>SU crash after deleting a nodal point while 'LSS Zone' tool is active is fixed</li>
+		<li>custom attributes remain attached after zone's contour editing using 'LSS Zone' tool</li>
+	</ul>
 </body>
 </html>

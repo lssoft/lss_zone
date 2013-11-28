@@ -247,12 +247,14 @@ module LSS_Extensions
 						@int_pt_chk_hgt=@zone_group.get_attribute("LSS_Zone_Entity", "int_pt_chk_hgt")
 						@aperture_size=@zone_group.get_attribute("LSS_Zone_Entity", "aperture_size")
 						@min_wall_offset=@zone_group.get_attribute("LSS_Zone_Entity", "min_wall_offset")
+						@op_trace_offset=@zone_group.get_attribute("LSS_Zone_Entity", "op_trace_offset")
 						@trace_openings=@zone_group.get_attribute("LSS_Zone_Entity", "trace_openings")
 						@use_materials=@zone_group.get_attribute("LSS_Zone_Entity", "use_materials")
 						# Read default in case if @zone_grop does not have corresponding attributes
 						@int_pt_chk_hgt=Sketchup.read_default("LSS Zone Defaults", "int_pt_chk_hgt", 100.0) if @int_pt_chk_hgt.nil?
 						@aperture_size=Sketchup.read_default("LSS Zone Defaults", "aperture_size", 4.0) if @aperture_size.nil?
 						@min_wall_offset=Sketchup.read_default("LSS Zone Defaults", "min_wall_offset", 4.0) if @min_wall_offset.nil?
+						@op_trace_offset=Sketchup.read_default("LSS Zone Defaults", "op_trace_offset", 4.0) if @op_trace_offset.nil?
 						@trace_openings=Sketchup.read_default("LSS Zone Defaults", "trace_openings", "true") if @trace_openings.nil?
 						@use_materials=Sketchup.read_default("LSS Zone Defaults", "use_materials", "true") if @use_materials.nil?
 						# Perform contour tracing in order to refresh @nodal_points array
@@ -260,6 +262,7 @@ module LSS_Extensions
 						@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
 						@trace_cont.aperture_size=@aperture_size
 						@trace_cont.min_wall_offset=@min_wall_offset
+						@trace_cont.op_trace_offset=@op_trace_offset
 						@trace_cont.trace_openings=@trace_openings
 						@trace_cont.use_materials=@use_materials
 						@trace_cont.int_pt=pos
@@ -319,6 +322,8 @@ module LSS_Extensions
 					# Trace contour case handling (added in ver. 1.2.0 19-Nov-13).
 					if @int_pt_crds!=""
 						@zone_entity.int_pt_chk_hgt=@int_pt_chk_hgt
+						@zone_entity.min_wall_offset=@min_wall_offset
+						@zone_entity.op_trace_offset=@op_trace_offset
 						@zone_entity.aperture_size=@aperture_size
 						@zone_entity.trace_openings=@trace_openings
 						@zone_entity.use_materials=@use_materials

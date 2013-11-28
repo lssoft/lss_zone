@@ -411,6 +411,56 @@ module LSS_Extensions
 				zone_layers_toolbar.add_item(ops_layer_cmd)
 				layers_submenu.add_item(ops_layer_cmd)
 				
+				# Internal Point Layer command (added in ver. 1.2.0 28-Nov-13)
+				int_pt_layer_cmd=UI::Command.new($lsszoneStrings.GetString("Internal Point Layer")){
+					model = Sketchup.active_model
+					layers = model.layers
+					zone_layers=LSS_Zone_Layers.new
+					if zone_layers.int_pt_layer
+						if zone_layers.int_pt_layer.visible?
+							zone_layers.int_pt_layer.visible=false
+						else
+							zone_layers.int_pt_layer.visible=true
+						end
+					else
+						warn_str=$lsszoneStrings.GetString("There are no 'LSS Zone' layers in an active model.")
+						warn_str+="\n"+$lsszoneStrings.GetString("Would you like to create 'LSS Zone' layers?")
+						res=UI.messagebox(warn_str, MB_YESNO)
+						if res==6
+							zone_layers.create_layers
+							if zone_layers.int_pt_layer.visible?
+								zone_layers.int_pt_layer.visible=false
+							else
+								zone_layers.int_pt_layer.visible=true
+							end
+						end
+					end
+				}
+				int_pt_layer_cmd.set_validation_proc {
+					model = Sketchup.active_model
+					layers = model.layers
+					zone_layers=LSS_Zone_Layers.new
+					if zone_layers.int_pt_layer
+						if zone_layers.int_pt_layer.visible?
+							MF_CHECKED
+						else
+							MF_UNCHECKED
+						end
+					else
+						MF_UNCHECKED
+					end
+				}
+				if su_ver.split(".")[0].to_i>=13
+					int_pt_layer_cmd.small_icon = "./tb_icons/layers/int_pt_24.png"
+					int_pt_layer_cmd.large_icon = "./tb_icons/layers/int_pt_32.png"
+				else
+					int_pt_layer_cmd.small_icon = "./tb_icons/layers/int_pt_16.png"
+					int_pt_layer_cmd.large_icon = "./tb_icons/layers/int_pt_24.png"
+				end
+				int_pt_layer_cmd.tooltip = $lsszoneStrings.GetString("Click to toggle internal point layer visibility.")
+				zone_layers_toolbar.add_item(int_pt_layer_cmd)
+				layers_submenu.add_item(int_pt_layer_cmd)
+				
 				# Hide the Rest command
 				hide_rest_cmd=UI::Command.new($lsszoneStrings.GetString("Hide the Rest")){
 					model = Sketchup.active_model

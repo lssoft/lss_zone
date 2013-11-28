@@ -14,6 +14,7 @@ str += "<li><img src='images/buttons/rebuild_24.png' border='0' valign='top'>&nb
 str += "<li><img src='images/buttons/props_24.png' border='0' valign='top'>&nbsp;<a href='props.html'>View/Edit Properties</a></li>";
 str += "<li><img src='images/buttons/filter_24.png' border='0' valign='top'>&nbsp;<a href='filter.html'>Filter Dialog</a></li>";
 str += "<li><img src='images/buttons/layers_24.png' border='0' valign='top'>&nbsp;<a href='layers.html'>Layers Toolbar</a></li>";
+str += "<li><img src='images/buttons/settings_24.png' border='0' valign='top'>&nbsp;<a href='settings.html'>Settings</a></li>";
 str += "</ul>";
 str += "Misc";
 str += "<ul>";

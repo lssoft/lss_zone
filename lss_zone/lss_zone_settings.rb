@@ -100,7 +100,7 @@ module LSS_Extensions
 				self.read_defaults
 				
 				# Create the WebDialog instance
-				@settings_dialog = UI::WebDialog.new($lsszoneStrings.GetString("LSS Zone"), true, "LSS Zone Settings", 350, 350, 200, 200, true)
+				@settings_dialog = UI::WebDialog.new($lsszoneStrings.GetString("LSS Zone Settings"), true, "LSS Zone Settings", 350, 350, 200, 200, true)
 				@settings_dialog.max_width=450
 				@settings_dialog.min_width=280
 			

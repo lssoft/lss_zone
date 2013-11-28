@@ -241,6 +241,14 @@ module LSS_Extensions
 				
 				@settings_hash["zone_type"]=[@zone_type, "string"]
 				@settings_hash["floors_count"]=[@floors_count, "integer"]
+				
+				# Trace contour settings added in ver. 1.2.0 28-Nov-13.
+				@settings_hash["int_pt_chk_hgt"]=[@int_pt_chk_hgt, "distance"]
+				@settings_hash["aperture_size"]=[@aperture_size, "distance"]
+				@settings_hash["trace_openings"]=[@trace_openings, "boolean"]
+				@settings_hash["use_materials"]=[@use_materials, "boolean"]
+				@settings_hash["min_wall_offset"]=[@min_wall_offset, "distance"]
+				@settings_hash["op_trace_offset"]=[@op_trace_offset, "distance"]
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -277,6 +285,14 @@ module LSS_Extensions
 				
 				@zone_type=@settings_hash["zone_type"][0]
 				@floors_count=@settings_hash["floors_count"][0]
+				
+				# Trace contour settings added in ver. 1.2.0 28-Nov-13.
+				@int_pt_chk_hgt=@settings_hash["int_pt_chk_hgt"][0]
+				@aperture_size=@settings_hash["aperture_size"][0]
+				@trace_openings=@settings_hash["trace_openings"][0]
+				@use_materials=@settings_hash["use_materials"][0]
+				@min_wall_offset=@settings_hash["min_wall_offset"][0]
+				@op_trace_offset=@settings_hash["op_trace_offset"][0]
 			end
 			
 			# This is a main method.
