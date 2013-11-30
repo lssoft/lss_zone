@@ -27,6 +27,7 @@
 "LSS Zone Volume"="LSS Zone Volume";
 "LSS Zone Openings"="LSS Zone Openings";
 "LSS Zone"="LSS Zone";
+"LSS Zone Internal Point"="LSS Zone Internal Point";
 //lss_zone_link_ops.rb
 "Link Openings Tool"="Link Openings Tool";
 "Select zones with openings, then click to link openings."="Select zones with openings, then click to link openings.";
@@ -92,6 +93,7 @@
 "Rebuild Zone(s)"="Rebuild Zone(s)";
 "Rebuilding zones: "="Rebuilding zones: ";
 "Rebuilding complete."="Rebuilding complete.";
+"Re-tracing wasn't performed."="Re-tracing wasn't performed.";
 //lss_zone_recalc.rb
 "Recalculate"="Recalculate";
 "Select zones, then click to recalculate."="Select zones, then click to recalculate.";
@@ -132,6 +134,7 @@
 "Unselect"="Unselect";
 "Insert Node"="Insert Node";
 "Reset"="Reset";
+"Check height: "="Check height: ";
 //lss_zone_toolbar.rb
 "LSS Zone"="LSS Zone";
 //lss_zone_web.rb
@@ -168,3 +171,14 @@
 "Click to hide all layers except 'LSS Zone' related ones."="Click to hide all layers except 'LSS Zone' related ones.";
 "Hiding layers: "="Hiding layers: ";
 "Unhiding layers: "="Unhiding layers: ";
+"Internal Point Layer"="Internal Point Layer";
+"Click to toggle internal point layer visibility."="Click to toggle internal point layer visibility.";
+//lss_zone_trace_cont.rb
+"Segments traced: "="Segments traced: ";
+"It looks like aperture size is too small for a contour being traced. Contour tracing may take too long."="It looks like aperture size is too small for a contour being traced. Contour tracing may take too long.";
+"It is recommended to open 'Settings' dialog and encrease aperture size."="It is recommended to open 'Settings' dialog and encrease aperture size.";
+"Would you like to break tracing at this point for aperture size re-adjustment?"="Would you like to break tracing at this point for aperture size re-adjustment?";
+//lss_zone_settings.rb
+"Global Settings"="Global Settings";
+"Click to adjust extension's global settings."="Click to adjust extension's global settings.";
+"LSS Zone Settings"="LSS Zone Settings";

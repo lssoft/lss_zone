@@ -20,33 +20,38 @@
 			</tr>
 			<tr>
 				<td class="info_img_cell">&nbsp;</td>
-				<td class="name_cell">Aperture size</td>
-				<td class="value_cell"><input type="text" id="aperture_size" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+				<td class="name_cell" title="Aperture size">Aperture size</td>
+				<td class="value_cell"><input type="text" id="aperture_size" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Size of a square range, which traces contours"></td>
 			</tr>
 			<tr>
 				<td class="info_img_cell">&nbsp;</td>
-				<td class="name_cell">Check height</td>
-				<td class="value_cell"><input type="text" id="int_pt_chk_hgt" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+				<td class="name_cell" title="Check height">Check height</td>
+				<td class="value_cell"><input type="text" id="int_pt_chk_hgt" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Height, at which contour of a closed space is to be traced"></td>
 			</tr>
 			<tr>
 				<td class="info_img_cell">&nbsp;</td>
-				<td class="name_cell">Minimal wall offset</td>
-				<td class="value_cell"><input type="text" id="min_wall_offset" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+				<td class="name_cell" title="Minimal wall offset">Minimal wall offset</td>
+				<td class="value_cell"><input type="text" id="min_wall_offset" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Helps to figure out emptiness of an opening"></td>
 			</tr>
 			<tr>
 				<td class="info_img_cell">&nbsp;</td>
-				<td class="name_cell">Opening tracing offset</td>
-				<td class="value_cell"><input type="text" id="op_trace_offset" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input"></td>
+				<td class="name_cell" title="Opening tracing offset">Opening tracing offset</td>
+				<td class="value_cell"><input type="text" id="op_trace_offset" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Offset from wall's inner surface"></td>
 			</tr>
 			<tr>
 				<td class="info_img_cell">&nbsp;</td>
-				<td class="name_cell">Trace openings</td>
+				<td class="name_cell" title="Trace openings">Trace openings</td>
 				<td class="value_cell"><input type="checkbox" id="trace_openings" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="dock_right"></td>
 			</tr>
 			<tr>
 				<td class="info_img_cell">&nbsp;</td>
-				<td class="name_cell">Use materials</td>
+				<td class="name_cell" title="Use materials">Use materials</td>
 				<td class="value_cell"><input type="checkbox" id="use_materials" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="dock_right"></td>
+			</tr>
+			<tr>
+				<td class="info_img_cell">&nbsp;</td>
+				<td class="name_cell" title="Segment tracing limit">Segment tracing limit</td>
+				<td class="value_cell"><input type="text" id="segm_tracing_lim" value="3000" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Integer value representing reasonable count of one straight segment's tracing steps" ></td>
 			</tr>
 			<tr class="splitter_row">
 				<td class="splitter_img_cell">

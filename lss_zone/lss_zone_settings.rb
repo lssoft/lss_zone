@@ -48,6 +48,7 @@ module LSS_Extensions
 				@use_materials="true"
 				@min_wall_offset=12.0
 				@op_trace_offset=2.0
+				@segm_tracing_lim=3000
 				
 				@settings_hash=Hash.new
 				self.settings2hash
@@ -61,6 +62,7 @@ module LSS_Extensions
 				@settings_hash["use_materials"]=[@use_materials, "boolean"]
 				@settings_hash["min_wall_offset"]=[@min_wall_offset, "distance"]
 				@settings_hash["op_trace_offset"]=[@op_trace_offset, "distance"]
+				@settings_hash["segm_tracing_lim"]=[@segm_tracing_lim, "integer"]
 				
 				# Store data types
 				@settings_hash.each_key{|key|
@@ -75,6 +77,7 @@ module LSS_Extensions
 				@use_materials=@settings_hash["use_materials"][0]
 				@min_wall_offset=@settings_hash["min_wall_offset"][0]
 				@op_trace_offset=@settings_hash["op_trace_offset"][0]
+				@segm_tracing_lim=@settings_hash["segm_tracing_lim"][0]
 			end
 			
 			def read_defaults

@@ -392,7 +392,7 @@ module LSS_Extensions
 						@trace_cont.int_pt_chk_hgt=@int_pt_chk_hgt
 						@pick_state="pick_int_pt"
 						self.onSetCursor
-						Sketchup.vcb_label=$lsszoneStrings.GetString("Offset height: ")
+						Sketchup.vcb_label=$lsszoneStrings.GetString("Check height: ")
 						Sketchup.vcb_value=Sketchup.format_length(@int_pt_chk_hgt.to_f)
 					end
 					if action_name.split(",")[1]=="floor_eye_dropper"

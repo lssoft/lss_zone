@@ -1,4 +1,4 @@
-# lss_zone_trace_cont.rb ver. 1.2.0 alpha 26-Nov-13
+# lss_zone_trace_cont.rb ver. 1.2.0 alpha 30-Nov-13
 # The script, which contains a class with contour tracing implementation.
 
 # (C) 2013, Links System Software
@@ -38,6 +38,8 @@ module LSS_Extensions
 			attr_accessor :norm
 			attr_accessor :wall_mat
 			
+			attr_accessor :is_traced
+			
 			def initialize
 				@model=Sketchup.active_model
 				
@@ -74,6 +76,9 @@ module LSS_Extensions
 				
 				@z_vec=Geom::Vector3d.new(0,0,1)
 				@init_vec=Geom::Vector3d.new(1,0,0)
+				
+				@is_traced=false
+				@opening_cancelled=false
 			end
 			
 			# This method forcibly stops tracing timer.
@@ -259,6 +264,15 @@ module LSS_Extensions
 							if @trace_openings=="true"
 								# Perform openings tracing
 								self.check_for_openings
+								if @opening_cancelled
+									UI.stop_timer(@tracing_timer_id)
+									@nodal_points=@zone_tracer.nodal_points
+									@is_tracing=false
+									# Restore layers visibility
+									@wall_layer.visible=@wall_visibility if @wall_layer
+									@openings_layer.visible=@openings_visibility if @openings_layer
+									@volume_layer.visible=@volume_visibility if @volume_layer
+								end
 							end
 						else
 							# Stop tracing if @zone_tracer tell, that tracing is finished.
@@ -268,6 +282,7 @@ module LSS_Extensions
 							@nodal_points=@zone_tracer.nodal_points
 							@is_tracing=false
 							@is_ready=true
+							@is_traced=true if @zone_tracer.tracing_cancelled==false and @opening_cancelled==false
 							# Restore layers visibility
 							@wall_layer.visible=@wall_visibility if @wall_layer
 							@openings_layer.visible=@openings_visibility if @openings_layer
@@ -290,6 +305,8 @@ module LSS_Extensions
 			# - restore layers visibility after tracing finish
 			
 			def hidden_trace
+				return if @norm.nil?
+				
 				@is_tracing=true
 				
 				# Make first tracing step
@@ -301,10 +318,10 @@ module LSS_Extensions
 				# in order to prevent immediate exit from tracing process.
 				@move_res=@zone_tracer.one_step(true)
 				@is_ready=false
-				return if @norm.nil?
 				
 				# Run tracing loop until aperture reaches the point where tracing was started (normal scenario) or
 				# until some other certain breaks (rescue scenario).
+				nodes_cnt=@zone_tracer.nodal_points.length
 				while @zone_tracer.is_tracing
 					if @move_res.nil?
 						break
@@ -313,8 +330,13 @@ module LSS_Extensions
 					if @trace_openings=="true"
 						self.check_for_openings
 					end
+					if @opening_cancelled
+						break
+					end
 				end
 				@is_ready=true
+				@is_tracing=false
+				@is_traced=true if @zone_tracer.tracing_cancelled==false and @opening_cancelled==false
 				# Restore layers visibility
 				@wall_layer.visible=@wall_visibility
 				@openings_layer.visible=@openings_visibility
@@ -532,6 +554,10 @@ module LSS_Extensions
 									break
 								end
 							end
+							if op_tracer.tracing_cancelled
+								@opening_cancelled=true
+								break
+							end
 							op_pts=op_tracer.nodal_points
 							curr_bnds=Geom::BoundingBox.new
 							curr_bnds.add(op_pts)
@@ -595,6 +621,9 @@ module LSS_Extensions
 			# in case if it is an opening contour tracing, project plane coincides with a vertical plane of wall's internal surface)
 			attr_accessor :proj_plane
 			
+			# This flag shows that tracing was cancelled after answering to a question of a warning message for example
+			attr_accessor :tracing_cancelled
+			
 			def initialize
 				@init_pt=nil
 				@init_ent=nil
@@ -611,6 +640,24 @@ module LSS_Extensions
 				@nodal_points=Array.new
 				@pseudo_progr_str=""
 				@proj_plane=nil
+				
+				# Segment tracing steps counter (in order to check if it exceeds segments tracing limit, which might happen
+				# in case of small aperture size relatively to a size of a contour being traced)
+				@segm_step=0
+				
+				# Limit of tracing steps along one straight segment (to prevent tracing hang during #hidden_trace)
+				@segm_tracing_lim=Sketchup.read_default("LSS Zone Defaults", "segm_tracing_lim", 3000)
+				@segm_tracing_lim=@segm_tracing_lim.to_i
+				if @segm_tracing_lim.nil? or @segm_tracing_lim==0 or @segm_tracing_lim>100000
+					@segm_tracing_lim=3000
+				end
+				
+				# Flag to indicate status of warning messagebox.
+				# It is used to prevent warning message duplication in case if contour tracer instance
+				# is being called from timer (in case of 'while' loop this flag is unnecessary).
+				@warn_mb_active=false
+				
+				@tracing_cancelled=false
 			end
 			
 			# This method performs one tracing step. It has one argument: boolean flag to figure out is it a first tracing step or not.
@@ -667,6 +714,10 @@ module LSS_Extensions
 				# being traced.
 				if new_ent!=@prev_ent
 					@segm_cnt+=1
+					
+					# Reset segment tracing steps count, since new segment is started
+					@segm_step=0
+					
 					if new_ent.is_a?(Sketchup::Face)
 						
 						# Grab a normal of newly detected boundary face
@@ -767,6 +818,24 @@ module LSS_Extensions
 				# make yet another tracing step moving along current tracing direction and
 				# continue searching for new bounding face.
 				else
+					# Increase segment tracing steps count, since aperture made a move along the same bounding segment
+					@segm_step+=1
+					
+					# Check if segment steps count exceeded limit specified in 'Settings' dialog
+					if @segm_step>@segm_tracing_lim
+						if @warn_mb_active==false
+							@warn_mb_active=true
+							warn_str=$lsszoneStrings.GetString("It looks like aperture size is too small for a contour being traced. Contour tracing may take too long.")+"\n"
+							warn_str+=$lsszoneStrings.GetString("It is recommended to open 'Settings' dialog and encrease aperture size.")+"\n"
+							quest_str=$lsszoneStrings.GetString("Would you like to break tracing at this point for aperture size re-adjustment?")
+							answer=UI.messagebox(warn_str+"\n"+quest_str, MB_YESNO)
+							if answer==6
+								@is_tracing=false
+								@tracing_cancelled=true
+							end
+						end
+					end
+					
 					# Perform checking at a new aperture position.
 					@move_res=self.check_point(new_init_pt, @prev_norm)
 					

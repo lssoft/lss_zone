@@ -32,13 +32,16 @@ function send_size(){
 	<ul>
 		<li><img src="images/cursors/default_cur.png"> 'default' mode</li>
 		<li><img src="images/cursors/pick_face_cur.png"> 'pick face' mode</li>
+		<li><img src="images/cursors/pick_int_pt_cur.png"> 'pick internal point' mode</li>
 		<li><img src="images/cursors/draw_contour_cur.png"> 'draw contour' mode</li>
 		<li><img src="images/cursors/cut_opening_cur.png"> 'cut opening' mode</li>
 		<li><img src="images/cursors/eye_dropper_cur.png"> 'get material' mode</li>
 	</ul>
 	<br>
 	Activate each mode by clicking an appropriate command button on a dialog.<br>
-	Use 'Esc' key to get back from any mode to 'default' one.
+	Use 'Esc' key to get back from any mode to 'default' one.<br>
+	In case if tracing of a contour is in progress, first hit of 'Esc' breaks tracing process.
+	It is necessary to hit it again to get back to 'default' mode if needed.
 	
 	<p><span class="blacksubheader">Advanced Operations</span> </p> 
 	Select existing zone while tool is active by single-click, then
@@ -47,11 +50,14 @@ function send_size(){
 		<li>change its height interactively</li>
 		<li>re-adjust its settings</li>
 		<li>cut openings</li>
+		<li>use value control box to enter distances, while drawing zone's or opening's contour vertex-by-vertex</li>
+		<li>use value control box to enter contour's check height, while 'pick internal point' mode is active</li>
 	</ul>
 	
 	<p><span class="blacksubheader">Modifier Keys</span> </p>
 	<ul>
 		<li>ESC, Home = cancel current operation and return to 'default' mode</li>
+		<li>ESC = break zone's contour tracing process</li>
 		<li>Enter = 
 			<ul>
 				<li type="square">apply settings and generate zone when it's ready to be generated</li>
@@ -76,6 +82,7 @@ function send_size(){
 	<p><span class="blacksubheader">Tool Modes Description</span></p>
 	<img src="images/cursors/default_cur.png"> 'Default' mode is for selecting existing zone objects. It is possible to reshape and re-adjust properties of selected zone.<br>
 	<img src="images/cursors/pick_face_cur.png"> 'Pick Face' mode is for picking any face, that represents a contour of a floor, in an active model instead of drawing zone's contour vertex-by-vertex.<br>
+	<img src="images/cursors/pick_int_pt_cur.png"> 'Pick Internal Point' mode is for picking a point inside a closed space and launching of automatic contour tracing procedure.<br>
 	<img src="images/cursors/draw_contour_cur.png"> 'Draw Contour' mode allows entering zone contour vertex-by-vertex.<br>
 	<img src="images/cursors/cut_opening_cur.png"> 'Cut Opening' mode becomes available after selecting an existing zone. Use it to draw openings inside selected zone.<br>
 	<img src="images/cursors/eye_dropper_cur.png"> 'Get Material' mode helps to obtain material directly from any object in an active model instead of choosing it from a drop-down list.<br>

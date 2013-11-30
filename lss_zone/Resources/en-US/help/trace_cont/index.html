@@ -1,0 +1,123 @@
+<html>
+<head>
+<title>Contour Tracing</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="help.css" rel="stylesheet" type="text/css">
+<script>
+function send_size(){
+	if (top!=self){
+		var hgt = document.body.scrollHeight;
+		var wdt = document.body.scrollWidth;
+		var size_str=hgt+"_"+wdt;
+		window.name=size_str;
+		window.location.hash = size_str;
+	}
+}
+</script>
+<script type="text/javascript" src="../help.js"></script>
+</head>
+<body class="body" onload="send_size()">
+	<p><a href="index.html"><span class="blackheader"><img src="images/trace_cont.gif" border="0"></span></a></p>
+    <p><a href="index.html"><span class="blackheader">Contour Tracing</span></a></p>
+    It is a procedure of automatic zone's contour generation by picking a point inside a closed space
+	bounded by some geometric elements (faces, groups or components, which containing faces) in an active model.<br><br>
+	The idea of automatic tracing is based on the assumption, that an average room (or any other closed space)
+	has completely closed contour regardless of openings at a certain level above room's floor level.
+	This 'check' level has to be located above the highest opening and below room's ceiling.<br>
+	So the first step, which is performed before tracing, is computing of coordinates of check point, by adding
+	<b>'check height'</b> value to z-coordinate of picked internal point. <b>'Check Height'</b> is an adjustable value: it can be adjusted
+	through 'Settings' dialog or right while 'LSS Zone' tool dialog is active just by typing new value using value control
+	box, when <b>'pick internal point'</b> mode of a tool is active.<br>
+	When <b>'check point'</b> is calculated, tracer makes 'the first shot': it checks if a ray started from <b>'check point'</b> and directed
+	the same way as model's	x-axis intersects something in an active model. Tracer is considered to be ready for tracing
+	if intersection is detected.<br>
+	The point, where intersection took place is very important: it is an <b>'initial point'</b> of a contour being traced. Tracing
+	procedure stops after reaching the <b>'initial point'</b>.<br>
+	Tracer also reads a material of a face intersected during first step, so it can be used as <b>'walls material'</b> of a zone.
+	<p><span class="blacksubheader">Contour of a Zone Tracing Logic</span> </p>
+	<img src="images/zone_contour_expl.png" width="150" onmouseover="image_over(this)" onmouseout="image_out(this)"><br>
+	Zone's contour tracing procedure performs the following steps:
+	<ol>
+		<li>
+			make first tracing step: move tracing <b>aperture</b> one step forward along tracing direction
+		</li>
+		<li>
+			run tracing loop:
+			<ul>
+				<li>move <b>aperture</b> one step forward along tracing direction</li>
+				<li>check if <b>aperture</b> reached the <b>initial point</b></li>
+				<li>check if aperture intersected a new bounding face or not</li>
+				<li>in case if previous face is detected again: move <b>aperture</b> yet another one step forward along tracing direction</li>
+				<li>in case if new bounding face is detected: add new nodal point and set tracing direction parallel to a newly detected bounding face</li>
+				<li>check for openings under <b>aperture</b> position if openings checking is enabled</li>
+			</ul>
+		</li>
+		<li>
+			exit tracing loop if an <b>aperture</b> reached the <b>initial point</b>
+		</li>
+	</ol>
+	<br>
+	<p><span class="blacksubheader">Contour of an Opening Tracing Logic</span> </p>
+	<img src="images/opening_contour_expl.png" width="150" onmouseover="image_over(this)" onmouseout="image_out(this)"><br>
+	The main logic is bacically the same as zone's contour tracing. The main difference is that tracing goes on
+	in a vertical plane, which is parallel to a plane of a face currently detected by zone's contour tracing aperture.<br>
+	So opening tracing performs the following steps:
+	<ol>
+		<li>
+			compute a <b>'check ray'</b>, which will search for openings:
+			<ul>
+				<li>
+					start point of the ray is located a bit lower than room's ceiling level and it shifted from
+					wall's surface into wall's body interior at a distance equal to <b>'opening tracing offset'</b>
+				</li>
+				<li>ray directed downwards parallel to z-axis</li>
+			</ul>
+		</li>
+		<li>
+			make first 'check shot' looking for intersection of computed <b>'check ray'</b> with geometry
+		</li>
+		<li>
+			if an intersection was detected and it took place somewhere at level above room's floor level, then
+			opening tracer checks if the face being intersected is actually a boundary of an opening:
+			<ul>
+				<li>
+					make the second 'control shot' from the first intersection point
+				</li>
+				<li>
+					the second intersection point has to be also above room's floor level (or directly at a floor level)
+				</li>
+				<li>
+					check if the first intersected face is really a boundary of an opening by 'looking' from
+					a point, which is slightly below this face towards wall's interior surface
+				</li>
+				<li>
+					in case if there was no intersections detected at a distance equal to <b>'minimal wall offset'</b>,
+					intersected face is considered to be a boundary of an opening
+				</li>
+			</ul>
+		</li>
+		<li>
+			if all tests were completed successfully, opening tracer begins tracing from the point of a first intersection
+			of opening 'check ray' with the first opening's boundary face
+		</li>
+		<li>
+			opening tracer makes the first tracing step: move tracing <b>aperture</b> one step forward along opening tracing direction<br>
+			(opening tracing direction lies in a vertical plane, which is parallel to a wall's interior surface)
+		</li>
+		<li>
+			run tracing loop (the same logic as zone's contour has):
+			<ul>
+				<li>move <b>aperture</b> one step forward along tracing direction</li>
+				<li>check if <b>aperture</b> reached the <b>initial point</b></li>
+				<li>check if aperture intersected a new bounding face or not</li>
+				<li>in case if previous face is detected again: move <b>aperture</b> yet another one step forward along tracing direction</li>
+				<li>in case if new bounding face is detected: add new nodal point to an opening contour and set tracing direction parallel to a newly detected bounding face</li>
+			</ul>
+		</li>
+		<li>
+			exit tracing loop if if <b>aperture</b> reached the <b>initial point</b><br>
+			(the <b>initial point</b> of opening tracing is a point where vertical <b>'check ray'</b> intersected first opening's bounding face)
+		</li>
+	</ol>
+</body>
+</html>

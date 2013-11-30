@@ -86,7 +86,7 @@ module LSS_Extensions
 							Sketchup.status_text=$lsszoneStrings.GetString("Rebuilding zones: ") + progr_bar.progr_string
 						}
 						Sketchup.status_text=$lsszoneStrings.GetString("Rebuilding complete.")
-						@selection.add(new_zones)
+						@selection.add(new_zones) if new_zones.length>0
 					# If stand_alone==false, then method is called from another @model.start_operation
 					@model.commit_operation if stand_alone
 					Sketchup.active_model.select_tool(nil) if @tool_nil
@@ -268,15 +268,21 @@ module LSS_Extensions
 						@trace_cont.int_pt=pos
 						@trace_cont.init_check
 						@trace_cont.hidden_trace
-						if @trace_cont.nodal_points
-							if @trace_cont.nodal_points.length>0
-								@nodal_points=@trace_cont.nodal_points
+						if @trace_cont.is_traced
+							if @trace_cont.nodal_points
+								if @trace_cont.nodal_points.length>0
+									@nodal_points=@trace_cont.nodal_points
+								end
 							end
-						end
-						if @trace_cont.openings_arr
-							if @trace_cont.openings_arr.length>0
-								@openings_arr=@trace_cont.openings_arr
+							if @trace_cont.openings_arr
+								if @trace_cont.openings_arr.length>0
+									@openings_arr=@trace_cont.openings_arr
+								end
 							end
+						else
+							warn_str=$lsszoneStrings.GetString("Re-tracing wasn't performed.")
+							UI.messagebox(warn_str, MB_OK)
+							return @zone_group
 						end
 					end
 				end
