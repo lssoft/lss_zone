@@ -1,4 +1,4 @@
-# lss_zone_settings.rb ver. 1.2.0 alpha 24-Nov-13
+# lss_zone_settings.rb ver. 1.2.0 beta 01-Dec-13
 # The file, which contains 'Global Settings' dialog implementation
 # Not in use for now.
 

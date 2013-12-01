@@ -1,4 +1,4 @@
-# lss_zone_layers_cmd.rb ver. 1.1.2 beta 08-Oct-13
+# lss_zone_layers_cmd.rb ver. 1.2.0 beta 01-Dec-13
 # The script, which contains a class, wich contains 'Zone Layers' toolbar implementation
 
 # (C) 2013, Links System Software

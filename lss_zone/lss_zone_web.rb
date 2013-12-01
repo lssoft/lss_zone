@@ -1,4 +1,4 @@
-# lss_zone_web.rb ver. 1.2.0 alpha 6 30-Nov-13
+# lss_zone_web.rb ver. 1.2.0 beta 01-Dec-13
 # The script, which loads extension's official web-page in a default browser.
 
 # (C) 2013, Links System Software
@@ -40,7 +40,7 @@ module LSS_Extensions
 				# Add 'About' dialog
 				lss_zone_about_cmd=UI::Command.new($lsszoneStrings.GetString("About")){
 					about_str=""
-					about_str+="LSS Zone ver. 1.2.0 alpha 6 (30-Nov-13)\n\n"
+					about_str+="LSS Zone ver. 1.2.0 beta (01-Dec-13)\n\n"
 					about_str+="E-mail1: designer@ls-software.ru\n"
 					about_str+="E-mail2: kirill2007_77@mail.ru\n"
 					about_str+="web-site: http://sites.google.com/site/lssoft2011/\n"

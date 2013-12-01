@@ -34,14 +34,37 @@ function send_size(){
 		<li>reading coordinates of openings if any</li>
 		<li>reading custom attributes</li>
 		<li>erasing existing zone</li>
-		<li>creating new zone based on and 'area' element contour and obtained information</li>
+		<li>creating new zone based on an 'area' element contour and obtained information</li>
 	</ul>
 	The point is that it is possible to manipulate a zone using native SketchUp tools (move, rotate, scale), but after such manipulation
 	some information stored in zone's properties becomes irrelevant (for example, area and perimeter will not match actual zone object's size
 	after scaling a zone).<br>
 	It is also possible to manipulate elements inside zone group (area element, wall element(s), ceiling element etc). 'Rebuild' command takes
 	in account results of manipulations with 'area' element only and discards all other manipulations' results. So it is possible to launch
-	'Rebuild' command in order to 'undo' undesirable changes of internal zone's elements if any.
+	'Rebuild' command in order to 'undo' undesirable changes of internal zone's elements if any.<br>
+	Since <b>ver. 1.2.0</b> it is possible to create zones just by picking one single point inside a closed space in an active model.
+	Rebuilding of such kind of a zone goes on a bit differently.<br>
+	<p><span class="blacksubheader">Steps of rebuilding of a zone, which has internal point</span> </p>
+	<ul>
+		<li>reading basic zone properties from existing zone</li>
+		<li>reading information about attached labels</li>
+		<li>reading coordinates of internal point (it is represented by tiny cross mark contained inside zone group)</li>
+		<li>reading custom attributes</li>
+		<li>
+			performing zone's contour tracing (refer to 'Contour Tracing' chapter for more info) in order to update
+			an array of zone's nodal points and openings
+		</li>
+		<li>erasing existing zone</li>
+		<li>creating new zone based on contour tracing results (new nodal points and openings) and other obtained information</li>
+	</ul>
+	This method allows to take in account changes of actual geometry in an active model, which forms closed space where zone being
+	rebuilded is located. It is necessary to pay attention to a tiny cross, which represents an internal point. This
+	mark should be placed inside a closed space at room's floor level.<br>
+	<p><span class="blacksubheader">WARNING!</span></p>
+	It is necessary to ensure that bounding geometry is actually visible before performing a rebuilding of such kind of a zone,
+	because contour tracing procedure traces only visible things (i.e. WYSIWYG flag is turned on).<br>
+	Note that this limitation not only a limitation, because it allows to hide things, which are not a part of contour to be
+	traced (furniture, equipment, wall hanging light fixtures etc) before tracing.
 	
 	<p><span class="blacksubheader">Note</span> </p> 
 	<div class="note">
