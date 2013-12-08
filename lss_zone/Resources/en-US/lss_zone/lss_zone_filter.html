@@ -9,7 +9,7 @@
 <script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
 <script type="text/javascript" src="lss_zone_filter.js" charset="win-1251"></script>
 <body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
-	<table id="zone_settings_table" class="settings_list">
+	<table id="filter_cmds_table" class="settings_list">
 		<tbody>
 			<tr>
 				<td class="info_img_cell">
@@ -33,7 +33,9 @@
 				<td>&nbsp;</td>
 			</tr>
 		</tbody>
-		<tbody id="filter_tbody">
+	</table>
+	<table id="filter_table" class="settings_list">
+		<tbody id="id_tbody">
 			<tr id="number_row">
 				<td class="info_img_cell">&nbsp;</td>
 				<td class="name_cell">
@@ -66,6 +68,14 @@
 				</td>
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+		<tbody id="geom_tbody">
+			<tr id="geom_hdr_row">
+				<td class="info_img_cell">
+					<div id="fld_unfld|geom_tbody" onclick="fold_unfold_group(this)" style="cursor: hand; text-align: center;">-</div>
+				</td>
+				<td class="header1" colspan="2">Geometry</td>
 			</tr>
 			<tr id="height_row">
 				<td class="info_img_cell">
@@ -151,6 +161,14 @@
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>
+		</tbody>
+		<tbody id="mat_tbody">
+			<tr id="mat_hdr_row">
+				<td class="info_img_cell">
+					<div id="fld_unfld|mat_tbody" onclick="fold_unfold_group(this)" style="cursor: hand; text-align: center;">-</div>
+				</td>
+				<td class="name_cell" colspan="2"><div class="header1">Materials</div></td>
+			</tr>
 			<tr id="floor_mat_row">
 				<td class="info_img_cell">
 					<img src="images/floor_material.gif" align="bottom">
@@ -211,6 +229,8 @@
 				</td>
 				<td class="value_cell"><input type="text" id="wall_refno" value="" onchange="send_condition(this)" onkeydown="prevent_enter(this)" onkeyup="cond_key_up(this)" class="value_input"></td>
 			</tr>
+		</tbody>
+		<tbody id="misc_tbody">
 			<tr class="splitter_row">
 				<td class="splitter_img_cell">
 					&nbsp;

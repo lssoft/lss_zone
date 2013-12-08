@@ -1,4 +1,4 @@
-# lss_zone_tool.rb ver. 1.2.0 beta 01-Dec-13
+# lss_zone_tool.rb ver. 1.2.1 beta 08-Dec-13
 # The main file, which contains LSS Zone Tool implementation.
 
 # (C) 2013, Links System Software
@@ -23,8 +23,8 @@ module LSS_Extensions
 				@lss_zone_tool_observer=nil
 				@lss_zone_tool_observer_state="disabled"
 				
-				lss_zone_tool=LSS_Zone_Tool.new
 				lss_zone_cmd=UI::Command.new($lsszoneStrings.GetString("LSS Zone")){
+					lss_zone_tool=LSS_Zone_Tool.new
 					Sketchup.active_model.select_tool(lss_zone_tool)
 				}
 				su_ver=Sketchup.version
@@ -161,6 +161,13 @@ module LSS_Extensions
 				
 				@picked_floor_mat=nil
 				@picked_wall_mat=nil
+				
+				# Hash, which contains states of roll groups states (folded/unfolded).
+				# Added in ver. 1.2.1 05-Dec-13.
+				@dialog_rolls_hash=Hash.new
+				@dialog_rolls_hash["geom_tbody"]="-"
+				@dialog_rolls_hash["trace_cont_tbody"]="-"
+				@dialog_rolls_hash["mat_tbody"]="-"
 			end
 			
 			# Set cursor to indicate current tool's state:
@@ -228,6 +235,11 @@ module LSS_Extensions
 				@zone_type=Sketchup.read_default("LSS_Zone", "zone_type", "room")
 				@floors_count=Sketchup.read_default("LSS_Zone", "floors_count", 1)
 				self.settings2hash
+				
+				# Group of dialog settings states (folded/unfolded). Added in ver. 1.2.1 06-Dec-13
+				@dialog_rolls_hash.each_key{|key|
+					@dialog_rolls_hash[key]=Sketchup.read_default("LSS_Zone_Tool_Dialog_Rolls", key, "-")
+				}
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -312,6 +324,11 @@ module LSS_Extensions
 				}
 				# Trace contour settings
 				Sketchup.write_default("LSS Zone Defaults", "int_pt_chk_hgt", @int_pt_chk_hgt)
+				
+				# Group of settings states (folded/unfolded). Added in ver. 1.2.1 06-Dec-13
+				@dialog_rolls_hash.each_key{|key|
+					Sketchup.write_default("LSS_Zone_Tool_Dialog_Rolls", key, @dialog_rolls_hash[key])
+				}
 			end
 			
 			# This method creates 'LSS Zone' web-dialog.
@@ -493,6 +510,63 @@ module LSS_Extensions
 							end
 						end
 						self.hash2settings
+					end
+					# Obtain roll state from dialog. Added in ver. 1.2.1 05-Dec-13
+					if action_name.split(",")[0]=="obtain_roll_state"
+						roll_grp_name=action_name.split(",")[1]
+						roll_state=action_name.split(",")[2]
+						@dialog_rolls_hash[roll_grp_name]=roll_state
+					end
+					# Send roll states from ruby to web-dialog. Added in ver. 1.2.1 06-Dec-13
+					if action_name=="get_roll_states"
+						@dialog_rolls_hash.each_key{|roll_grp_name|
+							roll_state=@dialog_rolls_hash[roll_grp_name]
+							roll_pair_str= roll_grp_name.to_s + "|" + roll_state.to_s
+							js_command = "set_roll_state('" + roll_pair_str + "')" if roll_pair_str
+							@zone_dialog.execute_script(js_command) if js_command
+						}
+					end
+					if action_name.split(",")[0]=="content_size"
+						@cont_width=action_name.split(",")[1].to_i
+						@cont_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="visible_size"
+						@visible_width=action_name.split(",")[1].to_i
+						@visible_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="dial_xy"
+						@dial_x=action_name.split(",")[1].to_i
+						@dial_y=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="screen_size"
+						@scr_width=action_name.split(",")[1].to_i
+						@scr_height=action_name.split(",")[2].to_i
+					end
+					if action_name=="init_dial_d_size"
+						js_command="send_visible_size()"
+						@zone_dialog.execute_script(js_command) if js_command
+						@init_width=@visible_width
+						@init_height=@visible_height
+						@zone_dialog.set_size(@init_width, @init_height)
+						js_command="send_visible_size()"
+						@zone_dialog.execute_script(js_command) if js_command
+						@d_height=@init_height-@visible_height
+						@d_width=@init_width-@visible_width
+						win_width=@init_width+@d_width
+						win_height=@init_height+@d_height
+						@zone_dialog.set_size(win_width, win_height)
+					end
+					if action_name=="adjust_dial_size"
+						if @cont_height and @cont_width
+							if @cont_height>0 and @cont_width>0
+								win_width=@cont_width+@d_width
+								win_height=@cont_height+@d_height
+								chk_bottom_y=win_height+@dial_y
+								bottom_offset=chk_bottom_y-@scr_height
+								win_height-=bottom_offset if bottom_offset>0
+								@zone_dialog.set_size(win_width, win_height)
+							end
+						end
 					end
 					if action_name=="reset"
 						view=Sketchup.active_model.active_view

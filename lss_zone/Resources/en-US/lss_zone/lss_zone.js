@@ -194,6 +194,8 @@ function apply_defaults(){
 }
 
 function load_init_data() {
+	send_screen_size();
+	callRuby("init_dial_d_size");
 	callRuby('get_materials');
 	callRuby('get_categories');
 	obtain_defaults();
@@ -532,58 +534,58 @@ function zone_type_view(zone_type){
 	var floor_level_row=document.getElementById("floor_level_row");
 	var floor_number_row=document.getElementById("floor_number_row");
 	var floors_count_row=document.getElementById("floors_count_row");
+	var mat_tbody=document.getElementById("mat_tbody");
 	var floor_mat_row=document.getElementById("floor_mat_row");
 	var ceiling_mat_row=document.getElementById("ceiling_mat_row");
 	var wall_mat_row=document.getElementById("wall_mat_row");
 	var floor_refno_row=document.getElementById("floor_refno_row");
 	var ceiling_refno_row=document.getElementById("ceiling_refno_row");
 	var wall_refno_row=document.getElementById("wall_refno_row");
+	
+	// Read roll groups statuses (folded/unfolded). Added in ver. 1.2.1 06-Dec-13.
+	var geom_grp_btn=document.getElementById("fld_unfld|geom_tbody");
+	var mat_grp_btn=document.getElementById("fld_unfld|mat_tbody");
+	var mat_st=mat_grp_btn.innerHTML;
+	var geom_st=geom_grp_btn.innerHTML;
+
 	switch(zone_type)
 	{
 		case "room":
 			// Display room related rows
-			height_row.style.display="";
-			volume_row.style.display="";
-			floor_level_row.style.display="";
-			floor_number_row.style.display="";
-			floor_mat_row.style.display="";
-			ceiling_mat_row.style.display="";
-			wall_mat_row.style.display="";
-			floor_refno_row.style.display="";
-			ceiling_refno_row.style.display="";
-			wall_refno_row.style.display="";
+			if (geom_st!="+"){
+				height_row.style.display="";
+				volume_row.style.display="";
+				floor_level_row.style.display="";
+				floor_number_row.style.display="";
+			}
+			mat_tbody.style.display="";
 			// Hide non-related rows
 			floors_count_row.style.display="none";
 			break;
 		case "box":
 			// Display building box related rows
-			floors_count_row.style.display="";
-			height_row.style.display="";
-			volume_row.style.display="";
+			if (geom_st!="+"){
+				floors_count_row.style.display="";
+				height_row.style.display="";
+				volume_row.style.display="";
+			}
 			// Hide non-related rows
 			floor_level_row.style.display="none";
 			floor_number_row.style.display="none";
-			floor_mat_row.style.display="none";
-			ceiling_mat_row.style.display="none";
-			wall_mat_row.style.display="none";
-			floor_refno_row.style.display="none";
-			ceiling_refno_row.style.display="none";
-			wall_refno_row.style.display="none";
+			mat_tbody.style.display="none";
 			break;
 		case "flat":
 			// Display flat zone related rows
-			
+			if (geom_st!="+"){
+				floor_level_row.style.display="";
+
+			}
 			// Hide non-related rows
 			height_row.style.display="none";
 			volume_row.style.display="none";
 			floor_level_row.style.display="none";
 			floor_number_row.style.display="none";
-			floor_mat_row.style.display="none";
-			ceiling_mat_row.style.display="none";
-			wall_mat_row.style.display="none";
-			floor_refno_row.style.display="none";
-			ceiling_refno_row.style.display="none";
-			wall_refno_row.style.display="none";
+			mat_tbody.style.display="none";
 			floors_count_row.style.display="none";
 			break;
 		default:
@@ -598,4 +600,152 @@ function refresh_volume(vol_str){
 
 function close_dial(){
 	callRuby("close_dial");
+}
+
+function fold_unfold_group(btn){
+	var grp_id=btn.id.split("|")[1]
+	var props_tbody=document.getElementById(grp_id);
+	var init_delay=60;
+	if (btn.innerHTML=="-") {
+		// Collapse properties list
+		btn.innerHTML="+";
+		var nodes = props_tbody.childNodes;
+		var i = 0;
+		delay=60;
+		function hide_nodes () {
+			setTimeout(function () {
+				var node=nodes[i];
+				if (node.id.indexOf("hdr_row")==-1){
+					node.style.display="none";
+				}
+				i++;
+				if (i < nodes.length) {
+					hide_nodes();
+				}
+				delay=parseInt(init_delay/(i*i/nodes.length+1));
+			}, delay);
+			adjust_dial_height();
+		}
+		hide_nodes();
+	}
+	else {
+		// Unfold properties list
+		var zone_type_field=document.getElementById("zone_type");
+		if (zone_type_field.nodeName=="SELECT"){
+			zone_type_field=false;
+		}
+		if (zone_type_field){
+			var zone_type=zone_type_field.value;
+		}
+		btn.innerHTML="-";
+		var nodes = props_tbody.childNodes;
+		var i = nodes.length-1;
+		delay=60;
+		function show_nodes () {
+			setTimeout(function () {
+				var node=nodes[i];
+				if (node.id.indexOf("hdr_row")==-1){
+					if (zone_type_field){
+						if (zone_type=="room"){
+							if (node.id!="floors_count_row"){
+								node.style.display="";
+							}
+						}
+						if (zone_type=="box"){
+							if (node.id!="floor_level_row" && node.id!="floor_number_row"){
+								node.style.display="";
+							}
+						}
+						if (zone_type=="flat"){
+							if (node.id!="floor_level_row" && node.id!="floor_number_row" && node.id!="floors_count_row" && node.id!="height_row" && node.id!="volume_row"){
+								node.style.display="";
+							}
+						}
+					}
+					else {
+						var room_cnt_div=document.getElementById("room_cnt_div");
+						var box_cnt_div=document.getElementById("box_cnt_div");
+						var flat_cnt_div=document.getElementById("flat_cnt_div");
+						if (room_cnt_div || box_cnt_div || flat_cnt_div){
+							if (room_cnt_div){
+								if (node.id!="floors_count_row"){
+									node.style.display="";
+								}
+							}
+							if (box_cnt_div){
+								if (node.id!="floor_level_row" && node.id!="floor_number_row"){
+									node.style.display="";
+								}
+							}
+							if (flat_cnt_div){
+								if (node.id!="floor_level_row" && node.id!="floor_number_row" && node.id!="floors_count_row" && node.id!="height_row" && node.id!="volume_row"){
+									node.style.display="";
+								}
+							}
+						}
+						else {
+							node.style.display="";
+						}
+					}
+				}
+				i-=1;
+				if (i >=0) {
+					show_nodes();
+				}
+				delay=parseInt(init_delay/(i*i/nodes.length+1));
+			}, delay);
+			adjust_dial_height();
+		}
+		show_nodes();
+	}
+	var act_name="obtain_roll_state" + delimiter + grp_id  + delimiter + btn.innerHTML;
+	callRuby(act_name);
+}
+
+function set_roll_state(roll_state_pair){
+	var roll_id=roll_state_pair.split("|")[0];
+	var roll_state=roll_state_pair.split("|")[1];
+	var roll_btn=document.getElementById("fld_unfld|"+roll_id);
+	if (roll_btn){
+		if (roll_btn.innerHTML!=roll_state){
+			fold_unfold_group(roll_btn);
+		}
+	}
+}
+
+function adjust_dial_height(){
+	send_content_size();
+	send_dial_xy();
+	act_name="adjust_dial_size";
+	callRuby(act_name);
+}
+
+function send_visible_size(){
+	var visible_width=document.body.offsetWidth;
+	var visible_height=document.body.offsetHeight;
+	act_name="visible_size" + delimiter + visible_width + delimiter + visible_height;
+	callRuby(act_name);
+}
+
+function send_content_size(){
+	// In our particular case table width=100% so we need to send 'offsetWidth' instead of 'scrollWidth'
+	var content_width=document.body.offsetWidth;
+	// As for content height, we need to send 'scrollHeight' in order to inform about actual content height
+	var content_height=document.body.scrollHeight;
+	act_name="content_size" + delimiter + content_width + delimiter + content_height;
+	callRuby(act_name);
+}
+
+function send_dial_xy(){
+	var dial_y=window.screenTop;
+	var dial_x=window.screenLeft;
+	act_name="dial_xy" + delimiter + dial_x + delimiter + dial_y;
+	callRuby(act_name);
+}
+
+function send_screen_size(){
+	var avail_width=screen.availWidth;
+	var avail_height=screen.availHeight;
+	act_name="screen_size" + delimiter + avail_width + delimiter + avail_height;
+	callRuby(act_name);
 }

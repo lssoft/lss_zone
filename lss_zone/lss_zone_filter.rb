@@ -1,4 +1,4 @@
-# lss_zone_filter.rb ver. 1.1.2 beta 07-Nov-13
+# lss_zone_filter.rb ver. 1.2.1 beta 06-Dec-13
 # The file, which contains 'Filter' dialog implementation
 
 # (C) 2013, Links System Software
@@ -45,6 +45,13 @@ module LSS_Extensions
 				@settings_hash=Hash.new
 				@zoom_selection="true"
 				@names_arr=nil # Array of collected zone names to place in 'autosuggest' widget
+				
+				# Hash, which contains states of roll groups states (folded/unfolded).
+				# Added in ver. 1.2.1 06-Dec-13.
+				@dialog_rolls_hash=Hash.new
+				@dialog_rolls_hash["geom_tbody"]="-"
+				@dialog_rolls_hash["trace_cont_tbody"]="-"
+				@dialog_rolls_hash["mat_tbody"]="-"
 			end
 
 			# This method collects only zone objects from current selection set and
@@ -376,6 +383,21 @@ module LSS_Extensions
 						@conditions_hash[cond_name]=cond_val
 						self.apply_filter
 					end
+					# Obtain roll state from dialog. Added in ver. 1.2.1 05-Dec-13
+					if action_name.split(",")[0]=="obtain_roll_state"
+						roll_grp_name=action_name.split(",")[1]
+						roll_state=action_name.split(",")[2]
+						@dialog_rolls_hash[roll_grp_name]=roll_state
+					end
+					# Send roll states from ruby to web-dialog. Added in ver. 1.2.1 06-Dec-13
+					if action_name=="get_roll_states"
+						@dialog_rolls_hash.each_key{|roll_grp_name|
+							roll_state=@dialog_rolls_hash[roll_grp_name]
+							roll_pair_str= roll_grp_name.to_s + "|" + roll_state.to_s
+							js_command = "set_roll_state('" + roll_pair_str + "')" if roll_pair_str
+							@filter_dialog.execute_script(js_command) if js_command
+						}
+					end
 					if action_name=="reset"
 						@filter_dialog.close
 						@selection.clear
@@ -511,6 +533,11 @@ module LSS_Extensions
 			
 			def read_defaults
 				@zoom_selection=Sketchup.read_default("LSS_Zone", "zoom_selection", "true")
+				
+				# Group states (folded/unfolded). Added in ver. 1.2.1 05-Dec-13
+				@dialog_rolls_hash.each_key{|key|
+					@dialog_rolls_hash[key]=Sketchup.read_default("LSS_Zone_Filter_Rolls", key, "-")
+				}
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -519,6 +546,11 @@ module LSS_Extensions
 			
 			def write_defaults
 				Sketchup.write_default("LSS_Zone", "zoom_selection", @zoom_selection)
+				
+				# Group states (folded/unfolded). Added in ver. 1.2.1 05-Dec-13
+				@dialog_rolls_hash.each_key{|key|
+					Sketchup.write_default("LSS_Zone_Filter_Rolls", key, @dialog_rolls_hash[key])
+				}
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present

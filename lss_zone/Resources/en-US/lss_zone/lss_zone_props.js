@@ -35,10 +35,10 @@ function get_zones_cnt(cnt_str){
 	}
 	var cnt_div=document.getElementById("zones_count");
 	cnt_div.innerHTML="";
-	var props_tbody=document.getElementById("props_tbody");
+	var basic_props_table=document.getElementById("basic_props_table");
 	var btm_tbl=document.getElementById("bottom_tbl");
 	if (room_cnt==0 && box_cnt==0 && flat_cnt==0){
-		props_tbody.style.display="none";
+		basic_props_table.style.display="none";
 		cnt_div.innerHTML="Zero";
 		var props_list_content_field=document.getElementById("props_list_content");
 		var view_type=props_list_content_field.value;
@@ -50,7 +50,7 @@ function get_zones_cnt(cnt_str){
 		}
 	}
 	else {
-		props_tbody.style.display="";
+		basic_props_table.style.display="";
 		btm_tbl.style.display="";
 		if (room_cnt!=0) {
 			room_img=document.createElement("IMG");
@@ -88,6 +88,15 @@ function get_zones_cnt(cnt_str){
 			flat_cnt_div.title="'Flat' zones count";
 			cnt_div.appendChild(flat_cnt_div);
 		}
+		
+		// Read roll groups statuses (folded/unfolded). Added in ver. 1.2.1 06-Dec-13.
+		var trace_cont_grp_btn=document.getElementById("fld_unfld|trace_cont_tbody");
+		var geom_grp_btn=document.getElementById("fld_unfld|geom_tbody");
+		var mat_grp_btn=document.getElementById("fld_unfld|mat_tbody");
+		var trace_cont_st=trace_cont_grp_btn.innerHTML;
+		var mat_st=mat_grp_btn.innerHTML;
+		var geom_st=geom_grp_btn.innerHTML;
+		
 		// Adjust display of properties according to selected zone types
 		var height_row=document.getElementById("height_row");
 		var volume_row=document.getElementById("volume_row");
@@ -120,25 +129,31 @@ function get_zones_cnt(cnt_str){
 		wall_area_row.style.display="none";
 		if (room_cnt!=0) {
 			// Display room related rows
-			height_row.style.display="";
-			volume_row.style.display="";
-			floor_level_row.style.display="";
-			floor_number_row.style.display="";
-			floor_mat_row.style.display="";
-			ceiling_mat_row.style.display="";
-			wall_mat_row.style.display="";
-			floor_refno_row.style.display="";
-			ceiling_refno_row.style.display="";
-			wall_refno_row.style.display="";
-			floor_area_row.style.display="";
-			ceiling_area_row.style.display="";
-			wall_area_row.style.display="";
+			if (geom_st!="+"){
+				height_row.style.display="";
+				volume_row.style.display="";
+				floor_level_row.style.display="";
+				floor_number_row.style.display="";
+			};
+			if (mat_st!="+"){
+				floor_mat_row.style.display="";
+				ceiling_mat_row.style.display="";
+				wall_mat_row.style.display="";
+				floor_refno_row.style.display="";
+				ceiling_refno_row.style.display="";
+				wall_refno_row.style.display="";
+				floor_area_row.style.display="";
+				ceiling_area_row.style.display="";
+				wall_area_row.style.display="";
+			};
 		}
 		if (box_cnt!=0) {
 			// Display building box related rows
-			floors_count_row.style.display="";
-			height_row.style.display="";
-			volume_row.style.display="";
+			if (geom_st!="+"){
+				floors_count_row.style.display="";
+				height_row.style.display="";
+				volume_row.style.display="";
+			}
 		}
 		if (flat_cnt!=0) {
 			// Display flat zone related rows
@@ -159,26 +174,30 @@ function custom_init(){
 			else {
 				var zone_only_radio=document.getElementById("zone_only");
 				radio_click(zone_only_radio);
+				// Roll states added in ver. 1.2.1 05-Dec-13.
+				var act_name="get_roll_states";
+				callRuby(act_name);
 			}
 		}
 	}
 }
 
 function switch_content_view(view_type){
-	var basic_props_tbody=document.getElementById("props_tbody");
-	var all_props_tbody=document.getElementById("all_props_tbody");
+	var basic_props_table=document.getElementById("basic_props_table");
+	var all_props_table=document.getElementById("all_props_table");
 	var zones_count_row=document.getElementById("zones_count_row");
 	var btm_tbl=document.getElementById("bottom_tbl");
 	if (view_type=="all"){
-		all_props_tbody.style.display="";
-		basic_props_tbody.style.display="none";
-		zones_count_row.style.display="none";
+		all_props_table.style.display="";
+		basic_props_table.style.display="none";
+		// Commented in ver. 1.2.1 05-Dec-13
+		// zones_count_row.style.display="none";
 		btm_tbl.style.display="";
 	}
 	else
 	{
-		all_props_tbody.style.display="none";
-		basic_props_tbody.style.display="";
+		all_props_table.style.display="none";
+		basic_props_table.style.display="";
 		callRuby("get_zones_cnt");
 		zones_count_row.style.display="";
 	}
@@ -311,12 +330,12 @@ function list_all_props(){
 function fold_unfold(evt){
 	var dict_name=this.id.split(delimiter)[1];
 	var props_tbody=document.getElementById("tbody"+delimiter+dict_name);
+	var init_delay=60;
 	if (this.innerHTML=="-") {
 		// Collapse properties list
 		this.innerHTML="+";
 		var nodes = props_tbody.childNodes;
 		var i = 0;
-		init_delay=60;
 		delay=60;
 		function hide_nodes () {
 			setTimeout(function () {

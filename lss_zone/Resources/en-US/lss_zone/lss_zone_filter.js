@@ -66,16 +66,16 @@ function get_zones_cnt(cnt_str){
 	}
 	var cnt_div=document.getElementById(cnt_type+"_zones_count");
 	cnt_div.innerHTML="";
-	var filter_tbody=document.getElementById("filter_tbody");
+	var filter_table=document.getElementById("filter_table");
 	var btm_tbl=document.getElementById("bottom_tbl");
 	if (room_cnt==0 && box_cnt==0 && flat_cnt==0){
 		if (cnt_type=="total"){
-			filter_tbody.style.display="none";
+			filter_table.style.display="none";
 		}
 		cnt_div.innerHTML="Zero";
 	}
 	else {
-		filter_tbody.style.display="";
+		filter_table.style.display="";
 		btm_tbl.style.display="";
 		if (room_cnt!=0) {
 			room_img=document.createElement("IMG");
@@ -87,6 +87,7 @@ function get_zones_cnt(cnt_str){
 			room_cnt_div.innerHTML=room_cnt;
 			room_cnt_div.className="dock_left";
 			room_cnt_div.title="'Room' zones count";
+			room_cnt_div.id="room_cnt_div";
 			cnt_div.appendChild(room_cnt_div);
 		}
 		if (box_cnt!=0) {
@@ -99,6 +100,7 @@ function get_zones_cnt(cnt_str){
 			box_cnt_div.innerHTML=box_cnt;
 			box_cnt_div.className="dock_left";
 			box_cnt_div.title="'Box' zones count";
+			box_cnt_div.id="box_cnt_div";
 			cnt_div.appendChild(box_cnt_div);
 		}
 		if (flat_cnt!=0) {
@@ -111,6 +113,7 @@ function get_zones_cnt(cnt_str){
 			flat_cnt_div.innerHTML=flat_cnt;
 			flat_cnt_div.className="dock_left";
 			flat_cnt_div.title="'Flat' zones count";
+			flat_cnt_div.id="flat_cnt_div";
 			cnt_div.appendChild(flat_cnt_div);
 		}
 		// Adjust display of properties according to selected zone types
@@ -137,6 +140,7 @@ function get_zones_cnt(cnt_str){
 		var use_floor_refno=document.getElementById("use_floor_refno");
 		var use_ceiling_refno=document.getElementById("use_ceiling_refno");
 		var use_wall_refno=document.getElementById("use_wall_refno");
+		
 		// Hide all adjustable properties
 		if (use_height.checked==false){ height_row.style.display="none";};
 		if (use_volume.checked==false){	volume_row.style.display="none";};
@@ -149,24 +153,42 @@ function get_zones_cnt(cnt_str){
 		if (use_ceiling_refno.checked==false){ ceiling_refno_row.style.display="none";};
 		if (use_wall_refno.checked==false){ wall_refno_row.style.display="none";};
 		if (use_floors_count.checked==false){ floors_count_row.style.display="none";};
+		
+		// Hide group of materials searching conditions
+		var mat_tbody=document.getElementById("mat_tbody");
+		mat_tbody.style.display="none";
+		
+		// Read roll groups statuses (folded/unfolded). Added in ver. 1.2.1 06-Dec-13.
+		var geom_grp_btn=document.getElementById("fld_unfld|geom_tbody");
+		var mat_grp_btn=document.getElementById("fld_unfld|mat_tbody");
+		var mat_st=mat_grp_btn.innerHTML;
+		var geom_st=geom_grp_btn.innerHTML;
+		
 		if (room_cnt!=0) {
 			// Display room related rows
-			height_row.style.display="";
-			volume_row.style.display="";
-			floor_level_row.style.display="";
-			floor_number_row.style.display="";
-			floor_mat_row.style.display="";
-			ceiling_mat_row.style.display="";
-			wall_mat_row.style.display="";
-			floor_refno_row.style.display="";
-			ceiling_refno_row.style.display="";
-			wall_refno_row.style.display="";
+			if (geom_st!="+"){
+				height_row.style.display="";
+				volume_row.style.display="";
+				floor_level_row.style.display="";
+				floor_number_row.style.display="";
+			}
+			if (mat_st!="+"){
+				floor_mat_row.style.display="";
+				ceiling_mat_row.style.display="";
+				wall_mat_row.style.display="";
+				floor_refno_row.style.display="";
+				ceiling_refno_row.style.display="";
+				wall_refno_row.style.display="";
+			}
+			mat_tbody.style.display="";
 		}
 		if (box_cnt!=0) {
 			// Display building box related rows
-			floors_count_row.style.display="";
-			height_row.style.display="";
-			volume_row.style.display="";
+			if (geom_st!="+"){
+				floors_count_row.style.display="";
+				height_row.style.display="";
+				volume_row.style.display="";
+			}
 		}
 		if (flat_cnt!=0) {
 			// Display flat zone related rows
@@ -194,4 +216,7 @@ function cond_key_up(field) {
 function custom_init(){
 	callRuby("get_zones_cnt");
 	callRuby("get_names");
+	// Roll states added in ver. 1.2.1 05-Dec-13.
+	var act_name="get_roll_states";
+	callRuby(act_name);
 }

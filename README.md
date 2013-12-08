@@ -2,7 +2,8 @@
 Brief
 -----
 'LSS Zone' is an extension for Sketchup, which allows to create, store and manage information about rooms.
-![Sample Screenshot](https://googledrive.com/host/0Bwmt-Rax8alUNGhCMTZpTzdxdzg/zone_tool.gif)
+![Sample Screenshot 1](https://googledrive.com/host/0Bwmt-Rax8alUZS1MRFJHcFkzOFU/zone_tool.gif)
+![Sample Screenshot 2](https://googledrive.com/host/0Bwmt-Rax8alUVk85MUlhQ3NzU3c/trace_cont.gif)
 
 Features
 --------

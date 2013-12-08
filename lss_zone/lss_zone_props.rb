@@ -1,4 +1,4 @@
-# lss_zone_props.rb ver. 1.1.2 beta 09-Nov-13
+# lss_zone_props.rb ver. 1.2.1 beta 06-Dec-13
 # The file, which contains 'Zone Properties' dialog implementation.
 
 # (C) 2013, Links System Software
@@ -53,6 +53,13 @@ module LSS_Extensions
 				@new_attrs=Array.new
 				@rebuild_on_apply="true"
 				@zone_types_cnt=Hash.new
+				
+				# Hash, which contains states of roll groups states (folded/unfolded).
+				# Added in ver. 1.2.1 05-Dec-13.
+				@dialog_rolls_hash=Hash.new
+				@dialog_rolls_hash["geom_tbody"]="-"
+				@dialog_rolls_hash["trace_cont_tbody"]="-"
+				@dialog_rolls_hash["mat_tbody"]="-"
 			end
 			
 			# This method performs filtering of selection in order to choose only zone objects from
@@ -101,6 +108,15 @@ module LSS_Extensions
 				
 				@area=0; @perimeter=0; @volume=0
 				@floor_area=0; @ceiling_area=0; @wall_area=0 # New geom summary added in ver. 1.1.1 06-Nov-13.
+				
+				# Contour tracing settings. Added 05-Dec-13.
+				@int_pt_chk_hgt=etalon_zone.get_attribute("LSS_Zone_Entity", "int_pt_chk_hgt").to_s
+				@aperture_size=etalon_zone.get_attribute("LSS_Zone_Entity", "aperture_size").to_s
+				@min_wall_offset=etalon_zone.get_attribute("LSS_Zone_Entity", "min_wall_offset").to_s
+				@op_trace_offset=etalon_zone.get_attribute("LSS_Zone_Entity", "op_trace_offset").to_s
+				@trace_openings=etalon_zone.get_attribute("LSS_Zone_Entity", "trace_openings").to_s
+				@use_materials=etalon_zone.get_attribute("LSS_Zone_Entity", "use_materials").to_s
+				
 				i=1; tot_cnt=@zones_arr.length
 				progr_char="|"; rest_char="_"; scale_coeff=1
 				progr_bar=LSS_Progr_Bar.new(tot_cnt,progr_char,rest_char,scale_coeff)
@@ -149,6 +165,15 @@ module LSS_Extensions
 						else # Treat 'nil' as a 'room' type
 						@zone_types_cnt["room"]+=1
 					end
+					
+					# Contour tracing properties. Added in ver. 1.2.1 05-Dec-13.
+					@int_pt_chk_hgt="..." if zone_obj.get_attribute("LSS_Zone_Entity", "int_pt_chk_hgt").to_s!=@int_pt_chk_hgt
+					@aperture_size="..." if zone_obj.get_attribute("LSS_Zone_Entity", "aperture_size").to_s!=@aperture_size
+					@min_wall_offset="..." if zone_obj.get_attribute("LSS_Zone_Entity", "min_wall_offset").to_s!=@min_wall_offset
+					@op_trace_offset="..." if zone_obj.get_attribute("LSS_Zone_Entity", "op_trace_offset").to_s!=@op_trace_offset
+					@trace_openings="..." if zone_obj.get_attribute("LSS_Zone_Entity", "trace_openings").to_s!=@trace_openings
+					@use_materials="..." if zone_obj.get_attribute("LSS_Zone_Entity", "use_materials").to_s!=@use_materials
+					
 					progr_bar.update(i)
 					i+=1
 					Sketchup.status_text=$lsszoneStrings.GetString("Reading attributes: ") + progr_bar.progr_string
@@ -447,6 +472,15 @@ module LSS_Extensions
 							zone_obj.set_attribute("LSS_Zone_Entity", "wall_refno", @wall_refno) if @wall_refno and @wall_refno.to_s!="..."
 							zone_obj.set_attribute("LSS_Zone_Entity", "ceiling_refno", @ceiling_refno) if @ceiling_refno and @ceiling_refno.to_s!="..."
 							zone_obj.set_attribute("LSS_Zone_Entity", "floors_count", @floors_count) if @floors_count and @floors_count.to_s!="..."
+							
+							# Contour tracing properties. Added in ver. 1.2.1 05-Dec-13.
+							zone_obj.set_attribute("LSS_Zone_Entity", "int_pt_chk_hgt", @int_pt_chk_hgt) if @int_pt_chk_hgt and @int_pt_chk_hgt.to_s!="..."
+							zone_obj.set_attribute("LSS_Zone_Entity", "aperture_size", @aperture_size) if @aperture_size and @aperture_size.to_s!="..."
+							zone_obj.set_attribute("LSS_Zone_Entity", "min_wall_offset", @min_wall_offset) if @min_wall_offset and @min_wall_offset.to_s!="..."
+							zone_obj.set_attribute("LSS_Zone_Entity", "op_trace_offset", @op_trace_offset) if @op_trace_offset and @op_trace_offset.to_s!="..."
+							zone_obj.set_attribute("LSS_Zone_Entity", "trace_openings", @trace_openings) if @trace_openings and @trace_openings.to_s!="..."
+							zone_obj.set_attribute("LSS_Zone_Entity", "use_materials", @use_materials) if @use_materials and @use_materials.to_s!="..."
+							
 							progr_bar.update(i)
 							i+=1
 							Sketchup.status_text=$lsszoneStrings.GetString("Applying new properties: ") + progr_bar.progr_string
@@ -647,6 +681,21 @@ module LSS_Extensions
 						dict_hash[new_prop_name]=val				# Add key with new attribute name
 						@all_props[dict_name]=dict_hash				# Store updated dictionary in dictionaries hash
 					end
+					# Obtain roll state from dialog. Added in ver. 1.2.1 05-Dec-13
+					if action_name.split(",")[0]=="obtain_roll_state"
+						roll_grp_name=action_name.split(",")[1]
+						roll_state=action_name.split(",")[2]
+						@dialog_rolls_hash[roll_grp_name]=roll_state
+					end
+					# Send roll states from ruby to web-dialog. Added in ver. 1.2.1 06-Dec-13
+					if action_name=="get_roll_states"
+						@dialog_rolls_hash.each_key{|roll_grp_name|
+							roll_state=@dialog_rolls_hash[roll_grp_name]
+							roll_pair_str= roll_grp_name.to_s + "|" + roll_state.to_s
+							js_command = "set_roll_state('" + roll_pair_str + "')" if roll_pair_str
+							@props_dialog.execute_script(js_command) if js_command
+						}
+					end
 					if action_name=="reset"
 						@props_dialog.close
 						lss_zone_props=LSS_Zone_Props.new
@@ -785,6 +834,11 @@ module LSS_Extensions
 			def read_defaults
 				@props_list_content=Sketchup.read_default("LSS_Zone", "props_list_content", "zone_only") # Alternative representation is 'all'
 				@rebuild_on_apply=Sketchup.read_default("LSS_Zone", "rebuild_on_apply", "true")
+				
+				# Group states (folded/unfolded). Added in ver. 1.2.1 05-Dec-13
+				@dialog_rolls_hash.each_key{|key|
+					@dialog_rolls_hash[key]=Sketchup.read_default("LSS_Zone_Dialog_Rolls", key, "-")
+				}
 			end
 			
 			# This method writes 'Properties' dialog defaults:
@@ -794,6 +848,11 @@ module LSS_Extensions
 			def write_defaults
 				Sketchup.write_default("LSS_Zone", "props_list_content", @props_list_content)
 				Sketchup.write_default("LSS_Zone", "rebuild_on_apply", @rebuild_on_apply)
+				
+				# Group states (folded/unfolded). Added in ver. 1.2.1 05-Dec-13
+				@dialog_rolls_hash.each_key{|key|
+					Sketchup.write_default("LSS_Zone_Dialog_Rolls", key, @dialog_rolls_hash[key])
+				}
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
