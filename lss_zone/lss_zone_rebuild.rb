@@ -139,7 +139,32 @@ module LSS_Extensions
 						preset_name=dict["preset_name"]
 						label_template=dict["label_template"]
 						label_layer=dict["label_layer"]
-						@labels_arr<<[preset_name, label_template, label_layer]
+						
+						# Search for actual text representation of a label and read coordinates of its position.
+						# Added in ver. 1.2.1 09-Dec-13.
+						txt_str=nil
+						@zone_group.entities.each{|ent|
+							if ent.is_a?(Sketchup::Text)
+								label_name=ent.get_attribute("LSS_Zone_Entity", "label_name")
+								if label_name==preset_name
+									txt_pos=ent.point
+									txt_pos.transform!(@zone_group.transformation)
+									txt_str=txt_pos.to_a.join("|")
+									break
+								end
+							end
+						}
+						
+						if txt_str
+							# Save information about label's actual position for recreating new label
+							# at the same point.
+							@labels_arr<<[preset_name, label_template, label_layer, txt_str]
+						else
+							# Discard information about label's position, so zone entity
+							# will create this particular label at an initial position
+							# computed acording to global settings.
+							@labels_arr<<[preset_name, label_template, label_layer]
+						end
 					end
 				}
 				

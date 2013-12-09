@@ -200,6 +200,7 @@ function load_init_data() {
 	callRuby('get_categories');
 	obtain_defaults();
 	document.onkeypress = stopRKey; //It is a trick to prevent onclick event of the first image button after pressing Enter key
+	adjust_dial_height();
 }
 
 //Function to prevent onclick event of the first image button after pressing Enter key
@@ -631,8 +632,10 @@ function fold_unfold_group(btn){
 	else {
 		// Unfold properties list
 		var zone_type_field=document.getElementById("zone_type");
-		if (zone_type_field.nodeName=="SELECT"){
-			zone_type_field=false;
+		if (zone_type_field){
+			if (zone_type_field.nodeName=="SELECT"){
+				zone_type_field=false;
+			}
 		}
 		if (zone_type_field){
 			var zone_type=zone_type_field.value;

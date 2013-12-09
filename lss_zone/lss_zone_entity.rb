@@ -1,4 +1,4 @@
-# lss_zone_entity.rb ver. 1.2.0 beta 01-Dec-13
+# lss_zone_entity.rb ver. 1.2.1 beta 09-Dec-13
 # This file contains LSS_Zone_Entity class, LSS_Element_Group class and LSS_Volume_Group class.
 # LSS_Zone_Entity class is the main one. It is actively used by other methods.
 # LSS_Element_Group and LSS_Volume_Group are service classes and #create_zone method
@@ -74,6 +74,11 @@ module LSS_Extensions
 			attr_accessor :op_trace_offset
 			attr_accessor :int_pt_crds
 			
+			# Label position settings (added in ver. 1.2.1 09-Dec-13)
+			attr_accessor :label_level
+			attr_accessor :label_pos
+			attr_accessor :label_offset
+			
 			# Result
 			attr_accessor :zone_group
 			
@@ -131,6 +136,13 @@ module LSS_Extensions
 				@trace_openings="true"
 				@use_materials="true"
 				@int_pt_crds=""
+				
+				# Level where to place label text initially during creation of a zone
+				@label_level=Sketchup.read_default("LSS Zone Defaults", "label_level", "bottom") # bottom, center, top
+				# Position of a label on the label level plane
+				@label_pos=Sketchup.read_default("LSS Zone Defaults", "label_pos", "center") #top_left, top_right, bottom_right, bottom_left, center
+				# Offset from chosen alignment point
+				@label_offset=Sketchup.read_default("LSS Zone Defaults", "label_offset", 30)
 			
 				@model=Sketchup.active_model
 				@entities=@model.active_entities
@@ -332,6 +344,9 @@ module LSS_Extensions
 						preset_name=label[0]
 						label_template=label[1]
 						label_layer=label[2]
+						# Read label coordinates if any. Added in ver. 1.2.1 09-Dec-13.
+						label_crds=nil
+						label_crds=label[3] if label.length>3
 						attr_dict=@zone_group.attribute_dictionary("LSS_Zone_Entity")
 						label_txt="#{label_template}"
 						attr_dict.each_key{|key|
@@ -364,7 +379,52 @@ module LSS_Extensions
 							end
 							label_txt.gsub!(attr_name, value.to_s)
 						}
-						txt_pos=@zone_group.bounds.center
+						if label_crds
+							# Looks like it is a refreshing of previously existed label so
+							# put label at a previously stored position.
+							txt_pos=Geom::Point3d.new(label_crds.split("|").map!{|crd| crd.to_f})
+						else
+							# Looks like it is a brand new label, so compute its position
+							# according to global settings.
+							# @label_level="bottom" # bottom, center, top
+							# @label_pos="center" #top-left, top-right, bottom-right, bottom-left, center
+							# @label_offset=30
+							if @label_offset
+								@label_offset=@label_offset.to_f
+							else
+								@label_offset=0
+							end
+							case @label_pos
+								when "center"
+								txt_pos=@zone_group.bounds.center
+								txt_pos.x-=@label_offset
+								txt_pos.y+=@label_offset
+								when "top-left"
+								txt_pos=@zone_group.bounds.corner(2)
+								txt_pos.x+=@label_offset
+								txt_pos.y-=@label_offset
+								when "top-right"
+								txt_pos=@zone_group.bounds.corner(3)
+								txt_pos.x-=@label_offset
+								txt_pos.y-=@label_offset
+								when "bottom-right"
+								txt_pos=@zone_group.bounds.corner(1)
+								txt_pos.x-=@label_offset
+								txt_pos.y+=@label_offset
+								when "bottom-left"
+								txt_pos=@zone_group.bounds.corner(0)
+								txt_pos.x+=@label_offset
+								txt_pos.y+=@label_offset
+							end
+							case @label_level
+								when "bottom"
+								txt_pos.z=@zone_group.bounds.min.z
+								when "center"
+								txt_pos.z=@zone_group.bounds.center.z
+								when "top"
+								txt_pos.z=@zone_group.bounds.max.z
+							end
+						end
 						label_obj=@zone_group.entities.add_text(label_txt, txt_pos)
 						if layer_names.include?(label_layer)==false
 							layers.add(label_layer)

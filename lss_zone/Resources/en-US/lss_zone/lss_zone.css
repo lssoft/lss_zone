@@ -3,7 +3,7 @@
   margin-right: 0.5em;
   margin-left: 0.5em;
   margin-top: 0.5em;
-  margin-bottom: 0.8em;
+  margin-bottom: 0.1em;
   line-height: 1.25em;
   color: black; 
   background: white;
@@ -143,6 +143,9 @@ a:hover
 .header1
 {
 	font: bold 100%  Helvetica, Arial, sans-serif;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .name_cell

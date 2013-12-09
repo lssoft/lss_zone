@@ -1,4 +1,4 @@
-# lss_zone_tool.rb ver. 1.2.1 beta 08-Dec-13
+# lss_zone_tool.rb ver. 1.2.1 beta 09-Dec-13
 # The main file, which contains LSS Zone Tool implementation.
 
 # (C) 2013, Links System Software
@@ -168,6 +168,9 @@ module LSS_Extensions
 				@dialog_rolls_hash["geom_tbody"]="-"
 				@dialog_rolls_hash["trace_cont_tbody"]="-"
 				@dialog_rolls_hash["mat_tbody"]="-"
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
+				@stick_height="false"
 			end
 			
 			# Set cursor to indicate current tool's state:
@@ -234,6 +237,10 @@ module LSS_Extensions
 				
 				@zone_type=Sketchup.read_default("LSS_Zone", "zone_type", "room")
 				@floors_count=Sketchup.read_default("LSS_Zone", "floors_count", 1)
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
+				@stick_height=Sketchup.read_default("LSS_Zone", "stick_height", "false")
+				
 				self.settings2hash
 				
 				# Group of dialog settings states (folded/unfolded). Added in ver. 1.2.1 06-Dec-13
@@ -286,6 +293,9 @@ module LSS_Extensions
 				Sketchup.write_default("LSS Zone Data Types", "floor_int_ops_area", "area")
 				Sketchup.write_default("LSS Zone Data Types", "ceiling_ext_ops_area", "area")
 				Sketchup.write_default("LSS Zone Data Types", "ceiling_int_ops_area", "area")
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
+				@settings_hash["stick_height"]=[@stick_height, "boolean"]
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -311,6 +321,9 @@ module LSS_Extensions
 				
 				@zone_type=@settings_hash["zone_type"][0]
 				@floors_count=@settings_hash["floors_count"][0]
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
+				@stick_height=@settings_hash["stick_height"][0]
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -322,6 +335,7 @@ module LSS_Extensions
 				@settings_hash.each_key{|key|
 					Sketchup.write_default("LSS_Zone", key, @settings_hash[key][0].to_s)
 				}
+				
 				# Trace contour settings
 				Sketchup.write_default("LSS Zone Defaults", "int_pt_chk_hgt", @int_pt_chk_hgt)
 				
@@ -508,6 +522,11 @@ module LSS_Extensions
 									@height=0
 								end
 							end
+							
+							# Handle stick height setting change
+							if key=="stick_height"
+								self.adjust_dial_size if val=="true"
+							end
 						end
 						self.hash2settings
 					end
@@ -526,6 +545,7 @@ module LSS_Extensions
 							@zone_dialog.execute_script(js_command) if js_command
 						}
 					end
+					# Content size block start
 					if action_name.split(",")[0]=="content_size"
 						@cont_width=action_name.split(",")[1].to_i
 						@cont_height=action_name.split(",")[2].to_i
@@ -557,17 +577,11 @@ module LSS_Extensions
 						@zone_dialog.set_size(win_width, win_height)
 					end
 					if action_name=="adjust_dial_size"
-						if @cont_height and @cont_width
-							if @cont_height>0 and @cont_width>0
-								win_width=@cont_width+@d_width
-								win_height=@cont_height+@d_height
-								chk_bottom_y=win_height+@dial_y
-								bottom_offset=chk_bottom_y-@scr_height
-								win_height-=bottom_offset if bottom_offset>0
-								@zone_dialog.set_size(win_width, win_height)
-							end
+						if @stick_height=="true"
+							self.adjust_dial_size
 						end
 					end
+					# Content size block end
 					if action_name=="reset"
 						view=Sketchup.active_model.active_view
 						self.reset(view)
@@ -586,6 +600,20 @@ module LSS_Extensions
 					self.write_defaults
 					Sketchup.active_model.select_tool(nil)
 				}
+			end
+			
+			# This method adjusts the size of a dialog to fit its content. Added in ver. 1.2.1 09-Dec-13.
+			def adjust_dial_size
+				if @cont_height and @cont_width
+					if @cont_height>0 and @cont_width>0
+						win_width=@cont_width+@d_width
+						win_height=@cont_height+@d_height
+						chk_bottom_y=win_height+@dial_y
+						bottom_offset=chk_bottom_y-@scr_height
+						win_height-=bottom_offset if bottom_offset>0
+						@zone_dialog.set_size(win_width, win_height)
+					end
+				end
 			end
 			
 			def set_trace_cont_defaults
