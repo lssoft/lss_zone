@@ -1,4 +1,4 @@
-# lss_zone_tool.rb ver. 1.2.1 beta 09-Dec-13
+# lss_zone_tool.rb ver. 1.2.1 alpha 25-Dec-13
 # The main file, which contains LSS Zone Tool implementation.
 
 # (C) 2013, Links System Software
@@ -170,7 +170,7 @@ module LSS_Extensions
 				@dialog_rolls_hash["mat_tbody"]="-"
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
-				@stick_height="false"
+				@stick_height="true"
 			end
 			
 			# Set cursor to indicate current tool's state:
@@ -239,7 +239,7 @@ module LSS_Extensions
 				@floors_count=Sketchup.read_default("LSS_Zone", "floors_count", 1)
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
-				@stick_height=Sketchup.read_default("LSS_Zone", "stick_height", "false")
+				@stick_height=Sketchup.read_default("LSS_Zone", "stick_height", "true")
 				
 				self.settings2hash
 				
@@ -525,7 +525,7 @@ module LSS_Extensions
 							
 							# Handle stick height setting change
 							if key=="stick_height"
-								self.adjust_dial_size if val=="true"
+								LSS_Zone_Utils.new.adjust_dial_size(@zone_dialog, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height) if val=="true"
 							end
 						end
 						self.hash2settings
@@ -562,6 +562,9 @@ module LSS_Extensions
 						@scr_width=action_name.split(",")[1].to_i
 						@scr_height=action_name.split(",")[2].to_i
 					end
+					if action_name.split(",")[0]=="hdr_ftr_height"
+						@hdr_ftr_height=action_name.split(",")[1].to_i
+					end
 					if action_name=="init_dial_d_size"
 						js_command="send_visible_size()"
 						@zone_dialog.execute_script(js_command) if js_command
@@ -570,7 +573,7 @@ module LSS_Extensions
 						@zone_dialog.set_size(@init_width, @init_height)
 						js_command="send_visible_size()"
 						@zone_dialog.execute_script(js_command) if js_command
-						@d_height=@init_height-@visible_height
+						@d_height=@init_height-@visible_height + @hdr_ftr_height
 						@d_width=@init_width-@visible_width
 						win_width=@init_width+@d_width
 						win_height=@init_height+@d_height
@@ -578,7 +581,7 @@ module LSS_Extensions
 					end
 					if action_name=="adjust_dial_size"
 						if @stick_height=="true"
-							self.adjust_dial_size
+							LSS_Zone_Utils.new.adjust_dial_size(@zone_dialog, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height)
 						end
 					end
 					# Content size block end
@@ -601,21 +604,7 @@ module LSS_Extensions
 					Sketchup.active_model.select_tool(nil)
 				}
 			end
-			
-			# This method adjusts the size of a dialog to fit its content. Added in ver. 1.2.1 09-Dec-13.
-			def adjust_dial_size
-				if @cont_height and @cont_width
-					if @cont_height>0 and @cont_width>0
-						win_width=@cont_width+@d_width
-						win_height=@cont_height+@d_height
-						chk_bottom_y=win_height+@dial_y
-						bottom_offset=chk_bottom_y-@scr_height
-						win_height-=bottom_offset if bottom_offset>0
-						@zone_dialog.set_size(win_width, win_height)
-					end
-				end
-			end
-			
+
 			def set_trace_cont_defaults
 				@int_pt_chk_hgt=Sketchup.read_default("LSS Zone Defaults","int_pt_chk_hgt", 100.0)
 				@aperture_size=Sketchup.read_default("LSS Zone Defaults","aperture_size", 4.0)
@@ -1444,29 +1433,29 @@ module LSS_Extensions
 									@zone_dialog.execute_script(js_command)
 									if @zone_type!="box" and @zone_type!="flat"
 										disp=""
-										js_command = "opening_tbody_display('" + disp + "')"
+										js_command = "opening_cont_display('" + disp + "')"
 										@zone_dialog.execute_script(js_command)
 									else
 										disp="none"
-										js_command = "opening_tbody_display('" + disp + "')"
+										js_command = "opening_cont_display('" + disp + "')"
 										@zone_dialog.execute_script(js_command)
 									end
 								else
 									self.small_reset
 									disp="none"
-									js_command = "opening_tbody_display('" + disp + "')"
+									js_command = "opening_cont_display('" + disp + "')"
 									@zone_dialog.execute_script(js_command)
 								end
 							else
 								self.small_reset
 								disp="none"
-								js_command = "opening_tbody_display('" + disp + "')"
+								js_command = "opening_cont_display('" + disp + "')"
 								@zone_dialog.execute_script(js_command)
 							end
 						else
 							self.small_reset
 							disp="none"
-							js_command = "opening_tbody_display('" + disp + "')"
+							js_command = "opening_cont_display('" + disp + "')"
 							@zone_dialog.execute_script(js_command)
 						end
 				end
@@ -1501,7 +1490,7 @@ module LSS_Extensions
 				@selected_zone=nil
 				@labels_arr=nil
 				disp="none"
-				js_command = "opening_tbody_display('" + disp + "')"
+				js_command = "opening_cont_display('" + disp + "')"
 				@zone_dialog.execute_script(js_command)
 				@nodal_points=Array.new
 				@mid_points=Array.new

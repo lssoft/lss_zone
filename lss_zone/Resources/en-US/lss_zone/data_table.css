@@ -1,6 +1,8 @@
 ﻿.table_container
 {
-	text-align: left;
+	margin-left: 42px;
+	margin-right: 6px;
+	margin-bottom: 6px;
 	height: 6em;
 	overflow-y: scroll;
 }

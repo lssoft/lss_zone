@@ -1,4 +1,4 @@
-# lss_zone_filter.rb ver. 1.2.1 beta 09-Dec-13
+# lss_zone_filter.rb ver. 1.2.1 alpha 25-Dec-13
 # The file, which contains 'Filter' dialog implementation
 
 # (C) 2013, Links System Software
@@ -54,7 +54,7 @@ module LSS_Extensions
 				@dialog_rolls_hash["mat_tbody"]="-"
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
-				@stick_height="false"
+				@stick_height="true"
 			end
 
 			# This method collects only zone objects from current selection set and
@@ -386,7 +386,7 @@ module LSS_Extensions
 						end
 						# Handle stick height setting change
 						if key=="stick_height"
-							self.adjust_dial_size if val=="true"
+							LSS_Zone_Utils.new.adjust_dial_size(@filter_dialog, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height) if val=="true"
 						end
 						self.apply_filter
 					end
@@ -428,6 +428,9 @@ module LSS_Extensions
 						@scr_width=action_name.split(",")[1].to_i
 						@scr_height=action_name.split(",")[2].to_i
 					end
+					if action_name.split(",")[0]=="hdr_ftr_height"
+						@hdr_ftr_height=action_name.split(",")[1].to_i
+					end
 					if action_name=="init_dial_d_size"
 						js_command="send_visible_size()"
 						@filter_dialog.execute_script(js_command) if js_command
@@ -436,7 +439,7 @@ module LSS_Extensions
 						@filter_dialog.set_size(@init_width, @init_height)
 						js_command="send_visible_size()"
 						@filter_dialog.execute_script(js_command) if js_command
-						@d_height=@init_height-@visible_height
+						@d_height=@init_height-@visible_height + @hdr_ftr_height
 						@d_width=@init_width-@visible_width
 						win_width=@init_width+@d_width
 						win_height=@init_height+@d_height
@@ -444,14 +447,22 @@ module LSS_Extensions
 					end
 					if action_name=="adjust_dial_size"
 						if @stick_height=="true"
-							self.adjust_dial_size
+							LSS_Zone_Utils.new.adjust_dial_size(@filter_dialog, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height)
 						end
 					end
 					# Content size block end
 					if action_name=="reset"
+						# Fix added in ver. 1.2.1 10-Dec-13.
+						if @zones_arr
+							zones_temp_arr=Array.new(@zones_arr)
+						end
 						@filter_dialog.close
 						@selection.clear
-						@selection.add(@zones_arr)
+						
+						# Fix added in ver. 1.2.1 10-Dec-13.
+						if zones_temp_arr.length>0
+							@selection.add(zones_temp_arr)
+						end
 						lss_zone_filter=LSS_Zone_Filter.new
 						lss_zone_filter.activate
 					end
@@ -476,21 +487,7 @@ module LSS_Extensions
 					@zones_arr=nil
 				}
 			end
-			
-			# This method adjusts the size of a dialog to fit its content. Added in ver. 1.2.1 09-Dec-13.
-			def adjust_dial_size
-				if @cont_height and @cont_width
-					if @cont_height>0 and @cont_width>0
-						win_width=@cont_width+@d_width
-						win_height=@cont_height+@d_height
-						chk_bottom_y=win_height+@dial_y
-						bottom_offset=chk_bottom_y-@scr_height
-						win_height-=bottom_offset if bottom_offset>0
-						@filter_dialog.set_size(win_width, win_height)
-					end
-				end
-			end
-			
+
 			# This method contains the main logic.
 			# First of all it makes 'new_selection' array, which is actually a copy of @zones_arr
 			# (array of initially selected zone objects).
@@ -604,7 +601,7 @@ module LSS_Extensions
 				}
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
-				@stick_height=Sketchup.read_default("LSS_Zone_Filter_Dialog", "stick_height", "false")
+				@stick_height=Sketchup.read_default("LSS_Zone_Filter_Dialog", "stick_height", "true")
 				self.settings2hash
 			end
 			

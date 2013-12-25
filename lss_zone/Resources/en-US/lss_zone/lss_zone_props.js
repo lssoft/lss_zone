@@ -35,23 +35,28 @@ function get_zones_cnt(cnt_str){
 	}
 	var cnt_div=document.getElementById("zones_count");
 	cnt_div.innerHTML="";
-	var basic_props_table=document.getElementById("basic_props_table");
+	var basic_props_container=document.getElementById("basic_props_container");
 	var btm_tbl=document.getElementById("bottom_tbl");
+	var apply_btn=document.getElementById("apply_btn");
+	var reset_btn=document.getElementById("reset_btn");
 	if (room_cnt==0 && box_cnt==0 && flat_cnt==0){
-		basic_props_table.style.display="none";
+		basic_props_container.style.display="none";
 		cnt_div.innerHTML="Zero";
 		var props_list_content_field=document.getElementById("props_list_content");
 		var view_type=props_list_content_field.value;
 		if (view_type=="zone_only") {
-			btm_tbl.style.display="none";
+			apply_btn.disabled=true;
+			reset_btn.disabled=true;
 		}
 		else {
-			btm_tbl.style.display="";
+			apply_btn.disabled=false;
+			reset_btn.disabled=false;
 		}
 	}
 	else {
-		basic_props_table.style.display="";
-		btm_tbl.style.display="";
+		basic_props_container.style.display="";
+		apply_btn.disabled=false;
+		reset_btn.disabled=false;
 		if (room_cnt!=0) {
 			room_img=document.createElement("IMG");
 			room_img.src="images/room.gif"
@@ -90,9 +95,9 @@ function get_zones_cnt(cnt_str){
 		}
 		
 		// Read roll groups statuses (folded/unfolded). Added in ver. 1.2.1 06-Dec-13.
-		var trace_cont_grp_btn=document.getElementById("fld_unfld|trace_cont_tbody");
-		var geom_grp_btn=document.getElementById("fld_unfld|geom_tbody");
-		var mat_grp_btn=document.getElementById("fld_unfld|mat_tbody");
+		var trace_cont_grp_btn=document.getElementById("fld_unfld|trace_cont_group");
+		var geom_grp_btn=document.getElementById("fld_unfld|geom_group");
+		var mat_grp_btn=document.getElementById("fld_unfld|mat_group");
 		var trace_cont_st=trace_cont_grp_btn.innerHTML;
 		var mat_st=mat_grp_btn.innerHTML;
 		var geom_st=geom_grp_btn.innerHTML;
@@ -160,6 +165,7 @@ function get_zones_cnt(cnt_str){
 			
 		}
 	}
+	adjust_dial_height();
 }
 
 function custom_init(){
@@ -183,23 +189,19 @@ function custom_init(){
 }
 
 function switch_content_view(view_type){
-	var basic_props_table=document.getElementById("basic_props_table");
-	var all_props_table=document.getElementById("all_props_table");
+	var basic_props_container=document.getElementById("basic_props_container");
+	var all_props_container=document.getElementById("all_props_container");
 	var zones_count_row=document.getElementById("zones_count_row");
 	var btm_tbl=document.getElementById("bottom_tbl");
 	if (view_type=="all"){
-		all_props_table.style.display="";
-		basic_props_table.style.display="none";
-		// Commented in ver. 1.2.1 05-Dec-13
-		// zones_count_row.style.display="none";
-		btm_tbl.style.display="";
+		all_props_container.style.display="";
+		basic_props_container.style.display="none";
 	}
 	else
 	{
-		all_props_table.style.display="none";
-		basic_props_table.style.display="";
+		all_props_container.style.display="none";
+		basic_props_container.style.display="";
 		callRuby("get_zones_cnt");
-		zones_count_row.style.display="";
 	}
 }
 
@@ -349,6 +351,7 @@ function fold_unfold(evt){
 				}
 				delay=parseInt(init_delay/(i*i/nodes.length+1));
 			}, delay);
+			adjust_dial_height();
 		}
 		hide_nodes();   
 	}
@@ -370,6 +373,7 @@ function fold_unfold(evt){
 				}
 				delay=parseInt(init_delay/(i*i/nodes.length+1));
 			}, delay);
+			adjust_dial_height();
 		}
 		show_nodes();   
 	}

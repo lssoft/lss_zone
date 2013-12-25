@@ -1,4 +1,4 @@
-# lss_zone_link_ops.rb ver. 1.1.2 beta 08-Nov-13
+# lss_zone_link_ops.rb ver. 1.2.1 alpha 25-Dec-13
 # The script, which contains 'Link Openings Tool' implementation.
 # This tool searches for adjacent openings among selected zones
 # and marks adjucent openings as internal.
@@ -73,6 +73,9 @@ module LSS_Extensions
 				@settings_hash=Hash.new
 				# Array of openings of selected zones.
 				@openings_arr=Array.new
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 25-Dec-13.
+				@stick_height="true"
 			end
 			
 			def read_defaults
@@ -90,6 +93,9 @@ module LSS_Extensions
 			def settings2hash
 				@settings_hash["check_dist"]=[@check_dist, "distance"]
 				@settings_hash["weightened_graph"]=[@weightened_graph, "boolean"]
+				# Stick dialog height setting. Added in ver. 1.2.1 25-Dec-13.
+				@settings_hash["stick_height"]=[@stick_height, "boolean"]
+				
 				# Store data types
 				@settings_hash.each_key{|key|
 					Sketchup.write_default("LSS Zone Data Types", key, @settings_hash[key][1])
@@ -104,6 +110,8 @@ module LSS_Extensions
 				return if @settings_hash.keys.length==0
 				@check_dist=@settings_hash["check_dist"][0]
 				@weightened_graph=@settings_hash["weightened_graph"][0]
+				# Stick dialog height setting. Added in ver. 1.2.1 25-Dec-13.
+				@stick_height=@settings_hash["stick_height"][0]
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -164,6 +172,10 @@ module LSS_Extensions
 							end
 						end
 						self.hash2settings
+						# Handle stick height setting change
+						if key=="stick_height"
+							LSS_Zone_Utils.new.adjust_dial_size(@link_ops_dialog, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height) if val=="true"
+						end
 					end
 					if action_name.split(",")[0]=="move_node" # From web-dialog
 						ind=action_name.split(",")[1].to_i
@@ -205,6 +217,67 @@ module LSS_Extensions
 						reason="dialog_cancel"
 						self.onCancel(reason, view)
 					end
+					# Content size block start (WARNING: this block differs from similar blocks in other dialogs)
+					if action_name.split(",")[0]=="content_size"
+						@cont_width=action_name.split(",")[1].to_i
+						@cont_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="visible_size"
+						@visible_width=action_name.split(",")[1].to_i
+						@visible_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="dial_xy"
+						@dial_x=action_name.split(",")[1].to_i
+						@dial_y=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="screen_size"
+						@scr_width=action_name.split(",")[1].to_i
+						@scr_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="hdr_ftr_height"
+						@hdr_ftr_height=action_name.split(",")[1].to_i
+					end
+					# Warning: this particular action presents only in 'Link Openings' dialog
+					if action_name.split(",")[0]=="links_cont_height"
+						@links_cont_height=action_name.split(",")[1].to_i
+					end
+					if action_name=="init_dial_d_size"
+						# Warning: this parameter request present only in 'Link Openings' dialog
+						# because links container is available only in this dialog.
+						js_command="send_links_cont_height()"
+						@link_ops_dialog.execute_script(js_command) if js_command
+						#
+						js_command="send_visible_size()"
+						@link_ops_dialog.execute_script(js_command) if js_command
+						@init_width=@visible_width
+						@init_height=@visible_height
+						@link_ops_dialog.set_size(@init_width, @init_height)
+						js_command="send_visible_size()"
+						@link_ops_dialog.execute_script(js_command) if js_command
+						# @d_height computing differs from other dialogs because of links container height
+						@d_height1=@init_height-@visible_height + @hdr_ftr_height + @links_cont_height
+						@d_height2=@init_height-@visible_height + @hdr_ftr_height
+						@d_width=@init_width-@visible_width
+						win_width=@init_width+@d_width
+						win_height=@init_height+@d_height2
+						@link_ops_dialog.set_size(win_width, win_height)
+					end
+					if action_name=="adjust_dial_size_max"
+						if @stick_height=="true"
+							LSS_Zone_Utils.new.adjust_dial_size(@link_ops_dialog, @cont_height, @cont_width, @d_width, @d_height1, @dial_y, @scr_height)
+						end
+					end
+					if action_name=="adjust_dial_size_min"
+						if @stick_height=="true"
+							LSS_Zone_Utils.new.adjust_dial_size(@link_ops_dialog, @cont_height, @cont_width, @d_width, @d_height2, @dial_y, @scr_height)
+						end
+					end
+					if action_name=="adjust_dial_size"
+						if @stick_height=="true"
+							LSS_Zone_Utils.new.adjust_dial_size(@link_ops_dialog, @cont_height, @cont_width, @d_width, @d_height1, @dial_y, @scr_height)
+						end
+					end
+					# Content size block end
 				end
 				resource_dir=LSS_Dirs.new.resource_path
 				dial_path="#{resource_dir}/lss_zone/lss_zone_link_ops.html"

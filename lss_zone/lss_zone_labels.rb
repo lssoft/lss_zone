@@ -1,4 +1,4 @@
-# lss_zone_labels.rb ver. 1.1.2 beta 08-Nov-13
+# lss_zone_labels.rb ver. 1.2.1 alpha 25-Dec-13
 # The script, which implements attaching labels with zone attributes to existing zone objects
 # in an active model.
 
@@ -54,6 +54,11 @@ module LSS_Extensions
 				@label_layer="LSS Zone Label"
 				
 				@settings_hash=Hash.new
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 10-Dec-13.
+				@stick_height="true"
+				
+				$lss_labels_dial_is_active=false
 			end
 			
 			def activate
@@ -104,6 +109,9 @@ module LSS_Extensions
 			# This class creates 'Labels' web-dialog.
 			
 			def create_web_dial
+				return if $lss_labels_dial_is_active
+				$lss_labels_dial_is_active=true
+			
 				self.read_defaults
 				
 				# Create the WebDialog instance
@@ -144,6 +152,10 @@ module LSS_Extensions
 								@settings_hash[key][0]=val
 							end
 						end
+						# Handle stick height setting change
+						if key=="stick_height"
+							LSS_Zone_Utils.new.adjust_dial_size(@zone_labels_dialog, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height) if val=="true"
+						end
 						self.hash2settings
 					end
 					if action_name=="get_label_preview"
@@ -176,6 +188,46 @@ module LSS_Extensions
 					if action_name=="cancel"
 						@zone_labels_dialog.close
 					end
+					# Content size block start
+					if action_name.split(",")[0]=="content_size"
+						@cont_width=action_name.split(",")[1].to_i
+						@cont_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="visible_size"
+						@visible_width=action_name.split(",")[1].to_i
+						@visible_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="dial_xy"
+						@dial_x=action_name.split(",")[1].to_i
+						@dial_y=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="screen_size"
+						@scr_width=action_name.split(",")[1].to_i
+						@scr_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="hdr_ftr_height"
+						@hdr_ftr_height=action_name.split(",")[1].to_i
+					end
+					if action_name=="init_dial_d_size"
+						js_command="send_visible_size()"
+						@zone_labels_dialog.execute_script(js_command) if js_command
+						@init_width=@visible_width
+						@init_height=@visible_height
+						@zone_labels_dialog.set_size(@init_width, @init_height)
+						js_command="send_visible_size()"
+						@zone_labels_dialog.execute_script(js_command) if js_command
+						@d_height=@init_height-@visible_height + @hdr_ftr_height
+						@d_width=@init_width-@visible_width
+						win_width=@init_width+@d_width
+						win_height=@init_height+@d_height
+						@zone_labels_dialog.set_size(win_width, win_height)
+					end
+					if action_name=="adjust_dial_size"
+						if @stick_height=="true"
+							LSS_Zone_Utils.new.adjust_dial_size(@zone_labels_dialog, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height)
+						end
+					end
+					# Content size block end
 				end
 				resource_dir=LSS_Dirs.new.resource_path
 				dial_path="#{resource_dir}/lss_zone/lss_zone_labels.html"
@@ -184,6 +236,7 @@ module LSS_Extensions
 				@zone_labels_dialog.set_on_close{
 					self.write_defaults
 					Sketchup.active_model.select_tool(nil)
+					$lss_labels_dial_is_active=false
 				}
 			end
 			
@@ -275,6 +328,9 @@ module LSS_Extensions
 			def settings2hash
 				@settings_hash["preset_name"]=[@preset_name, "string"]
 				@settings_hash["label_layer"]=[@label_layer, "string"]
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 10-Dec-13.
+				@settings_hash["stick_height"]=[@stick_height, "boolean"]
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -285,6 +341,9 @@ module LSS_Extensions
 				return if @settings_hash.keys.length==0
 				@preset_name=@settings_hash["preset_name"][0]
 				@label_layer=@settings_hash["label_layer"][0]
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 10-Dec-13.
+				@stick_height=@settings_hash["stick_height"][0]
 			end
 			
 			# This method deletes preset with name equals to @preset_name.
@@ -453,11 +512,14 @@ module LSS_Extensions
 			end
 			
 			def write_defaults
-				# Sketchup.write_default("LSS_Zone_Labels", "label_supress_linear", @label_supress_linear)
+				self.settings2hash
+				Sketchup.write_default("LSS Zone Labels Defaults", "stick_height", @settings_hash["stick_height"][0].to_s)
 			end
 			
 			def read_defaults
-				# @label_supress_linear=Sketchup.read_default("LSS_Zone_Labels", "label_supress_linear", "false")
+				default_value=Sketchup.read_default("LSS Zone Labels Defaults", "stick_height", "true")
+				@settings_hash["stick_height"]=[default_value, "boolean"]
+				@stick_height=default_value
 			end
 			
 			# This method calls label preview drawing method.
@@ -486,6 +548,7 @@ module LSS_Extensions
 					return
 				end
 				etalon_zone=@selected_zones.first
+				return if etalon_zone.nil? # Fix added in ver. 1.2.1 10-Dec-13.
 				attr_dict=etalon_zone.attribute_dictionary("LSS_Zone_Entity")
 				@label_preview_txt="#{@label_template}"
 				attr_dict.each_key{|key|

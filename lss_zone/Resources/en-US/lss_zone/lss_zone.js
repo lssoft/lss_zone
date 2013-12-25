@@ -144,10 +144,10 @@ function apply_defaults(){
 		var img_btn=document.images[settings_arr[i][0]]
 		if (img_btn) {
 			if (settings_arr[i][1]=="true") {
-				img_btn.setAttribute("className", "btn_checked");
+				img_btn.setAttribute("className", "btn_checked") || img_btn.setAttribute("class", "btn_checked");
 			};
 			else {
-				img_btn.setAttribute("className", "btn_unchecked");
+				img_btn.setAttribute("className", "btn_unchecked") || img_btn.setAttribute("class", "btn_unchecked");
 			};
 		}
 		var input_ctrl=document.getElementById(settings_arr[i][0]);
@@ -195,9 +195,10 @@ function apply_defaults(){
 
 function load_init_data() {
 	send_screen_size();
+	send_hdr_ftr_height();
 	callRuby("init_dial_d_size");
-	callRuby('get_materials');
-	callRuby('get_categories');
+	callRuby("get_materials");
+	callRuby("get_categories");
 	obtain_defaults();
 	document.onkeypress = stopRKey; //It is a trick to prevent onclick event of the first image button after pressing Enter key
 	adjust_dial_height();
@@ -253,12 +254,12 @@ function prevent_enter(field){
 }
 
 function click_chk(btn) {
-	if ((btn.getAttribute("className")=="btn_unchecked") || (btn.getAttribute("className")=="btn_unchecked_over")) {
-		btn.setAttribute("className", "btn_checked");
+	if ((btn.getAttribute("className")=="btn_unchecked") || (btn.getAttribute("className")=="btn_unchecked_over") || (btn.getAttribute("class")=="btn_unchecked") || (btn.getAttribute("class")=="btn_unchecked_over")) {
+		btn.setAttribute("className", "btn_checked") || btn.setAttribute("class", "btn_checked");
 		act_name="obtain_setting"+ delimiter+ btn.id+ delimiter +"true";
 	}
 	else {
-		btn.setAttribute("className", "btn_unchecked");
+		btn.setAttribute("className", "btn_unchecked") || btn.setAttribute("class", "btn_unchecked"); 
 		act_name="obtain_setting"+ delimiter+ btn.id+ delimiter +"false";
 	}
 	callRuby(act_name);
@@ -271,52 +272,52 @@ function click_speed(btn) {
 }
 
 function btn_over(btn) {
-	if (btn.getAttribute("className")=="btn_unchecked") {
-		btn.setAttribute("className", "btn_unchecked_over");
+	if (btn.getAttribute("className")=="btn_unchecked" || btn.getAttribute("class")=="btn_unchecked") {
+		btn.setAttribute("className", "btn_unchecked_over") || btn.setAttribute("class", "btn_unchecked_over");
 	}
 	else {
-		btn.setAttribute("className", "btn_checked_over");
+		btn.setAttribute("className", "btn_checked_over") || btn.setAttribute("class", "btn_checked_over");
 	}
 }
 
 function btn_out(btn) {
-	if ((btn.getAttribute("className")=="btn_unchecked_over") || (btn.getAttribute("className")=="btn_unchecked")) {
-		btn.setAttribute("className", "btn_unchecked");
+	if ((btn.getAttribute("className")=="btn_unchecked_over") || (btn.getAttribute("className")=="btn_unchecked") || (btn.getAttribute("class")=="btn_unchecked_over") || (btn.getAttribute("class")=="btn_unchecked")) {
+		btn.setAttribute("className", "btn_unchecked") || btn.setAttribute("class", "btn_unchecked");
 	}
 	else {
-		btn.setAttribute("className", "btn_checked");
+		btn.setAttribute("className", "btn_checked") || btn.setAttribute("class", "btn_checked");
 	}
 }
 
 function speed_btn_over(btn) {
-	btn.setAttribute("className", "speed_btn_over");
+	btn.setAttribute("className", "speed_btn_over") || btn.setAttribute("class", "speed_btn_over");
 }
 
 function speed_btn_out(btn) {
-	btn.setAttribute("className", "speed_btn");
+	btn.setAttribute("className", "speed_btn") || btn.setAttribute("class", "speed_btn");
 }
 
 function radio_over(btn) {
-	if (btn.getAttribute("className")=="radio_unselected") {
-		btn.setAttribute("className", "radio_unselected_over");
+	if (btn.getAttribute("className")=="radio_unselected" || btn.getAttribute("class")=="radio_unselected") {
+		btn.setAttribute("className", "radio_unselected_over") || btn.setAttribute("class", "radio_unselected_over");
 	}
 }
 
 function radio_out(btn) {
-	if (btn.getAttribute("className")=="radio_unselected_over") {
-		btn.setAttribute("className", "radio_unselected");
+	if (btn.getAttribute("className")=="radio_unselected_over" || btn.getAttribute("class")=="radio_unselected_over") {
+		btn.setAttribute("className", "radio_unselected") || btn.setAttribute("class", "radio_unselected");
 	}
 }
 
 function radio_click(btn) {
-	if ((btn.getAttribute("className")=="radio_unselected_over") || (btn.getAttribute("className")=="radio_unselected")) {
+	if ((btn.getAttribute("className")=="radio_unselected_over") || (btn.getAttribute("className")=="radio_unselected") || (btn.getAttribute("class")=="radio_unselected_over") || (btn.getAttribute("class")=="radio_unselected")) {
 		radio_grp=btn.parentNode;
 		for (i=0; i < document.images.length; i++) {
 			if (document.images[i].parentNode==radio_grp) {
-				document.images[i].setAttribute("className", "radio_unselected");
+				document.images[i].setAttribute("className", "radio_unselected") || document.images[i].setAttribute("class", "radio_unselected");
 			}
 		}
-		btn.setAttribute("className", "radio_selected");
+		btn.setAttribute("className", "radio_selected") || btn.setAttribute("class", "radio_selected");
 		for (i=0; i < radio_grp.all.length; i++) {
 			if (radio_grp.all[i].type=="hidden") {
 				radio_grp.all[i].value=btn.id;
@@ -504,9 +505,10 @@ function cancel_changes(){
 	callRuby("cancel");
 }
 
-function opening_tbody_display(display_str){
-	var opening_tbody=document.getElementById("opening_tbody");
-	opening_tbody.style.display=display_str;
+function opening_cont_display(display_str){
+	var opening_cont=document.getElementById("opening_cont");
+	opening_cont.style.display=display_str;
+	adjust_dial_height();
 }
 
 function cut_opening(){
@@ -535,7 +537,7 @@ function zone_type_view(zone_type){
 	var floor_level_row=document.getElementById("floor_level_row");
 	var floor_number_row=document.getElementById("floor_number_row");
 	var floors_count_row=document.getElementById("floors_count_row");
-	var mat_tbody=document.getElementById("mat_tbody");
+	var mat_group=document.getElementById("mat_group");
 	var floor_mat_row=document.getElementById("floor_mat_row");
 	var ceiling_mat_row=document.getElementById("ceiling_mat_row");
 	var wall_mat_row=document.getElementById("wall_mat_row");
@@ -544,8 +546,8 @@ function zone_type_view(zone_type){
 	var wall_refno_row=document.getElementById("wall_refno_row");
 	
 	// Read roll groups statuses (folded/unfolded). Added in ver. 1.2.1 06-Dec-13.
-	var geom_grp_btn=document.getElementById("fld_unfld|geom_tbody");
-	var mat_grp_btn=document.getElementById("fld_unfld|mat_tbody");
+	var geom_grp_btn=document.getElementById("fld_unfld|geom_group");
+	var mat_grp_btn=document.getElementById("fld_unfld|mat_group");
 	var mat_st=mat_grp_btn.innerHTML;
 	var geom_st=geom_grp_btn.innerHTML;
 
@@ -559,7 +561,7 @@ function zone_type_view(zone_type){
 				floor_level_row.style.display="";
 				floor_number_row.style.display="";
 			}
-			mat_tbody.style.display="";
+			mat_group.style.display="";
 			// Hide non-related rows
 			floors_count_row.style.display="none";
 			break;
@@ -573,7 +575,7 @@ function zone_type_view(zone_type){
 			// Hide non-related rows
 			floor_level_row.style.display="none";
 			floor_number_row.style.display="none";
-			mat_tbody.style.display="none";
+			mat_group.style.display="none";
 			break;
 		case "flat":
 			// Display flat zone related rows
@@ -586,7 +588,7 @@ function zone_type_view(zone_type){
 			volume_row.style.display="none";
 			floor_level_row.style.display="none";
 			floor_number_row.style.display="none";
-			mat_tbody.style.display="none";
+			mat_group.style.display="none";
 			floors_count_row.style.display="none";
 			break;
 		default:
@@ -724,15 +726,15 @@ function adjust_dial_height(){
 }
 
 function send_visible_size(){
-	var visible_width=document.body.offsetWidth;
-	var visible_height=document.body.offsetHeight;
+	var visible_width=document.documentElement.offsetWidth;
+	var visible_height=document.documentElement.offsetHeight;
 	act_name="visible_size" + delimiter + visible_width + delimiter + visible_height;
 	callRuby(act_name);
 }
 
 function send_content_size(){
 	// In our particular case table width=100% so we need to send 'offsetWidth' instead of 'scrollWidth'
-	var content_width=document.body.offsetWidth;
+	var content_width=document.documentElement.offsetWidth;
 	// As for content height, we need to send 'scrollHeight' in order to inform about actual content height
 	var content_height=document.body.scrollHeight;
 	act_name="content_size" + delimiter + content_width + delimiter + content_height;
@@ -750,5 +752,37 @@ function send_screen_size(){
 	var avail_width=screen.availWidth;
 	var avail_height=screen.availHeight;
 	act_name="screen_size" + delimiter + avail_width + delimiter + avail_height;
+	callRuby(act_name);
+}
+
+function send_hdr_ftr_height(){
+	var hdr=document.getElementById("dial_header");
+	var ftr=document.getElementById("dial_footer");
+	if (hdr && ftr) {
+		var hdr_hgt=hdr.offsetHeight;
+		var ftr_hgt=hdr.offsetHeight;
+		var sum_height=hdr_hgt+ftr_hgt;
+		act_name="hdr_ftr_height" + delimiter + sum_height;
+		callRuby(act_name);
+	}
+}
+
+function fld_unfld_dial(){
+	var content=document.getElementById("content_container")
+	if (content.style.display==""){
+		content.style.display="none";
+	}
+	else {
+		content.style.display="";
+	}
+	// As for content height, we need to send 'scrollHeight' in order to inform about actual content height
+	var content_height=document.body.scrollHeight;
+	if (content_height==0){content_height=1};
+	// In our particular case table width=100% so we need to send 'offsetWidth' instead of 'scrollWidth'
+	var content_width=document.documentElement.offsetWidth;
+	act_name="content_size" + delimiter + content_width + delimiter + content_height;
+	callRuby(act_name);
+	send_dial_xy();
+	act_name="adjust_dial_size";
 	callRuby(act_name);
 }

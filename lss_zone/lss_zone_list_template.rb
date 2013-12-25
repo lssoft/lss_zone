@@ -1,4 +1,4 @@
-# lss_zone_list_template.rb ver. 1.1.2 beta 08-Nov-13
+# lss_zone_list_template.rb ver. 1.2.1 alpha 25-Dec-13
 # The file, which contains report template editing dialog (query string, sort and group options etc)
 
 # (C) 2013, Links System Software
@@ -33,6 +33,9 @@ module LSS_Extensions
 				@parent=nil
 				@settings_hash=Hash.new
 				@charts_arr=Array.new
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 13-Dec-13.
+				@stick_height="true"
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -47,6 +50,9 @@ module LSS_Extensions
 				@settings_hash["group_by"]=[@group_by, "string"]
 				@settings_hash["sort_dir"]=[@sort_dir, "string"]
 				@settings_hash["query_string"]=[@query_string, "string"]
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 13-Dec-13.
+				@settings_hash["stick_height"]=[@stick_height, "boolean"]
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -60,6 +66,20 @@ module LSS_Extensions
 				@group_by=@settings_hash["group_by"][0]
 				@sort_dir=@settings_hash["sort_dir"][0]
 				@query_string=@settings_hash["query_string"][0]
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 13-Dec-13.
+				@stick_height=@settings_hash["stick_height"][0]
+			end
+			
+			def write_defaults
+				self.settings2hash
+				Sketchup.write_default("LSS Zone List Template Defaults", "stick_height", @settings_hash["stick_height"][0].to_s)
+			end
+			
+			def read_defaults
+				default_value=Sketchup.read_default("LSS Zone List Template Defaults", "stick_height", "true")
+				@settings_hash["stick_height"]=[default_value, "boolean"]
+				@stick_height=default_value
 			end
 			
 			# This method creates 'List Template' web-dialog.
@@ -127,6 +147,10 @@ module LSS_Extensions
 								@settings_hash[key][0]=val
 							end
 						end
+						# Handle stick height setting change
+						if key=="stick_height"
+							LSS_Zone_Utils.new.adjust_dial_size(@list_template_dial, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height) if val=="true"
+						end
 						self.hash2settings
 					end
 					if action_name.split(",")[0]=="obtain_chart"
@@ -172,6 +196,46 @@ module LSS_Extensions
 					if action_name=="cancel"
 						@list_template_dial.close
 					end
+					# Content size block start
+					if action_name.split(",")[0]=="content_size"
+						@cont_width=action_name.split(",")[1].to_i
+						@cont_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="visible_size"
+						@visible_width=action_name.split(",")[1].to_i
+						@visible_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="dial_xy"
+						@dial_x=action_name.split(",")[1].to_i
+						@dial_y=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="screen_size"
+						@scr_width=action_name.split(",")[1].to_i
+						@scr_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="hdr_ftr_height"
+						@hdr_ftr_height=action_name.split(",")[1].to_i
+					end
+					if action_name=="init_dial_d_size"
+						js_command="send_visible_size()"
+						@list_template_dial.execute_script(js_command) if js_command
+						@init_width=@visible_width
+						@init_height=@visible_height
+						@list_template_dial.set_size(@init_width, @init_height)
+						js_command="send_visible_size()"
+						@list_template_dial.execute_script(js_command) if js_command
+						@d_height=@init_height-@visible_height + @hdr_ftr_height
+						@d_width=@init_width-@visible_width
+						win_width=@init_width+@d_width
+						win_height=@init_height+@d_height
+						@list_template_dial.set_size(win_width, win_height)
+					end
+					if action_name=="adjust_dial_size"
+						if @stick_height=="true"
+							LSS_Zone_Utils.new.adjust_dial_size(@list_template_dial, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height)
+						end
+					end
+					# Content size block end
 				end
 				resource_dir=LSS_Dirs.new.resource_path
 				dial_path="#{resource_dir}/lss_zone/lss_zone_list_template.html"

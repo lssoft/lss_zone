@@ -1,15 +1,375 @@
+<!DOCTYPE HTML>
 <html>
 <head>
 <title>LSS Zone</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link href="lss_zone.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient_w {
+       filter: none;
+    }
+  </style>
+<![endif]-->
 <script type="text/javascript" src="autosuggest/autosuggest.js"></script>
 </head>
-<script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
-<script type="text/javascript" src="lss_zone_tool.js" charset="win-1251"></script>
+<script type="text/javascript" src="lss_zone.js" charset="UTF-8"></script>
+<script type="text/javascript" src="lss_zone_tool.js" charset="UTF-8"></script>
 <body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
-	<table id="zone_settings_table" class="settings_list">
+	<div class="header" id="dial_header">
+		<div class="dial_icon" onclick="fld_unfld_dial()">
+			<img src="images/buttons/web_dial_32.png" align="bottom">
+		</div>
+		<div class="elastic">
+			<div class="header_caption">
+				Zone Settings
+			</div>
+		</div>
+	</div>
+	<div class="content" id="content_container">
+		<div class="setting_band">
+			<div class="elastic">
+				<span id="zone_type_radio_grp">
+					<input type="hidden" id="zone_type">
+					<img src="images/room.gif" class="radio_unselected" onmouseover="radio_over(this)" onmouseout="radio_out(this)" onclick="radio_click(this)" id="room" alt="Room">
+					<img src="images/box.gif" class="radio_unselected" onmouseover="radio_over(this)" onmouseout="radio_out(this)" onclick="radio_click(this)" id="box" alt="Building box">
+					<img src="images/flat.gif" class="radio_unselected" onmouseover="radio_over(this)" onmouseout="radio_out(this)" onclick="radio_click(this)" id="flat" alt="Flat zone">
+				</span>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Floor face
+				</div>
+				<div class="setting_ctrl">
+					<input type="button" onclick="pick_face()" value="pick >>" size="10" class="cmd_button"/>
+				</div>
+			</div>
+		</div>
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Contour
+				</div>
+				<div class="setting_ctrl">
+					<input type="button" onclick="draw_contour()" value=" draw..." size="10" class="cmd_button"/>
+				</div>
+			</div>
+		</div>
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Internal point
+				</div>
+				<div class="setting_ctrl">
+					<input type="button" onclick="int_pt()" value=" pick >>" size="10" class="cmd_button"/>
+				</div>
+			</div>
+		</div>
+		<div class="setting_band" id="opening_cont" style="display: none">
+			<div class="info_col">
+				<img src="images/cut_opening.gif" align="bottom">
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Opening
+				</div>
+				<div class="setting_ctrl">
+					<input type="button" onclick="cut_opening()" value=" cut >>" size="10" class="cmd_button"/></td>
+				</div>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="settings_group" id="id_group">
+			<div class="setting_band">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Number
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="number" value="001" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Name
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="name" value="Room" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Category
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="category" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="settings_group" id="geom_group">
+			<div class="setting_band" id="geom_hdr_row">
+				<div class="info_col">
+					<div id="fld_unfld|geom_group" onclick="fold_unfold_group(this)" style="cursor: hand; text-align: center;">-</div>
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						<div class="header1">Geometry</div>
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="height_row">
+				<div class="info_col">
+					<img src="images/height.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Height
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="height" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="area_row">
+				<div class="info_col">
+					<img src="images/area.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Area
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="area" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" disabled="true">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="perimeter_row">
+				<div class="info_col">
+					<img src="images/perimeter.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Perimeter
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="perimeter" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" disabled="true">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="volume_row">
+				<div class="info_col">
+					<img src="images/volume.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Volume
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="volume" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" disabled="true">
+					</div>
+				</div>
+			</div>
+			
+			<div class="horiz_split">&nbsp;</div>
+			
+			<div class="setting_band" id="floor_level_row">
+				<div class="info_col">
+					<img src="images/floor_level.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Floor level
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="floor_level" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="floor_number_row">
+				<div class="info_col">
+					<img src="images/floor_number.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Floor number
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="floor_number" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="floors_count_row">
+				<div class="info_col">
+					<img src="images/floors_count.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Floors count
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="floors_count" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="settings_group" id="mat_group">
+			<div class="setting_band" id="mat_hdr_row">
+				<div class="info_col">
+					<div id="fld_unfld|mat_group" onclick="fold_unfold_group(this)" style="cursor: hand; text-align: center;">-</div>
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						<div class="header1">Materials</div>
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="floor_row">
+				<div class="info_col">
+					<img src="images/floor_material.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						<input type="image" src="images/eye_dropper.gif" valign="bottom" id="floor_eye_dropper" onclick="click_standard_btn(this)" class="img_btn">&nbsp;Floor Material
+					</div>
+					<div class="setting_ctrl">
+						<div id="floor_mat_container"></div>
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="ceiling_row">
+				<div class="info_col">
+					<img src="images/ceiling_material.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						<input type="image" src="images/eye_dropper.gif" valign="bottom" id="ceiling_eye_dropper" onclick="click_standard_btn(this)" class="img_btn">&nbsp;Ceiling Material
+					</div>
+					<div class="setting_ctrl">
+						<div id="ceiling_mat_container"></div>
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="wall_row">
+				<div class="info_col">
+					<img src="images/wall_material.gif" align="bottom">
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						<input type="image" src="images/eye_dropper.gif" valign="bottom" id="wall_eye_dropper" onclick="click_standard_btn(this)" class="img_btn">&nbsp;Walls Material
+					</div>
+					<div class="setting_ctrl">
+						<div id="wall_mat_container"></div>
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="floor_refno_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Floor REFNO
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="floor_refno" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="ceiling_refno_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Ceiling REFNO
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="ceiling_refno" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="wall_refno_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Wall REFNO
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="wall_refno" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="setting_band" id="wall_refno_row">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Memo
+				</div>
+				<div class="setting_ctrl">
+					<input type="text" id="memo" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input">
+				</div>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+	</div>
+	<div class="footer gradient_w" id="dial_footer">
+		<div class="dock_left">
+			<img src="images/up_dwn_arrws.gif" id="stick_height" class="btn_checked" onmouseover="btn_over(this)" onmouseout="btn_out(this)" onclick="click_chk(this)" title="Fit height to content">
+		</div>
+		<div>
+			<input id="reset_btn" type="button" onclick="reset_tool()" value="Reset" class="dock_right"/>
+			<input id="apply_btn" type="button" onclick="apply_settings()" value="Apply" class="dock_right"/>
+		</div>
+	</div>
+
+	<!-- <table id="zone_settings_table" class="settings_list">
 		<tbody id="commands_body">
 			<tr>
 				<td class="info_img_cell">
@@ -273,5 +633,6 @@
 			</td>
 		</tr>
 	</table>
+	-->
 </body>
 </html>

@@ -1,3 +1,4 @@
+<!DOCTYPE HTML>
 <html>
 <head>
 <title>List Template</title>
@@ -6,6 +7,13 @@
 <link href="chart.css" rel="stylesheet" type="text/css">
 <link href="data_table.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient_w {
+       filter: none;
+    }
+  </style>
+<![endif]-->
 <script type="text/javascript" src="autosuggest/autosuggest.js"></script>
 </head>
 <script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
@@ -14,6 +22,134 @@
 <script src="raphael/g.raphael-min.js" charset="utf-8"></script>
 <script src="raphael/g.pie-min.js" charset="utf-8"></script>
 <body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<div class="header" id="dial_header">
+		<div class="dial_icon" onclick="fld_unfld_dial()">
+			<img src="images/buttons/list_zones_32.png" align="bottom">
+		</div>
+		<div class="elastic">
+			<div class="header_caption">
+				List Template
+			</div>
+		</div>
+	</div>
+	<div class="content" id="content_container">
+		<div class="setting_band">
+			<div class="elastic">
+				List Template
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Template name
+				</div>
+				<div class="setting_ctrl">
+					<input type="text" value="" id="list_name" class="value_input" onchange="send_setting(this)">
+				</div>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="table_container" id="table_container"></div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Query String
+				</div>
+			</div>
+		</div>
+		<div class="preview_container">
+			<textarea rows="2" id="query_string" onkeyup="query_str_key_up(this)" class="value_input"></textarea>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Sort by
+				</div>
+				<div class="setting_ctrl">
+					<select id="sort_by" class="value_input" onchange="query_condition_change(this)"></select>
+				</div>
+			</div>
+		</div>
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Sort Direction
+				</div>
+				<div class="setting_ctrl">
+					<select id="sort_dir" class="value_input" onchange="query_condition_change(this)" value="ascending">
+						<option value="ascending">ascending</option>
+						<option value="descending">descending</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Group by
+				</div>
+				<div class="setting_ctrl">
+					<select id="group_by" class="value_input" onchange="query_condition_change(this)"></select>
+				</div>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Charts
+				</div>
+				<div class="setting_ctrl">
+					<input type="button" onclick="add_new_chart()" value="add" class="value_input">
+				</div>
+			</div>
+		</div>
+		
+		<div class="charts_container" id="charts_container"></div>
+		
+		<div class="horiz_split">&nbsp;</div>
+	</div>
+	<div class="footer gradient_w" id="dial_footer">
+		<div class="dock_left">
+			<img src="images/up_dwn_arrws.gif" id="stick_height" class="btn_checked" onmouseover="btn_over(this)" onmouseout="btn_out(this)" onclick="click_chk(this)" title="Fit height to content">
+		</div>
+		<div>
+			<input type="button" onclick="save_template()" value="Save" class="dock_right"/>
+			<input type="button" onclick="cancel_changes()" value="Cancel" class="dock_right"/>
+		</div>
+	</div>
+	<!--
 	<table id="page_table" class="settings_list">
 		<tbody id="list_body">
 			<tr>
@@ -116,11 +252,15 @@
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
+			<td>
+				<img src="images/up_dwn_arrws.gif" id="stick_height" class="btn_checked" onmouseover="btn_over(this)" onmouseout="btn_out(this)" onclick="click_chk(this)" title="Fit height to content">
+			</td>
 			<td align="right">
 				<input type="button" onclick="save_template()" value="Save" />
 				<input type="button" onclick="cancel_changes()" value="Cancel"/>
 			</td>
 		</tr>
 	</table>
+	-->
 </body>
 </html>

@@ -1,4 +1,4 @@
-# lss_zone_list.rb ver. 1.1.2 beta 08-Nov-13
+# lss_zone_list.rb ver. 1.2.1 alpha 25-Dec-13
 # The file, which contains report generator implementation.
 # It generates selected zones list for further saving
 # it to an HTML file.
@@ -21,8 +21,9 @@ module LSS_Extensions
 		
 		class LSS_Zone_List_Cmd
 			def initialize
+				lss_list_dial=LSS_Zone_List.new
 				lss_zone_list_cmd=UI::Command.new($lsszoneStrings.GetString("List Zones")){
-					LSS_Zone_List.new.list_dial
+					lss_list_dial.list_dial
 				}
 				su_ver=Sketchup.version
 				if su_ver.split(".")[0].to_i>=13
@@ -75,6 +76,12 @@ module LSS_Extensions
 				@charts_arr=Array.new
 				# Child dialog uses this array for auto-suggest widget
 				@nested_elements_names=Array.new
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 13-Dec-13.
+				@stick_height="true"
+				
+				# Dialog duplication prevention. Added in ver. 1.2.1 13-Dec-13.
+				$lss_list_dial_is_active=false
 			end
 			
 			# This method collects only zone objects from current selection set and
@@ -200,6 +207,7 @@ module LSS_Extensions
 				}
 				self.create_list_dial
 				Sketchup.status_text=$lsszoneStrings.GetString("Data collection complete.")
+				
 			end
 			
 			# This method iterates through @collected_data array and generates @query_result array
@@ -444,6 +452,12 @@ module LSS_Extensions
 			# This method creates 'List Zones' dialog.
 			
 			def create_list_dial
+				# Dialog duplication prevention. Added in ver. 1.2.1 13-Dec-13.
+				return if $lss_list_dial_is_active
+				$lss_list_dial_is_active=true
+				
+				self.read_defaults
+			
 				# Create the WebDialog instance
 				@zone_list_dial = UI::WebDialog.new($lsszoneStrings.GetString("List Zones"), true, "LSS List Zones", 450, 500, 200, 200, true)
 				@zone_list_dial.min_width=450
@@ -492,16 +506,77 @@ module LSS_Extensions
 					if action_name=="cancel"
 						@zone_list_dial.close
 					end
+					if action_name.split(",")[0]=="obtain_setting" # From web-dialog
+						key=action_name.split(",")[1]
+						val=action_name.split(",")[2]
+						if @settings_hash[key]
+							case @settings_hash[key][1]
+								when "distance"
+								dist=Sketchup.parse_length(val)
+								if dist.nil?
+									dist=Sketchup.parse_length(val.gsub(".",","))
+								end
+								@settings_hash[key][0]=dist
+								when "integer"
+								@settings_hash[key][0]=val.to_i
+								else
+								@settings_hash[key][0]=val
+							end
+						end
+						# Handle stick height setting change
+						if key=="stick_height"
+							LSS_Zone_Utils.new.adjust_dial_size(@zone_list_dial, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height) if val=="true"
+						end
+						self.hash2settings
+					end
+					# Content size block start
+					if action_name.split(",")[0]=="content_size"
+						@cont_width=action_name.split(",")[1].to_i
+						@cont_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="visible_size"
+						@visible_width=action_name.split(",")[1].to_i
+						@visible_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="dial_xy"
+						@dial_x=action_name.split(",")[1].to_i
+						@dial_y=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="screen_size"
+						@scr_width=action_name.split(",")[1].to_i
+						@scr_height=action_name.split(",")[2].to_i
+					end
+					if action_name.split(",")[0]=="hdr_ftr_height"
+						@hdr_ftr_height=action_name.split(",")[1].to_i
+					end
+					if action_name=="init_dial_d_size"
+						js_command="send_visible_size()"
+						@zone_list_dial.execute_script(js_command) if js_command
+						@init_width=@visible_width
+						@init_height=@visible_height
+						@zone_list_dial.set_size(@init_width, @init_height)
+						js_command="send_visible_size()"
+						@zone_list_dial.execute_script(js_command) if js_command
+						@d_height=@init_height-@visible_height + @hdr_ftr_height
+						@d_width=@init_width-@visible_width
+						win_width=@init_width+@d_width
+						win_height=@init_height+@d_height
+						@zone_list_dial.set_size(win_width, win_height)
+					end
+					if action_name=="adjust_dial_size"
+						if @stick_height=="true"
+							LSS_Zone_Utils.new.adjust_dial_size(@zone_list_dial, @cont_height, @cont_width, @d_width, @d_height, @dial_y, @scr_height)
+						end
+					end
+					# Content size block end
 				end
 				resource_dir=LSS_Dirs.new.resource_path
 				dial_path="#{resource_dir}/lss_zone/lss_zone_list.html"
 				@zone_list_dial.set_file(dial_path)
 				@zone_list_dial.show()
 				@zone_list_dial.set_on_close{
-					
-					# self.write_defaults
-					# self.write_presets
-					# Sketchup.active_model.select_tool(nil)
+					$lss_list_dial_is_active=false
+					self.write_defaults
 				}
 			end
 			
@@ -816,6 +891,9 @@ module LSS_Extensions
 				@settings_hash["group_by"]=[@group_by, "string"]
 				@settings_hash["sort_dir"]=[@sort_dir, "string"]
 				@settings_hash["query_string"]=[@query_string, "string"]
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 13-Dec-13.
+				@settings_hash["stick_height"]=[@stick_height, "boolean"]
 			end
 			
 			# This is a common method for all LSS tools and some tool-like classes, in which web-dialog is present
@@ -829,6 +907,20 @@ module LSS_Extensions
 				@group_by=@settings_hash["group_by"][0]
 				@sort_dir=@settings_hash["sort_dir"][0]
 				@query_string=@settings_hash["query_string"][0]
+				
+				# Stick dialog height setting. Added in ver. 1.2.1 13-Dec-13.
+				@stick_height=@settings_hash["stick_height"][0]
+			end
+			
+			def write_defaults
+				self.settings2hash
+				Sketchup.write_default("LSS Zone List Defaults", "stick_height", @settings_hash["stick_height"][0].to_s)
+			end
+			
+			def read_defaults
+				default_value=Sketchup.read_default("LSS Zone List Defaults", "stick_height", "true")
+				@settings_hash["stick_height"]=[default_value, "boolean"]
+				@stick_height=default_value
 			end
 			
 			# This method refreshes 'List Zones' dialog by performing custom initialization of it.

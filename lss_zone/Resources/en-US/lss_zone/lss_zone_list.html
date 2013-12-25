@@ -1,3 +1,4 @@
+<!DOCTYPE HTML>
 <html>
 <head>
 <title>List Zones</title>
@@ -5,6 +6,13 @@
 <link href="lss_zone.css" rel="stylesheet" type="text/css">
 <link href="chart.css" rel="stylesheet" type="text/css">
 <link href="data_table.css" rel="stylesheet" type="text/css">
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient_w {
+       filter: none;
+    }
+  </style>
+<![endif]-->
 </head>
 <script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
 <script type="text/javascript" src="lss_zone_list.js" charset="win-1251"></script>
@@ -13,6 +21,63 @@
 <script src="raphael/g.raphael-min.js" charset="utf-8"></script>
 <script src="raphael/g.pie-min.js" charset="utf-8"></script>
 <body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<div class="header" id="dial_header">
+		<div class="dial_icon" onclick="fld_unfld_dial()">
+			<img src="images/buttons/list_zones_32.png" align="bottom">
+		</div>
+		<div class="elastic">
+			<div class="header_caption">
+				List Zones
+			</div>
+		</div>
+	</div>
+	<div class="content" id="content_container">
+		<div class="setting_band">
+			<div class="elastic">
+				List Template
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					<input type="button" onclick="edit_preset('list_name')" value="..." title="Edit preset"/>
+					<input type="button" onclick="add_preset()" value=" + " title="Add preset"/>
+					<input type="button" onclick="delete_preset('list_name')" value=" - " title="Delete preset"/>
+				</div>
+				<div class="setting_ctrl">
+					<select id="list_name" onchange="preset_change(this)" class="value_input" title="Select preset"></select>
+				</div>
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="table_container" id="table_container"></div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="charts_container" id="charts_container"></div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		
+	</div>
+	<div class="footer gradient_w" id="dial_footer">
+		<div class="dock_left">
+			<img src="images/up_dwn_arrws.gif" id="stick_height" class="btn_checked" onmouseover="btn_over(this)" onmouseout="btn_out(this)" onclick="click_chk(this)" title="Fit height to content">
+		</div>
+		<div>
+			<input type="button" onclick="apply_settings()" value="Save List" class="dock_right"/>
+			<input type="button" onclick="cancel_changes()" value="Cancel" class="dock_right"/>
+		</div>
+	</div>
+	<!--
 	<table class="settings_list">
 		<tbody id="list_body">
 			<tr>
@@ -72,11 +137,15 @@
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
+			<td>
+				<img src="images/up_dwn_arrws.gif" id="stick_height" class="btn_checked" onmouseover="btn_over(this)" onmouseout="btn_out(this)" onclick="click_chk(this)" title="Fit height to content">
+			</td>
 			<td align="right">
 				<input type="button" onclick="apply_settings()" value="Save List" />
 				<input type="button" onclick="cancel_changes()" value="Cancel"/>
 			</td>
 		</tr>
 	</table>
+	-->
 </body>
 </html>

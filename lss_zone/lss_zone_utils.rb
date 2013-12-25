@@ -478,5 +478,29 @@ module LSS_Extensions
 			end
 		end #class LSS_Zone_App_Observer
 		
+		class LSS_Zone_Utils
+		
+			# This method adjusts the size of a dialog to fit its content. Added in ver. 1.2.1 10-Dec-13.
+			# dial - dialog, which height is to be adjusted
+			# cont_height - height of content (inner height of dialog's window)
+			# cont_width - width of content (inner width of dialog's window)
+			# d_h - size of window top and bottom borders (cont_width+d_w = outer width of dialog's window)
+			# d_w - size of window's side borders (cont_width+d_w = outer width of dialog's window)
+			# dial_y - coordinate of dialog window's top
+			# scr_height - available height of a screen
+			def adjust_dial_size(dial, cont_height, cont_width, d_w, d_h, dial_y, scr_height)
+				if cont_height and cont_width
+					if cont_height>0 and cont_width>0
+						win_width=cont_width+d_w
+						win_height=cont_height+d_h
+						chk_bottom_y=win_height+dial_y
+						bottom_offset=chk_bottom_y-scr_height
+						win_height-=bottom_offset if bottom_offset>0
+						dial.set_size(win_width, win_height)
+					end
+				end
+			end
+		end #class LSS_Zone_Utils
+		
 	end #module LSS_Zone_Extension
 end #module LSS_Extensions

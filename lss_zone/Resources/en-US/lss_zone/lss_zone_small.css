@@ -1,0 +1,458 @@
+﻿.body
+{ 
+	zoom: 100%;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 0.8em;
+	margin-right: 0.5em;
+	margin-left: 0.5em;
+	margin-top: 0.5em;
+	margin-bottom: 0.1em;
+	line-height: 0.8em;
+	color: black; 
+	background: white;
+	height: 100%;
+}
+
+.pg_tbl
+{
+	height: 100%;
+	width: 100%;
+	table-layout: fixed;
+	border-width:0px;
+	border-spacing: 0;
+	padding: 0px;
+	border-collapse: collapse;
+	margin: 0;
+	border: 0;
+}
+
+.pg_tbl_cell
+{
+	margin:0;
+	padding:0;
+}
+
+ol			
+{ list-style-type: decimal;
+	padding: 0;
+	margin: 0;
+	margin-left: 1.5em;
+}
+ul			
+{ list-style-type: circle;
+	padding: 0;
+	margin: 0;
+	margin-left: 1.5em;
+}
+p			{ margin-bottom: 0; }
+a			
+{ color: red;
+	text-decoration: none;
+}
+a:hover			
+{ color: red;
+	text-decoration: underline;
+}
+
+.cmd_button
+{
+	box-sizing: border-box;
+	width: 100%;
+	float: right;
+	font-size: 0.8em;
+}
+
+.expanding_cell
+{
+	height: 100%;
+	padding-right: 1em;
+	margin-right: 1em;
+	width: 100%;
+}
+
+.value_input
+{
+    width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+	font-size: 0.8em;
+}
+
+.preview_container
+{
+	text-align: left;
+	padding-right: 1em;
+	margin-right: 1em;
+}
+
+.preview_area
+{
+	width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+	background: #A6A6A6;
+	border: 1px solid "black";
+	overflow: hidden;
+}
+
+.dock_left
+{
+	display:inline;
+	float:left;
+}
+
+.dock_right
+{
+	display:inline;
+	float:right;
+}
+
+.dock_bottom
+{
+	float:bottom;
+}
+
+.page_tbl
+{
+	border-width:0px;
+	border-spacing: 0;
+	padding: 0;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.info_img_cell
+{
+	background: #A6A6A6 url(images/backs/info_cell_back.gif) repeat-y;
+	width: 42px;
+	height: 32px;
+}
+
+.splitter_img_cell
+{
+	background: #A6A6A6 url(images/backs/info_cell_back.gif) repeat-y;
+	width: 42px;
+	height: 16px;
+}
+
+.setting_cell
+{
+	background: #A6A6A6;
+	padding-right: 0.8em;
+}
+
+.props_cell
+{
+	background: #A6A6A6;
+	padding: 8px;
+}
+
+.settings_tbody
+{
+	bottom: 1em;
+}
+
+.tbl_hdr
+{
+	background: #A6A6A6 url(images/backs/hdr_back.gif) repeat-x;
+	vertical-align: middle;
+	height: 32px;
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: bold;
+	margin: 6;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	min-width: 0;
+}
+
+.header1
+{
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: bold;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.name_cell
+{
+	vertical-align: top;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: inline-block;
+	min-width: 0;
+}
+
+.fixed_name_cell
+{
+	vertical-align: top;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: inline-block;
+	padding-right: 1em;
+	width: 10em;
+	min-width: 0;
+}
+
+.fixed_value_cell
+{
+	vertical-align: top;
+	text-align: right;
+	padding-right: 1em;
+	margin-right: 1em;
+	white-space: nowrap;
+}
+
+.fixed_text_cell
+{
+	height: 5em;
+	text-align: right;
+	padding-right: 1em;
+	margin-right: 1em;
+	white-space: nowrap;
+	vertical-align: top;
+}
+
+.value_cell
+{
+	vertical-align: top;
+	text-align: right;
+	padding-right: 1em;
+	margin-right: 1em;
+	width: 40%;
+	white-space: nowrap;
+}
+
+.preset_btns_cell
+{
+	vertical-align: top;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: inline-block;
+	width: 10em;
+	min-width: 0;
+}
+
+.preset_selector_cell
+{
+	vertical-align: top;
+	text-align: right;
+	padding-right: 1em;
+	margin-right: 1em;
+	width: 100%;
+	white-space: nowrap;
+}
+
+.label_preview_cell
+{
+	height: 6em;
+	text-align: right;
+	padding-right: 1em;
+	margin-right: 1em;
+	white-space: nowrap;
+	vertical-align: top;
+}
+
+.settings_list
+{
+	width: 100%;
+	table-layout: fixed;
+	background: #A6A6A6;
+	border-width:0px;
+	border-spacing: 0;
+	padding: 0;
+	border-collapse: collapse;
+	margin: 0;
+}
+
+.splitter_row
+{
+	height: 0.3em;
+}
+
+.radio_selected
+{
+	background: #A6A6A6 url(images/backs/line.gif);
+	border-bottom: 1px solid white;
+	border-right: 1px solid white;
+}
+
+.radio_unselected
+{
+	background: #A6A6A6;
+	border-bottom: 1px solid #A6A6A6;
+	border-right: 1px solid #A6A6A6;
+	cursor: hand;
+}
+
+.radio_unselected_over
+{
+	background: #A6A6A6 url(images/backs/info_cell_back.gif) repeat-y;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	cursor: hand;
+}
+
+.btn_checked
+{
+	background: #A6A6A6 url(images/backs/dot.gif);
+	border-bottom: 1px solid white;
+	border-right: 1px solid white;
+	cursor: hand;
+}
+
+.btn_unchecked
+{
+	background: none;
+	border-bottom: 1px solid #A6A6A6;
+	border-right: 1px solid #A6A6A6;
+	cursor: hand;
+}
+
+.btn_unchecked_over
+{
+	background: #A6A6A6 url(images/backs/info_cell_back.gif) repeat-y;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	cursor: hand;
+}
+
+.btn_checked_over
+{
+	background: #A6A6A6 url(images/backs/dot.gif);
+	border-top: 1px solid white;
+	border-left: 1px solid white;
+	cursor: hand;
+}
+
+.img_btn
+{
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+}
+
+.img_btn_pressed
+{
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+}
+
+.speed_btn_over
+{
+	background: #A6A6A6 url(images/backs/hdr_back.gif) repeat-x;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	cursor: hand;
+}
+
+.speed_btn
+{
+	background: none;
+	border-bottom: 1px solid #A6A6A6;
+	border-right: 1px solid #A6A6A6;
+	cursor: hand;
+}
+
+.hidden
+{
+	display: none;
+}
+
+.bottom_tbl
+{
+	width: 100%;
+	border-width:0px;
+	border-spacing: 0;
+	padding: 0;
+	border-collapse: collapse;
+}
+
+.RO
+{
+	background: #A6A6A6;
+	font-weight: bold;
+	border-width:1px;
+	border-style: outset;
+	border-spacing: 0;
+}
+
+.side_btn
+{
+	border-width: 1px;
+	border-color: white;
+	cursor: hand;
+}
+
+.deleted
+{
+	/* Required for IE 5, 6, 7 */
+	/* ...or something to trigger hasLayout, like zoom: 1; */
+	width: 100%; 
+		
+	/* Theoretically for IE 8 & 9 (more valid) */	
+	/* ...but not required as filter works too */
+	/* should come BEFORE filter */
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+	/* -ms-filter:"progid:DXImageTransform.Microsoft.Blur(pixelradius=6)"; */
+	
+	/* This works in IE 8 & 9 too */
+	/* ... but also 5, 6, 7 */
+	filter: alpha(opacity=20);
+	/* filter:blur(add=false, direction=135, strength=9); */
+	
+	/* Safari 1.x (pre WebKit!) */
+	-khtml-opacity: 0.2;
+    
+	/* Modern!
+	/* Firefox 0.9+, Safari 2?, Chrome any?
+	/* Opera 9+, IE 9+ */
+	opacity: 0.2;
+}
+
+.simple_btn
+{	
+	background: none;
+	border-width:0px;
+	cursor: hand;
+	margin-bottom: 0.8em;
+	font-style: italic;
+}
+
+.simple_btn_over
+{
+	background: #A6A6A6 url(images/backs/hdr_back.gif) repeat-x;
+	margin-bottom: 0.8em;
+	font-style: italic;
+}
+
+.close_btn
+{
+	display:inline;
+	float:right;
+	background: none;
+	border-width:0px;
+	cursor: hand;
+}
+
+.close_btn_over
+{
+	display:inline;
+	float:right;
+	color: "red";
+}
+
+.props_hdr
+{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: inline;
+	min-width: 0px;
+	max-width: 100%;
+	width: 100%;
+	text-align: left;
+}

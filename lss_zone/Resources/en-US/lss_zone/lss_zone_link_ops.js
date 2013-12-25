@@ -46,6 +46,9 @@ function clear_nodes_and_links(){
 	nodes_pos_arr = new Array ();
 	node_objs_arr = new Array ();
 	links_arr = new Array ();
+	// Disable 'Build' button because links and nodes array became empty.
+	var build_graph_btn=document.getElementById("build_graph_btn");
+	build_graph_btn.disabled=true;
 }
 
 function get_link(link_str) {
@@ -69,11 +72,9 @@ function get_center(center_str){
 }
 
 function rebuild_links_graph(){
-	var links_tbl=document.getElementById("links_preview_table");
 	var links_container=document.getElementById("links_container");
-	links_container.innerHTML="";
 	if (links_arr.length!=0){
-		links_tbl.style.display="";
+		links_container.innerHTML="";
 		// Estimate scale
 		var x_max=parseFloat(max_crds[0]);
 		var y_max=parseFloat(max_crds[1]);
@@ -141,7 +142,7 @@ function rebuild_links_graph(){
 		}
 	}
 	else {
-		links_tbl.style.display="none";
+		// links_tbl.style.display="none";
 	}
 }
 
@@ -198,6 +199,39 @@ function build_graph(){
 }
 
 function display_build_graph(){
-	var graph_cmd_tbl=document.getElementById("build_graph_table");
-	graph_cmd_tbl.style.display="";
+	// var graph_cmd_tbl=document.getElementById("build_graph_table");
+	// graph_cmd_tbl.style.display="";
+	var build_graph_btn=document.getElementById("build_graph_btn");
+	build_graph_btn.disabled=false;
+}
+
+function send_links_cont_height(){
+	var links_cont=document.getElementById("links_container");
+	if (links_cont) {
+		var hgt=links_cont.offsetHeight+18; //18 is padding size of links_cell div
+		act_name="links_cont_height" + delimiter + hgt;
+		callRuby(act_name);
+	}
+}
+
+function fld_unfld_link_ops_dial(){
+	var content=document.getElementById("content_container")
+	if (content.style.display==""){
+		content.style.display="none";
+		act_name="adjust_dial_size_min";
+		callRuby(act_name);
+	}
+	else {
+		// As for content height, we need to send 'scrollHeight' in order to inform about actual content height
+		var content_height=document.body.scrollHeight;
+		if (content_height==0){content_height=1};
+		// In our particular case table width=100% so we need to send 'offsetWidth' instead of 'scrollWidth'
+		var content_width=document.documentElement.offsetWidth;
+		act_name="content_size" + delimiter + content_width + delimiter + content_height;
+		callRuby(act_name);
+		send_dial_xy();
+		content.style.display="";
+		act_name="adjust_dial_size_max";
+		callRuby(act_name);
+	}
 }

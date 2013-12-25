@@ -116,11 +116,10 @@ function build_table(){
 }
 
 function draw_charts(){
-	var charts_cell=document.getElementById("charts_cell");
 	var charts_container=document.getElementById("charts_container");
 	charts_container.innerHTML="";
 	if (charts_arr.length!=0){
-		charts_cell.style.display="";
+		charts_container.style.display="";
 		for (j=0; j<charts_arr.length; j++){
 			var chart_hash=charts_arr[j];
 			var chart_name=chart_hash["chart_name"];
@@ -130,8 +129,9 @@ function draw_charts(){
 		}
 	}
 	else {
-		charts_cell.style.display="none";
+		charts_container.style.display="none";
 	}
+	adjust_dial_height();
 }
 
 function add_chart(chart_name, data_key, legend_key, chart_no){

@@ -1,14 +1,199 @@
+<!DOCTYPE HTML>
 <html>
 <head>
 <title>Settings</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link href="lss_zone.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient_w {
+       filter: none;
+    }
+  </style>
+<![endif]-->
 <script type="text/javascript" src="autosuggest/autosuggest.js"></script>
 </head>
 <script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
 <script type="text/javascript" src="lss_zone_settings.js" charset="win-1251"></script>
 <body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<div class="header" id="dial_header">
+		<div class="dial_icon" onclick="fld_unfld_dial()">
+			<img src="images/buttons/settings_32.png" align="bottom">
+		</div>
+		<div class="elastic">
+			<div class="header_caption">
+				Settings
+			</div>
+		</div>
+	</div>
+	<div class="content" id="content_container">
+		<div class="settings_group" id="trace_cont_group">
+			<div class="setting_band" id="trace_cont_hdr_row">
+				<div class="info_col">
+					<div id="fld_unfld|trace_cont_group" onclick="fold_unfold_group(this)" style="cursor: hand; text-align: center;">-</div>
+				</div>
+				<div class="elastic">
+					<div class="header1">Contour Tracing</div>
+				</div>
+			</div>
+			<div class="setting_band" id="aperture_size_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Aperture size
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="aperture_size" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Size of a square range, which traces contours">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="int_pt_chk_hgt_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Check height
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="int_pt_chk_hgt" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Height, at which contour of a closed space is to be traced">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="min_wall_offset_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Minimal wall offset
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="min_wall_offset" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Helps to figure out emptiness of an opening">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="op_trace_offset_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Opening tracing offset
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="op_trace_offset" value="" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Offset from wall's inner surface">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="trace_openings_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Trace openings
+					</div>
+					<div class="setting_ctrl">
+						<input type="checkbox" id="trace_openings" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="dock_right">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="use_materials_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Use materials
+					</div>
+					<div class="setting_ctrl">
+						<input type="checkbox" id="use_materials" value="0" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="dock_right">
+					</div>
+				</div>
+			</div>
+			<div class="setting_band" id="segm_tracing_lim_row">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name">
+						Segment tracing limit
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="segm_tracing_lim" value="3000" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Integer value representing reasonable count of one straight segment's tracing steps" >
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="settings_group" id="label_pos_group">
+			<div class="setting_band" id="label_pos_hdr_row">
+				<div class="info_col">
+					<div id="fld_unfld|label_pos_group" onclick="fold_unfold_group(this)" style="cursor: hand; text-align: center;">-</div>
+				</div>
+				<div class="elastic">
+					<div class="header1">Initial Position of a Label</div>
+				</div>
+			</div>
+			<div class="setting_band">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name" title="Point where to place a text label">
+						Label anchor
+					</div>
+					<div class="setting_ctrl">
+						<select id="label_pos" value="center" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="" >
+							<option value="center">center</option>
+							<option value="top-left">top-left</option>
+							<option value="top-right">top-right</option>
+							<option value="bottom-right">bottom-right</option>
+							<option value="bottom-left">bottom-left</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="setting_band">
+				<div class="elastic">
+					<div class="setting_name" title="Vertical positioning of text label">
+						Label level
+					</div>
+					<div class="setting_ctrl">
+						<select id="label_level" value="bottom" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="" >
+							<option value="bottom">bottom</option>
+							<option value="center">center</option>
+							<option value="top">top</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="setting_band">
+				<div class="elastic">
+					<div class="setting_name" title="Offset from anchor point">
+						Label offset
+					</div>
+					<div class="setting_ctrl">
+						<input type="text" id="label_offset" value="30" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Offset from an anchor point" >
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="horiz_split">&nbsp;</div>
+	</div>
+	<div class="footer gradient_w" id="dial_footer">
+		<div class="dock_left">
+			<img src="images/up_dwn_arrws.gif" id="stick_height" class="btn_checked" onmouseover="btn_over(this)" onmouseout="btn_out(this)" onclick="click_chk(this)" title="Fit height to content">
+		</div>
+		<div>
+			<input type="button" onclick="apply_settings()" value="Apply" class="dock_right"/>
+			<input type="button" onclick="cancel_changes()" value="Cancel" class="dock_right" />
+		</div>
+	</div>
+	<!--
 	<table id="zone_settings_table" class="settings_list">
 		<tbody id="settings_body">
 			<tr>
@@ -129,5 +314,6 @@
 			</td>
 		</tr>
 	</table>
+	-->
 </body>
 </html>

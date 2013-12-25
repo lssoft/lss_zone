@@ -67,7 +67,6 @@ function get_zones_cnt(cnt_str){
 	var cnt_div=document.getElementById(cnt_type+"_zones_count");
 	cnt_div.innerHTML="";
 	var filter_table=document.getElementById("filter_table");
-	var btm_tbl=document.getElementById("bottom_tbl");
 	if (room_cnt==0 && box_cnt==0 && flat_cnt==0){
 		if (cnt_type=="total"){
 			filter_table.style.display="none";
@@ -76,7 +75,6 @@ function get_zones_cnt(cnt_str){
 	}
 	else {
 		filter_table.style.display="";
-		btm_tbl.style.display="";
 		if (room_cnt!=0) {
 			room_img=document.createElement("IMG");
 			room_img.src="images/room.gif"
@@ -155,12 +153,12 @@ function get_zones_cnt(cnt_str){
 		if (use_floors_count.checked==false){ floors_count_row.style.display="none";};
 		
 		// Hide group of materials searching conditions
-		var mat_tbody=document.getElementById("mat_tbody");
-		mat_tbody.style.display="none";
+		var mat_group=document.getElementById("mat_group");
+		mat_group.style.display="none";
 		
 		// Read roll groups statuses (folded/unfolded). Added in ver. 1.2.1 06-Dec-13.
-		var geom_grp_btn=document.getElementById("fld_unfld|geom_tbody");
-		var mat_grp_btn=document.getElementById("fld_unfld|mat_tbody");
+		var geom_grp_btn=document.getElementById("fld_unfld|geom_group");
+		var mat_grp_btn=document.getElementById("fld_unfld|mat_group");
 		var mat_st=mat_grp_btn.innerHTML;
 		var geom_st=geom_grp_btn.innerHTML;
 		
@@ -180,7 +178,7 @@ function get_zones_cnt(cnt_str){
 				ceiling_refno_row.style.display="";
 				wall_refno_row.style.display="";
 			}
-			mat_tbody.style.display="";
+			mat_group.style.display="";
 		}
 		if (box_cnt!=0) {
 			// Display building box related rows

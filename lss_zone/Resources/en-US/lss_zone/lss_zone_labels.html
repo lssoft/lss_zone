@@ -1,14 +1,96 @@
+<!DOCTYPE HTML>
 <html>
 <head>
 <title>Labels</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link href="lss_zone.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient_w {
+       filter: none;
+    }
+  </style>
+<![endif]-->
 <script type="text/javascript" src="autosuggest/autosuggest.js"></script>
 </head>
-<script type="text/javascript" src="lss_zone.js" charset="win-1251"></script>
-<script type="text/javascript" src="lss_zone_labels.js" charset="win-1251"></script>
+<script type="text/javascript" src="lss_zone.js" charset="UTF-8"></script>
+<script type="text/javascript" src="lss_zone_labels.js" charset="UTF-8"></script>
 <body class="body" onload="load_init_data()" onkeyup="key_up_body(event)">
+	<div class="header" id="dial_header">
+		<div class="dial_icon" onclick="fld_unfld_dial()">
+			<img src="images/buttons/labels_32.png" align="bottom">
+		</div>
+		<div class="elastic">
+			<div class="header_caption">
+				Attach Labels
+			</div>
+		</div>
+	</div>
+	<div class="content" id="content_container">
+		<div class="setting_band">
+			<div class="elastic">
+				Label Template
+			</div>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					<input type="button" onclick="edit_preset('preset_name')" value="..." title="Edit preset" class="dock_left"/>
+					<input type="button" onclick="add_preset()" value=" + " title="Add preset" class="dock_left"/>
+					<input type="button" onclick="delete_preset('preset_name')" value=" - " title="Delete preset" class="dock_left"/>
+				</div>
+				<div class="setting_ctrl">
+					<select id="preset_name" onchange="preset_change(this)" class="value_input" title="Select preset"></select>
+				</div>
+			</div>
+		</div>
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Label's&nbsp;layer
+				</div>
+				<div class="setting_ctrl">
+					<input type="text" id="label_layer" value="" onchange="send_setting(this)" onkeydown="prevent_enter(this)" onkeyup="key_up(this)" class="value_input" title="Layer where labels should be">
+				</div>
+			</div>
+		</div>
+		<div class="setting_band">
+			<div class="info_col">
+				&nbsp;
+			</div>
+			<div class="elastic">
+				<div class="setting_name">
+					Preview of a Label
+				</div>
+			</div>
+		</div>
+		<div class="preview_container">
+			<textarea rows="5" cols="1" id="preview_container" class="preview_area"></textarea>
+		</div>
+		
+		<div class="horiz_split">&nbsp;</div>
+		
+	</div>
+	<div class="footer gradient_w" id="dial_footer">
+		<div class="dock_left">
+			<img src="images/up_dwn_arrws.gif" id="stick_height" class="btn_checked" onmouseover="btn_over(this)" onmouseout="btn_out(this)" onclick="click_chk(this)" title="Fit height to content">
+		</div>
+		<div>
+			<input type="button" onclick="apply_settings()" value="Apply" class="dock_right"/>
+			<input type="button" onclick="cancel_changes()" value="Cancel" class="dock_right"/>
+		</div>
+	</div>
+	<!--
 	<table class="settings_list">
 		<tr>
 			<td class="info_img_cell">
@@ -90,11 +172,15 @@
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
+			<td>
+				<img src="images/up_dwn_arrws.gif" id="stick_height" class="btn_checked" onmouseover="btn_over(this)" onmouseout="btn_out(this)" onclick="click_chk(this)" title="Fit height to content">
+			</td>
 			<td align="right">
 				<input type="button" onclick="apply_settings()" value="Apply" />
 				<input type="button" onclick="cancel_changes()" value="Cancel"/>
 			</td>
 		</tr>
 	</table>
+	-->
 </body>
 </html>
