@@ -1,4 +1,4 @@
-# lss_zone_labels.rb ver. 1.2.1 alpha 25-Dec-13
+# lss_zone_labels.rb ver. 1.2.1 alpha 26-Dec-13
 # The script, which implements attaching labels with zone attributes to existing zone objects
 # in an active model.
 
@@ -116,7 +116,7 @@ module LSS_Extensions
 				
 				# Create the WebDialog instance
 				@zone_labels_dialog = UI::WebDialog.new($lsszoneStrings.GetString("Labels"), true, "LSS Zone Labels", 450, 500, 200, 200, true)
-				@zone_labels_dialog.min_width=450
+				@zone_labels_dialog.min_width=350
 				@zone_labels_dialog.max_width=800
 				
 				# Attach an action callback
@@ -228,6 +228,13 @@ module LSS_Extensions
 						end
 					end
 					# Content size block end
+					
+					# Dialog style handling. Added in ver. 1.2.1 26-Dec-13.
+					if action_name=="get_dial_style"
+						dial_style=Sketchup.read_default("LSS Zone Defaults", "dial_style", "standard")
+						js_command="get_dial_style('" + dial_style + "')"
+						@zone_labels_dialog.execute_script(js_command) if js_command
+					end
 				end
 				resource_dir=LSS_Dirs.new.resource_path
 				dial_path="#{resource_dir}/lss_zone/lss_zone_labels.html"

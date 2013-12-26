@@ -1,4 +1,4 @@
-# lss_zone_props.rb ver. 1.2.1 alpha 25-Dec-13
+# lss_zone_props.rb ver. 1.2.1 alpha 26-Dec-13
 # The file, which contains 'Zone Properties' dialog implementation.
 
 # (C) 2013, Links System Software
@@ -57,9 +57,9 @@ module LSS_Extensions
 				# Hash, which contains states of roll groups states (folded/unfolded).
 				# Added in ver. 1.2.1 05-Dec-13.
 				@dialog_rolls_hash=Hash.new
-				@dialog_rolls_hash["geom_tbody"]="-"
-				@dialog_rolls_hash["trace_cont_tbody"]="-"
-				@dialog_rolls_hash["mat_tbody"]="-"
+				@dialog_rolls_hash["geom_group"]="-"
+				@dialog_rolls_hash["trace_cont_group"]="-"
+				@dialog_rolls_hash["mat_group"]="-"
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
 				@stick_height="true"
@@ -526,7 +526,7 @@ module LSS_Extensions
 				# Create the WebDialog instance
 				@props_dialog = UI::WebDialog.new($lsszoneStrings.GetString("Properties"), true, "LSS Zone Properties", 350, 500, 200, 200, true)
 				@props_dialog.max_width=450
-				@props_dialog.min_width=280
+				@props_dialog.min_width=210
 			
 				# Attach an action callback
 				@props_dialog.add_action_callback("get_data") do |web_dialog,action_name|
@@ -749,6 +749,13 @@ module LSS_Extensions
 						end
 					end
 					# Content size block end
+					
+					# Dialog style handling. Added in ver. 1.2.1 26-Dec-13.
+					if action_name=="get_dial_style"
+						dial_style=Sketchup.read_default("LSS Zone Defaults", "dial_style", "standard")
+						js_command="get_dial_style('" + dial_style + "')"
+						@props_dialog.execute_script(js_command) if js_command
+					end
 					if action_name=="reset"
 						@props_dialog.close
 						lss_zone_props=LSS_Zone_Props.new

@@ -25,7 +25,7 @@ module LSS_Extensions
 
 		zone_ext.description=$lsszoneStrings.GetString("This extension allows to create 'zone-objects' or just 'zones' in an active model. Each created zone may store geometric and other properties.")
 		zone_ext.copyright="(c)2013, Links' System Software"
-		zone_ext.version="1.2.1 alpha 25-Dec-13"
+		zone_ext.version="1.2.1 alpha 4 26-Dec-13"
 		zone_ext.creator="Links' System Software"
 		Sketchup.register_extension(zone_ext, true)
 	end #module LSS_Zone_Extension

@@ -3,7 +3,7 @@
 <head>
 <title>Settings</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="lss_zone.css" rel="stylesheet" type="text/css">
+<link href="lss_zone.css" rel="stylesheet" type="text/css" id="lss_zone_css">
 <link rel="stylesheet" type="text/css" href="autosuggest/autosuggest.css"></link>
 <!--[if gte IE 9]>
   <style type="text/css">
@@ -178,6 +178,32 @@
 					</div>
 					<div class="setting_ctrl">
 						<input type="text" id="label_offset" value="30" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Offset from an anchor point" >
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="settings_group" id="ui_group">
+			<div class="setting_band" id="ui_hdr_row">
+				<div class="info_col">
+					<div id="fld_unfld|ui_group" onclick="fold_unfold_group(this)" style="cursor: hand; text-align: center;">-</div>
+				</div>
+				<div class="elastic">
+					<div class="header1">User Interface</div>
+				</div>
+			</div>
+			<div class="setting_band">
+				<div class="info_col">
+					&nbsp;
+				</div>
+				<div class="elastic">
+					<div class="setting_name" title="Dialog style">
+						Dialog style
+					</div>
+					<div class="setting_ctrl">
+						<select id="dial_style" value="center" onchange="send_setting(this)" onkeydown="key_dwn(this)" class="value_input" title="Representation of contents of tool dialogs" >
+							<option value="standard">standard</option>
+							<option value="small">small</option>
+						</select>
 					</div>
 				</div>
 			</div>

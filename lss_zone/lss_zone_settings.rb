@@ -1,4 +1,4 @@
-# lss_zone_settings.rb ver. 1.2.1 alpha 25-Dec-13
+# lss_zone_settings.rb ver. 1.2.1 alpha 26-Dec-13
 # The file, which contains 'Global Settings' dialog implementation
 # Not in use for now.
 
@@ -57,6 +57,9 @@ module LSS_Extensions
 				# Offset from chosen alignment point
 				@label_offset=30
 				
+				# Style of tools' dialogs' contents representation (standard or small)
+				@dial_style="standard"
+				
 				@settings_hash=Hash.new
 				self.settings2hash
 				$lss_zone_settings_dial_is_active=false
@@ -64,8 +67,8 @@ module LSS_Extensions
 				# Hash, which contains states of roll groups states (folded/unfolded).
 				# Added in ver. 1.2.1 09-Dec-13.
 				@dialog_rolls_hash=Hash.new
-				@dialog_rolls_hash["trace_cont_tbody"]="-"
-				@dialog_rolls_hash["label_pos_tbody"]="-"
+				@dialog_rolls_hash["trace_cont_group"]="-"
+				@dialog_rolls_hash["label_pos_group"]="-"
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
 				@stick_height="true"
@@ -84,6 +87,9 @@ module LSS_Extensions
 				@settings_hash["label_level"]=[@label_level, "string"]
 				@settings_hash["label_pos"]=[@label_pos, "string"]
 				@settings_hash["label_offset"]=[@label_offset, "distance"]
+				
+				# Dialogs representation style. Added in ver. 1.2.1 26-Dec-13.
+				@settings_hash["dial_style"]=[@dial_style, "string"]
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
 				@settings_hash["stick_height"]=[@stick_height, "boolean"]
@@ -107,6 +113,9 @@ module LSS_Extensions
 				@label_level=@settings_hash["label_level"][0]
 				@label_pos=@settings_hash["label_pos"][0]
 				@label_offset=@settings_hash["label_offset"][0]
+				
+				# Dialogs representation style. Added in ver. 1.2.1 26-Dec-13.
+				@dial_style=@settings_hash["dial_style"][0]
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
 				@stick_height=@settings_hash["stick_height"][0]
@@ -147,7 +156,7 @@ module LSS_Extensions
 				# Create the WebDialog instance
 				@settings_dialog = UI::WebDialog.new($lsszoneStrings.GetString("LSS Zone Settings"), true, "LSS Zone Settings", 350, 350, 200, 200, true)
 				@settings_dialog.max_width=450
-				@settings_dialog.min_width=280
+				@settings_dialog.min_width=210
 			
 				# Attach an action callback
 				@settings_dialog.add_action_callback("get_data") do |web_dialog,action_name|
@@ -237,6 +246,12 @@ module LSS_Extensions
 					# Content size block end
 					if action_name=="cancel"
 						@settings_dialog.close
+					end
+					# Dialog style handling. Added in ver. 1.2.1 26-Dec-13.
+					if action_name=="get_dial_style"
+						dial_style=Sketchup.read_default("LSS Zone Defaults", "dial_style", "standard")
+						js_command="get_dial_style('" + dial_style + "')"
+						@settings_dialog.execute_script(js_command) if js_command
 					end
 				end
 				resource_dir=LSS_Dirs.new.resource_path

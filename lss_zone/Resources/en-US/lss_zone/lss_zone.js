@@ -4,6 +4,7 @@ var materials_arr = new Array ();
 var presets_arr = new Array ();
 var categories_arr = new Array ();
 var categories_autosuggest = {};
+var dial_style="standard";
 
 function callRuby(actionName) {
 	query = 'skp:get_data@' + actionName;
@@ -200,8 +201,33 @@ function load_init_data() {
 	callRuby("get_materials");
 	callRuby("get_categories");
 	obtain_defaults();
+	callRuby("get_dial_style");
+	apply_dial_style();
 	document.onkeypress = stopRKey; //It is a trick to prevent onclick event of the first image button after pressing Enter key
 	adjust_dial_height();
+}
+
+function get_dial_style(style_str){
+	dial_style=style_str;
+}
+
+function apply_dial_style(){
+	var main_css=document.getElementById("lss_zone_css");
+	var imgs=document.images;
+	if (dial_style=="small"){
+		main_css.setAttribute("href", "lss_zone_small.css");
+		for (var i=0,len=imgs.length; i<len; i++){
+			src_str=String(imgs[i].src);
+			if (src_str.indexOf("32")!=-1){
+				imgs[i].src=src_str.replace("32", "24");
+			}
+			else{
+				if ((src_str.indexOf("small")==-1) && (src_str.indexOf("24")==-1)) {
+					imgs[i].src=src_str.split(".")[0]+"_small."+src_str.split(".")[1];
+				}
+			}
+		}
+	}
 }
 
 //Function to prevent onclick event of the first image button after pressing Enter key
@@ -768,7 +794,7 @@ function send_hdr_ftr_height(){
 }
 
 function fld_unfld_dial(){
-	var content=document.getElementById("content_container")
+	var content=document.getElementById("content_container");
 	if (content.style.display==""){
 		content.style.display="none";
 	}
@@ -785,4 +811,49 @@ function fld_unfld_dial(){
 	send_dial_xy();
 	act_name="adjust_dial_size";
 	callRuby(act_name);
+}
+
+// This funtion is not in use
+function size_response(dial_hdr){
+	setTimeout(function () {
+		var main_css=document.getElementById("lss_zone_css");
+		var wdt=document.documentElement.offsetWidth;
+		var imgs=document.images;
+		if (wdt<250){
+			if (main_css.getAttribute("href").indexOf("lss_zone")!=-1){
+				main_css.setAttribute("href", "lss_zone_small.css");
+				for (var i=0,len=imgs.length; i<len; i++){
+					src_str=String(imgs[i].src);
+					if (src_str.indexOf("32")!=-1){
+						imgs[i].src=src_str.replace("32", "24");
+					}
+					else{
+						if ((src_str.indexOf("small")==-1) && (src_str.indexOf("24")==-1)) {
+							imgs[i].src=src_str.split(".")[0]+"_small."+src_str.split(".")[1];
+						}
+					}
+				}
+				setTimeout(function () {
+					adjust_dial_height();
+				}, 1000);
+			}
+		}
+		else{
+			if (main_css.getAttribute("href").indexOf("lss_zone_small")!=-1){
+				main_css.setAttribute("href", "lss_zone.css");
+				for (var i=0,len=imgs.length; i<len; i++){
+					src_str=String(imgs[i].src);
+					if (src_str.indexOf("24")!=-1){
+						imgs[i].src=src_str.replace("24", "32");
+					}
+					else {
+						imgs[i].src=src_str.replace("_small", "");
+					}
+				}
+				setTimeout(function () {
+					adjust_dial_height();
+				}, 1000);
+			}
+		}
+	}, 300);
 }

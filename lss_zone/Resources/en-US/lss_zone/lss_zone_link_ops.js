@@ -10,6 +10,7 @@ var popup = null;
 var delta_r=8;
 var init_r=8;
 var scale=1;
+var dial_style="standard";
 
 function get_cat_col(cat_col_str){
 	var cat_col=cat_col_str.split("|");
@@ -192,6 +193,11 @@ function node_out(){
 
 function custom_init(){
 	callRuby("get_cat_colors");
+	callRuby("get_dial_style");
+	var links_preview_css=document.getElementById("links_preview_css");
+	if (dial_style=="small"){
+		links_preview_css.setAttribute("href", "links_preview_small.css");
+	}
 }
 
 function build_graph(){

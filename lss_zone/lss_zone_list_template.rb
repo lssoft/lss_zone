@@ -1,4 +1,4 @@
-# lss_zone_list_template.rb ver. 1.2.1 alpha 25-Dec-13
+# lss_zone_list_template.rb ver. 1.2.1 alpha 26-Dec-13
 # The file, which contains report template editing dialog (query string, sort and group options etc)
 
 # (C) 2013, Links System Software
@@ -88,7 +88,7 @@ module LSS_Extensions
 				self.hash2settings # Because we get @settings_hash from parent dialog before launching this method
 				# Create the WebDialog instance
 				@list_template_dial = UI::WebDialog.new($lsszoneStrings.GetString("List Template"), true, "LSS List Template", 450, 500, 200, 200, true)
-				@list_template_dial.min_width=450
+				@list_template_dial.min_width=360
 				
 				# Attach an action callback
 				@list_template_dial.add_action_callback("get_data") do |web_dialog,action_name|
@@ -236,6 +236,13 @@ module LSS_Extensions
 						end
 					end
 					# Content size block end
+					
+					# Dialog style handling. Added in ver. 1.2.1 26-Dec-13.
+					if action_name=="get_dial_style"
+						dial_style=Sketchup.read_default("LSS Zone Defaults", "dial_style", "standard")
+						js_command="get_dial_style('" + dial_style + "')"
+						@list_template_dial.execute_script(js_command) if js_command
+					end
 				end
 				resource_dir=LSS_Dirs.new.resource_path
 				dial_path="#{resource_dir}/lss_zone/lss_zone_list_template.html"

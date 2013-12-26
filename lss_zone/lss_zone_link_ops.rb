@@ -1,4 +1,4 @@
-# lss_zone_link_ops.rb ver. 1.2.1 alpha 25-Dec-13
+# lss_zone_link_ops.rb ver. 1.2.1 alpha 26-Dec-13
 # The script, which contains 'Link Openings Tool' implementation.
 # This tool searches for adjacent openings among selected zones
 # and marks adjucent openings as internal.
@@ -278,6 +278,13 @@ module LSS_Extensions
 						end
 					end
 					# Content size block end
+					
+					# Dialog style handling. Added in ver. 1.2.1 26-Dec-13.
+					if action_name=="get_dial_style"
+						dial_style=Sketchup.read_default("LSS Zone Defaults", "dial_style", "standard")
+						js_command="get_dial_style('" + dial_style + "')"
+						@link_ops_dialog.execute_script(js_command) if js_command
+					end
 				end
 				resource_dir=LSS_Dirs.new.resource_path
 				dial_path="#{resource_dir}/lss_zone/lss_zone_link_ops.html"

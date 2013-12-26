@@ -1,4 +1,4 @@
-# lss_zone_tool.rb ver. 1.2.1 alpha 25-Dec-13
+# lss_zone_tool.rb ver. 1.2.1 alpha 26-Dec-13
 # The main file, which contains LSS Zone Tool implementation.
 
 # (C) 2013, Links System Software
@@ -165,9 +165,9 @@ module LSS_Extensions
 				# Hash, which contains states of roll groups states (folded/unfolded).
 				# Added in ver. 1.2.1 05-Dec-13.
 				@dialog_rolls_hash=Hash.new
-				@dialog_rolls_hash["geom_tbody"]="-"
-				@dialog_rolls_hash["trace_cont_tbody"]="-"
-				@dialog_rolls_hash["mat_tbody"]="-"
+				@dialog_rolls_hash["geom_group"]="-"
+				@dialog_rolls_hash["trace_cont_group"]="-"
+				@dialog_rolls_hash["mat_group"]="-"
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
 				@stick_height="true"
@@ -354,7 +354,7 @@ module LSS_Extensions
 				# Create the WebDialog instance
 				@zone_dialog = UI::WebDialog.new($lsszoneStrings.GetString("LSS Zone"), true, "LSS Zone", 350, 500, 200, 200, true)
 				@zone_dialog.max_width=450
-				@zone_dialog.min_width=280
+				@zone_dialog.min_width=210
 			
 				# Attach an action callback
 				@zone_dialog.add_action_callback("get_data") do |web_dialog,action_name|
@@ -432,6 +432,11 @@ module LSS_Extensions
 						@eye_dropper_type="floor"
 						js_command = "press_eye_dropper_btn('" + @eye_dropper_type + "')" if @eye_dropper_type
 						@zone_dialog.execute_script(js_command) if js_command
+						# Unpress other buttons
+						js_command = "unpress_eye_dropper_btn('" + "ceiling" + "')" if @eye_dropper_type
+						@zone_dialog.execute_script(js_command) if js_command
+						js_command = "unpress_eye_dropper_btn('" + "wall" + "')" if @eye_dropper_type
+						@zone_dialog.execute_script(js_command) if js_command
 					end
 					if action_name.split(",")[1]=="ceiling_eye_dropper"
 						@pick_state="eye_dropper"
@@ -439,13 +444,22 @@ module LSS_Extensions
 						@eye_dropper_type="ceiling"
 						js_command = "press_eye_dropper_btn('" + @eye_dropper_type + "')" if @eye_dropper_type
 						@zone_dialog.execute_script(js_command) if js_command
-						
+						# Unpress other buttons
+						js_command = "unpress_eye_dropper_btn('" + "floor" + "')" if @eye_dropper_type
+						@zone_dialog.execute_script(js_command) if js_command
+						js_command = "unpress_eye_dropper_btn('" + "wall" + "')" if @eye_dropper_type
+						@zone_dialog.execute_script(js_command) if js_command
 					end
 					if action_name.split(",")[1]=="wall_eye_dropper"
 						@pick_state="eye_dropper"
 						self.onSetCursor
 						@eye_dropper_type="wall"
 						js_command = "press_eye_dropper_btn('" + @eye_dropper_type + "')" if @eye_dropper_type
+						@zone_dialog.execute_script(js_command) if js_command
+						# Unpress other buttons
+						js_command = "unpress_eye_dropper_btn('" + "ceiling" + "')" if @eye_dropper_type
+						@zone_dialog.execute_script(js_command) if js_command
+						js_command = "unpress_eye_dropper_btn('" + "floor" + "')" if @eye_dropper_type
 						@zone_dialog.execute_script(js_command) if js_command
 					end
 					if action_name=="cut_opening"
@@ -585,6 +599,13 @@ module LSS_Extensions
 						end
 					end
 					# Content size block end
+					
+					# Dialog style handling. Added in ver. 1.2.1 26-Dec-13.
+					if action_name=="get_dial_style"
+						dial_style=Sketchup.read_default("LSS Zone Defaults", "dial_style", "standard")
+						js_command="get_dial_style('" + dial_style + "')"
+						@zone_dialog.execute_script(js_command) if js_command
+					end
 					if action_name=="reset"
 						view=Sketchup.active_model.active_view
 						self.reset(view)

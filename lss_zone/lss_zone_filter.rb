@@ -1,4 +1,4 @@
-# lss_zone_filter.rb ver. 1.2.1 alpha 25-Dec-13
+# lss_zone_filter.rb ver. 1.2.1 alpha 26-Dec-13
 # The file, which contains 'Filter' dialog implementation
 
 # (C) 2013, Links System Software
@@ -49,9 +49,9 @@ module LSS_Extensions
 				# Hash, which contains states of roll groups states (folded/unfolded).
 				# Added in ver. 1.2.1 06-Dec-13.
 				@dialog_rolls_hash=Hash.new
-				@dialog_rolls_hash["geom_tbody"]="-"
-				@dialog_rolls_hash["trace_cont_tbody"]="-"
-				@dialog_rolls_hash["mat_tbody"]="-"
+				@dialog_rolls_hash["geom_group"]="-"
+				@dialog_rolls_hash["trace_cont_group"]="-"
+				@dialog_rolls_hash["mat_group"]="-"
 				
 				# Stick dialog height setting. Added in ver. 1.2.1 09-Dec-13.
 				@stick_height="true"
@@ -278,7 +278,7 @@ module LSS_Extensions
 				# Create the WebDialog instance
 				@filter_dialog = UI::WebDialog.new($lsszoneStrings.GetString("Filter Zones"), true, "LSS Zone Filter", 350, 500, 200, 200, true)
 				@filter_dialog.max_width=450
-				@filter_dialog.min_width=280
+				@filter_dialog.min_width=210
 			
 				# Attach an action callback
 				@filter_dialog.add_action_callback("get_data") do |web_dialog,action_name|
@@ -468,6 +468,12 @@ module LSS_Extensions
 					end
 					if action_name=="close_dial"
 						@filter_dialog.close
+					end
+					# Dialog style handling. Added in ver. 1.2.1 26-Dec-13.
+					if action_name=="get_dial_style"
+						dial_style=Sketchup.read_default("LSS Zone Defaults", "dial_style", "standard")
+						js_command="get_dial_style('" + dial_style + "')"
+						@filter_dialog.execute_script(js_command) if js_command
 					end
 				end
 				resource_dir=LSS_Dirs.new.resource_path
