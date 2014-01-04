@@ -1,4 +1,4 @@
-# lss_zone_layers.rb ver. 1.2.0 beta 01-Dec-13
+﻿# lss_zone_layers.rb ver. 1.2.0 beta 01-Dec-13
 # The script, which contains a class, wich makes layers to store all necessary zone elements in an active model
 
 # (C) 2013, Links System Software

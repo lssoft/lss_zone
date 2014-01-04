@@ -1,4 +1,4 @@
-# lss_zone_filter.rb ver. 1.2.1 alpha 26-Dec-13
+﻿# lss_zone_filter.rb ver. 1.2.1 alpha 26-Dec-13
 # The file, which contains 'Filter' dialog implementation
 
 # (C) 2013, Links System Software
@@ -527,6 +527,11 @@ module LSS_Extensions
 									end
 								end
 							else
+								su_ver=Sketchup.version
+								if su_ver.split(".")[0].to_i>=14
+									filter_val=filter_val.force_encoding("UTF-8")
+									zone_val=zone_val.force_encoding("UTF-8")
+								end
 								if key=="memo"
 									if zone_val.include?(filter_val)==false
 										new_selection.delete(zone_obj)

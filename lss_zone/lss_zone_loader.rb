@@ -1,4 +1,4 @@
-# lss_zone_loader.rb ver. 1.2.0 alpha 19-Nov-13
+﻿# lss_zone_loader.rb ver. 1.2.1 beta 04-Jan-14
 # This file contains a script, which loads all available LSS Zone tools a commands.
 # Order of lines in this file matters it is basically the same as an order of
 # buttons in LSS Zone toolbar and an order of menu items in LSS Zone sub-menu.

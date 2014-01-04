@@ -1,4 +1,4 @@
-# lss_zone_tool.rb ver. 1.2.1 alpha 26-Dec-13
+﻿# lss_zone_tool.rb ver. 1.2.1 alpha 26-Dec-13
 # The main file, which contains LSS Zone Tool implementation.
 
 # (C) 2013, Links System Software
@@ -1066,9 +1066,30 @@ module LSS_Extensions
 						@under_cur_mat=nil
 						ph.all_picked.each_index{|ind|
 							ent=ph.leaf_at(ind)
-							if ent.respond_to?("material")
-								@under_cur_mat=ent.material
-								break
+							if ent.is_a?(Sketchup::Face)
+								# Estimate face's normal in order to find out, which side of a face is being observed now,
+								# so it is possible to figure out, what material to pick (front material or back material)
+								norm=ent.normal
+								view_ray=view.pickray(x, y)
+								chk_ang=norm.angle_between(view_ray[1])
+								if chk_ang<Math::PI/2.0
+									if ent.respond_to?("back_material")
+										@under_cur_mat=ent.back_material
+									else
+										if ent.respond_to?("material")
+											@under_cur_mat=ent.material
+										end
+									end
+								else
+									if ent.respond_to?("material")
+										@under_cur_mat=ent.material
+									end
+								end
+							else
+								if ent.respond_to?("material")
+									@under_cur_mat=ent.material
+									break
+								end
 							end
 						}
 					when "over_obj"
@@ -2038,7 +2059,7 @@ module LSS_Extensions
 				summary_text=""
 				summary_text+="#{@number} #{@name}\n"
 				summary_text+=$lsszoneStrings.GetString("Area: ")
-				summary_text+=Sketchup.format_area(@area.to_f)
+				summary_text+=Sketchup.format_area(@area.to_f).to_s
 				summary_text+="\n"
 				summary_text+=$lsszoneStrings.GetString("Perimeter: ")
 				summary_text+=Sketchup.format_length(@perimeter.to_f)

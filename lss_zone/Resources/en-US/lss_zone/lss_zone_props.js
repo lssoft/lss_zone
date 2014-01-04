@@ -12,6 +12,24 @@ function refresh_data(){
 }
 
 function get_zones_cnt(cnt_str){
+	var main_css=document.getElementById("lss_zone_css");
+	var room_img=document.createElement("IMG");
+	room_img.src="images/room.gif"
+	room_img.className="dock_left";
+	room_img.title="'Room' zone type";
+	var box_img=document.createElement("IMG");
+	box_img.src="images/box.gif"
+	box_img.className="dock_left";
+	box_img.title="'Box' zone type";
+	var flat_img=document.createElement("IMG");
+	flat_img.src="images/flat.gif"
+	flat_img.className="dock_left";
+	flat_img.title="'Flat' zone type";
+	if (main_css.getAttribute("href")=="lss_zone_small.css"){
+		room_img.src="images/room_small.gif"
+		box_img.src="images/box_small.gif"
+		flat_img.src="images/flat_small.gif"
+	}
 	var cnt_arr=cnt_str.split(",");
 	var room_cnt=0;
 	var box_cnt=0;
@@ -58,10 +76,6 @@ function get_zones_cnt(cnt_str){
 		apply_btn.disabled=false;
 		reset_btn.disabled=false;
 		if (room_cnt!=0) {
-			room_img=document.createElement("IMG");
-			room_img.src="images/room.gif"
-			room_img.className="dock_left";
-			room_img.title="'Room' zone type";
 			cnt_div.appendChild(room_img);
 			room_cnt_div=document.createElement("DIV");
 			room_cnt_div.innerHTML=room_cnt;
@@ -70,10 +84,6 @@ function get_zones_cnt(cnt_str){
 			cnt_div.appendChild(room_cnt_div);
 		}
 		if (box_cnt!=0) {
-			box_img=document.createElement("IMG");
-			box_img.src="images/box.gif"
-			box_img.className="dock_left";
-			box_img.title="'Box' zone type";
 			cnt_div.appendChild(box_img);
 			box_cnt_div=document.createElement("DIV");
 			box_cnt_div.innerHTML=box_cnt;
@@ -82,10 +92,6 @@ function get_zones_cnt(cnt_str){
 			cnt_div.appendChild(box_cnt_div);
 		}
 		if (flat_cnt!=0) {
-			flat_img=document.createElement("IMG");
-			flat_img.src="images/flat.gif"
-			flat_img.className="dock_left";
-			flat_img.title="'Flat' zone type";
 			cnt_div.appendChild(flat_img);
 			flat_cnt_div=document.createElement("DIV");
 			flat_cnt_div.innerHTML=flat_cnt;
@@ -228,6 +234,8 @@ function list_all_props(){
 		props_list_table.id="table"+delimiter+dict_name;
 		props_list_table.style.tableLayout="fixed";
 		props_list_table.style.width="100%";
+		props_list_table.style.paddingRight="9px";
+		props_list_table.style.paddingLeft="9px";
 		// Add properties list tbody
 		var props_tbody = document.createElement("TBODY");
 		props_tbody.style.width="100%";
@@ -515,9 +523,7 @@ function add_dict_div_btn(all_props_container){
 	add_dict_div.style.whiteSpace="nowrap";
 	add_dict_div.style.textOverflow="ellipsis";
 	add_dict_div.style.overflow="hidden";
-	add_dict_div.style.display="inline-block";
-	add_dict_div.style.width="100%";
-	add_dict_div.style.maxWidth="100%";
+	add_dict_div.style.paddingLeft="9px";
 	add_dict_div.title = "Add new attribute dictionary";
 	add_dict_div.style.cursor="hand";
 	add_dict_div.onclick=add_new_dict;
@@ -542,6 +548,7 @@ function add_new_attr_btn(props_tbody){
 	add_attr_div.style.display="inline-block";
 	add_attr_div.style.width="100%";
 	add_attr_div.style.maxWidth="100%";
+	add_attr_div.style.paddingLeft="9px";
 	add_attr_div.innerHTML = "Add Attribute";
 	add_attr_div.title = "Add new attribute (property) to a dictionary";
 	add_attr_div.id="add_attr"+delimiter+dict_name;

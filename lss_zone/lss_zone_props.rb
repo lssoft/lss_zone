@@ -1,4 +1,4 @@
-# lss_zone_props.rb ver. 1.2.1 alpha 26-Dec-13
+﻿# lss_zone_props.rb ver. 1.2.1 alpha 26-Dec-13
 # The file, which contains 'Zone Properties' dialog implementation.
 
 # (C) 2013, Links System Software
@@ -376,8 +376,10 @@ module LSS_Extensions
 						@selection.each{|ent|
 							if ent
 								@dicts2erase.each{|dict_name|
-									if ent.attribute_dictionaries[dict_name]
-										ent.delete_attribute(dict_name)
+									if ent.attribute_dictionaries # Additional check added in ver. 1.2.1 04-Jan-14.
+										if ent.attribute_dictionaries[dict_name]
+											ent.delete_attribute(dict_name)
+										end
 									end
 								}
 							end

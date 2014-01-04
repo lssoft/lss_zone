@@ -1,4 +1,4 @@
-# lss_zone_entity.rb ver. 1.2.1 beta 09-Dec-13
+﻿# lss_zone_entity.rb ver. 1.2.1 beta 30-Dec-13
 # This file contains LSS_Zone_Entity class, LSS_Element_Group class and LSS_Volume_Group class.
 # LSS_Zone_Entity class is the main one. It is actively used by other methods.
 # LSS_Element_Group and LSS_Volume_Group are service classes and #create_zone method

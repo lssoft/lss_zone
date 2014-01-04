@@ -1,4 +1,4 @@
-# lss_zone_rebuild.rb ver. 1.2.0 beta 01-Dec-13
+﻿# lss_zone_rebuild.rb ver. 1.2.0 beta 01-Dec-13
 # The file, which contains created zone(s) refreshing implementation
 
 # (C) 2013, Links System Software

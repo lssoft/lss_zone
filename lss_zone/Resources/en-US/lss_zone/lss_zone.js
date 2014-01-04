@@ -200,9 +200,9 @@ function load_init_data() {
 	callRuby("init_dial_d_size");
 	callRuby("get_materials");
 	callRuby("get_categories");
-	obtain_defaults();
 	callRuby("get_dial_style");
 	apply_dial_style();
+	obtain_defaults();
 	document.onkeypress = stopRKey; //It is a trick to prevent onclick event of the first image button after pressing Enter key
 	adjust_dial_height();
 }

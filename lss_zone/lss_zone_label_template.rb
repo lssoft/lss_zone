@@ -1,4 +1,4 @@
-# lss_zone_label_template.rb ver. 1.2.1 alpha 26-Dec-13
+﻿# lss_zone_label_template.rb ver. 1.2.1 alpha 26-Dec-13
 # The script, which implements editing label template (template's name and string)
 
 # (C) 2013, Links System Software

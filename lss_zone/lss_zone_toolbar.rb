@@ -1,4 +1,4 @@
-# lss_zone_toolbar.rb ver. 1.1.2 beta 09-Nov-13
+﻿# lss_zone_toolbar.rb ver. 1.1.2 beta 09-Nov-13
 # File where extension's toolbar and menu entry initialization take place.
 
 # (C) 2013, Links System Software

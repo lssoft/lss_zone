@@ -1,4 +1,4 @@
-# lss_zone_web.rb ver. 1.2.1 alpha 25-Dec-13
+ï»¿# lss_zone_web.rb ver. 1.2.1 beta 04-Jan-14
 # The script, which loads extension's official web-page in a default browser.
 
 # (C) 2013, Links System Software
@@ -40,7 +40,7 @@ module LSS_Extensions
 				# Add 'About' dialog
 				lss_zone_about_cmd=UI::Command.new($lsszoneStrings.GetString("About")){
 					about_str=""
-					about_str+="LSS Zone ver. 1.2.1 alpha 4 (26-Dec-13)\n\n"
+					about_str+="LSS Zone ver. 1.2.1 beta (04-Jan-14)\n\n"
 					about_str+="E-mail1: designer@ls-software.ru\n"
 					about_str+="E-mail2: kirill2007_77@mail.ru\n"
 					about_str+="web-site: http://sites.google.com/site/lssoft2011/\n"
@@ -49,8 +49,8 @@ module LSS_Extensions
 					about_str+="Auto-suggest control, version 2.4, October 10th 2009.\n"
 					about_str+="(c) 2007-2009 Dmitriy Khudorozhkov (dmitrykhudorozhkov@yahoo.com)\n"
 					about_str+="\n Raphael 2.1.0 - JavaScript Vector Library\n"
-					about_str+="Copyright © 2008-2012 Dmitry Baranovskiy (http://raphaeljs.com)\n"
-					about_str+="Copyright © 2008-2012 Sencha Labs (http://sencha.com)\n"
+					about_str+="Copyright Â© 2008-2012 Dmitry Baranovskiy (http://raphaeljs.com)\n"
+					about_str+="Copyright Â© 2008-2012 Sencha Labs (http://sencha.com)\n"
 					about_str+="Licensed under the MIT (http://raphaeljs.com/license.html) license.\n"
 					UI.messagebox(about_str,MB_MULTILINE,"LSS Zone")
 				}

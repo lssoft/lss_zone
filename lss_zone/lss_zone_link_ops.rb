@@ -1,4 +1,4 @@
-# lss_zone_link_ops.rb ver. 1.2.1 alpha 26-Dec-13
+﻿# lss_zone_link_ops.rb ver. 1.2.1 alpha 26-Dec-13
 # The script, which contains 'Link Openings Tool' implementation.
 # This tool searches for adjacent openings among selected zones
 # and marks adjucent openings as internal.

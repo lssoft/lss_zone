@@ -1,4 +1,4 @@
-# lss_zone_list_template.rb ver. 1.2.1 alpha 26-Dec-13
+﻿# lss_zone_list_template.rb ver. 1.2.1 alpha 26-Dec-13
 # The file, which contains report template editing dialog (query string, sort and group options etc)
 
 # (C) 2013, Links System Software

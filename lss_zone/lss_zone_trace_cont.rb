@@ -1,4 +1,4 @@
-# lss_zone_trace_cont.rb ver. 1.2.0 beta 01-Dec-13
+﻿# lss_zone_trace_cont.rb ver. 1.2.1 beta 03-Jan-14
 # The script, which contains a class with contour tracing implementation.
 
 # (C) 2013, Links System Software
@@ -637,6 +637,7 @@ module LSS_Extensions
 				@segm_cnt=0
 				@prev_norm=nil
 				@prev_ent=nil
+				@prev_ent_arr=nil
 				@nodal_points=Array.new
 				@pseudo_progr_str=""
 				@proj_plane=nil
@@ -686,6 +687,14 @@ module LSS_Extensions
 				new_init_vec=hit_ray[1]
 				new_init_pt=new_res[0]
 				new_ent=new_res[1].last
+				new_ent_arr=new_res[1]
+				
+				# Initial detection of new boundary face (it might be corrected later in case of geometrical
+				# coincidence of planes of newly hitted face and previously hitted face).
+				new_face_detected=false
+				if new_ent_arr!=@prev_ent_arr and first_step==false
+					new_face_detected=true
+				end
 				
 				# Check if aperture reached the initial point on the initial face, where tracing started and inform caller of a method,
 				# that it is necessary to stop tracing loop, because contour is closed.
@@ -706,13 +715,14 @@ module LSS_Extensions
 					dist2plane=new_init_pt.distance_to_plane(chk_plane)
 					if dist2plane<0.00001 # Comparison with zero sometimes may fail because of accuracy.
 						new_ent=@prev_ent
+						new_face_detected=false # Added in ver. 1.2.1 03-Jan-14.
 					end
 				end
 				
-				# Add new nodal point in case if aperture detected a new face on its way along previous bonding face.
+				# Add new nodal point in case if aperture detected a new face on its way along previous bounding face.
 				# This situation means, that aperture reached a corner of a room or any other bounding zone, that is
 				# being traced.
-				if new_ent!=@prev_ent
+				if new_face_detected
 					@segm_cnt+=1
 					
 					# Reset segment tracing steps count, since new segment is started
@@ -786,17 +796,27 @@ module LSS_Extensions
 						# intersected entity to #check_point method in order to ignore aperture intersection with it.
 						# In case if #check_point will not be aware of previously intersected entity, infinite loop
 						# will take place right after acute angle detection.
-						@move_res=self.check_point(new_init_pt, new_norm, @prev_ent)
+						if new_ent!=@prev_ent
+							@move_res=self.check_point(new_init_pt, new_norm, @prev_ent)
+						else
+							# Rare situation when new_face_detected is true, but new_ent==@prev_ent.
+							# It may take place when bounds made of some copies (instances) of the same component definition
+							# (component or a group) so face inside it has the same ID in any instance, that's why
+							# new_ent becomes equal to @prev_ent despite the fact of their actual difference.
+							# This additional check was added in ver. 1.2.1 03-Jan-14.
+							@move_res=self.check_point(new_init_pt, new_norm)
+						end
 						
 						# Refresh information about previous initial point, normal and intersected bounding face
 						@prev_init_pt=Geom::Point3d.new(new_init_pt)
 						@prev_norm=Geom::Vector3d.new(new_norm)
 						@prev_ent=new_ent
+						@prev_ent_arr=new_ent_arr
 					
 					# Hadle (most likely rare) situation, when aperture intersected an edge instead of face.
 					else
 						# Move half step back, because ray hit an edge
-						dir_vec=@prev_norm.cross(@z_vec)
+						dir_vec=@prev_norm.cross(@z_axis)
 						dir_vec.length=@aperture_size/2.0
 						
 						# Perform checking again from this back-stepped position
@@ -820,7 +840,7 @@ module LSS_Extensions
 				else
 					# Increase segment tracing steps count, since aperture made a move along the same bounding segment
 					@segm_step+=1
-					
+
 					# Check if segment steps count exceeded limit specified in 'Settings' dialog
 					if @segm_step>@segm_tracing_lim
 						if @warn_mb_active==false

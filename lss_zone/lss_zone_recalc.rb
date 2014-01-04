@@ -1,4 +1,4 @@
-# lss_zone_recalc.rb ver. 1.1.2 beta 09-Nov-13
+﻿# lss_zone_recalc.rb ver. 1.1.2 beta 09-Nov-13
 # The file, which contains implementation of recalculation of quantitative
 # attributes of an existing zone. It may be used to make quantitative attributes
 # match actual geometry of a zone without affecting geometry itself.

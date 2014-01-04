@@ -1,4 +1,4 @@
-# lss_zone_labels.rb ver. 1.2.1 alpha 26-Dec-13
+﻿# lss_zone_labels.rb ver. 1.2.1 beta 30-Dec-13
 # The script, which implements attaching labels with zone attributes to existing zone objects
 # in an active model.
 
@@ -262,6 +262,10 @@ module LSS_Extensions
 			# inside newly created zone group.
 			
 			def attach_labels
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=14
+					@label_template=@label_template.force_encoding("UTF-8")
+				end
 				rebuild_tool=LSS_Zone_Rebuild_Tool.new
 				dict_name="zone_label: "+@preset_name
 				i=1
@@ -294,6 +298,7 @@ module LSS_Extensions
 			# This method reads label template from a file with a name equal to @preset_file_name
 			
 			def read_template_from_file
+				su_ver=Sketchup.version
 				return if @preset_name.nil? or @preset_name==""
 				@preset_file_name=@preset_names[@preset_name]
 				if @preset_file_name.nil?
@@ -301,7 +306,13 @@ module LSS_Extensions
 				end
 				resource_dir=LSS_Dirs.new.resource_path
 				presets_dir="#{resource_dir}/label_presets/"
-				preset_file=File.open(presets_dir+@preset_file_name, "r")
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=14
+					preset_file_path=(presets_dir+@preset_file_name).force_encoding("UTF-8")
+				else
+					preset_file_path=(presets_dir+@preset_file_name)
+				end
+				preset_file=File.open(preset_file_path, "r")
 				@label_template=""
 				read_template=false
 				finish_reading=false
@@ -317,7 +328,11 @@ module LSS_Extensions
 						break
 					end
 					if read_template
-						@label_template+=line
+						if su_ver.split(".")[0].to_i>=14
+							@label_template+=line.force_encoding("UTF-8")
+						else
+							@label_template+=line
+						end
 					end
 				end
 				preset_file.close
@@ -363,12 +378,20 @@ module LSS_Extensions
 			
 			def delete_preset
 				resource_dir=LSS_Dirs.new.resource_path
+				su_ver=Sketchup.version
 				presets_dir="#{resource_dir}/label_presets/"
+				if su_ver.split(".")[0].to_i>=14
+					presets_dir=presets_dir.force_encoding("UTF-8")
+				end
 				file2del_name=nil
 				Dir.foreach(presets_dir){|preset_file_name|
 					if preset_file_name!="." and preset_file_name!=".."
 						begin
-							preset_file=File.open(presets_dir+preset_file_name, "r")
+							if su_ver.split(".")[0].to_i>=14
+								preset_file=File.open((presets_dir+preset_file_name).force_encoding("UTF-8"), "r")
+							else
+								preset_file=File.open((presets_dir+preset_file_name), "r")
+							end
 							while (line = preset_file.gets)
 								key_val=line.split("=")
 								if key_val[1]
@@ -388,7 +411,11 @@ module LSS_Extensions
 						break if file2del_name
 					end
 				}
-				File.delete(presets_dir+file2del_name) if file2del_name
+				if su_ver.split(".")[0].to_i>=14
+					File.delete((presets_dir+file2del_name).force_encoding("UTF-8")) if file2del_name
+				else
+					File.delete(presets_dir+file2del_name) if file2del_name
+				end
 				@preset_name=""
 				@preset_file_name=""
 				self.refresh
@@ -418,12 +445,16 @@ module LSS_Extensions
 				presets_dir="#{resource_dir}/label_presets/"
 				file_exist=true
 				file_no=0
+				su_ver=Sketchup.version
 				while file_exist
 					file_no_str=file_no.to_s
 					file_no_str="0"+file_no_str if file_no_str.length<2
 					file_no_str="0"+file_no_str if file_no_str.length<3
 					new_file_name="label_"+file_no_str+".lbl"
 					full_name=presets_dir+new_file_name
+					if su_ver.split(".")[0].to_i>=14
+						full_name=full_name.force_encoding("UTF-8")
+					end
 					file_exist=File.exist?(full_name)
 					if file_exist==false
 						new_preset=File.new(full_name, "w")
@@ -468,10 +499,18 @@ module LSS_Extensions
 				@preset_names=Hash.new
 				resource_dir=LSS_Dirs.new.resource_path
 				presets_dir="#{resource_dir}/label_presets/"
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=14
+					presets_dir=presets_dir.force_encoding("UTF-8")
+				end
 				Dir.foreach(presets_dir){|preset_file_name|
 					if preset_file_name!="." and preset_file_name!=".."
 						begin
-							preset_file=File.open(presets_dir+preset_file_name, "r")
+							if su_ver.split(".")[0].to_i>=14
+								preset_file=File.open((presets_dir+preset_file_name).force_encoding("UTF-8"), "r")
+							else
+								preset_file=File.open((presets_dir+preset_file_name), "r")
+							end
 							while (line = preset_file.gets)
 								key_val=line.split("=")
 								key_val[1]=key_val[1].gsub("\n", "")
@@ -595,7 +634,12 @@ module LSS_Extensions
 			def save_template
 				resource_dir=LSS_Dirs.new.resource_path
 				presets_dir="#{resource_dir}/label_presets/"
-				preset_file=File.open(presets_dir+@preset_file_name, "w")
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=14
+					preset_file=File.open((presets_dir+@preset_file_name).force_encoding("UTF-8"), "w")
+				else
+					preset_file=File.open((presets_dir+@preset_file_name), "w")
+				end
 				preset_file.puts("label_name=#{@preset_name}")
 				preset_file.puts("<label_template>")
 				preset_file.puts(@label_template)

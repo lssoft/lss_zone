@@ -1,4 +1,4 @@
-# lss_zone_help.rb ver. 1.1.2 beta 08-Nov-13
+﻿# lss_zone_help.rb ver. 1.1.2 beta 08-Nov-13
 # The file whith the script, which launches help system.
 
 # (C) 2013, Links System Software

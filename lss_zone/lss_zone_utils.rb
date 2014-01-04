@@ -1,4 +1,4 @@
-# lss_zone_utils.rb ver. 1.1.2 beta 09-Nov-13
+﻿# lss_zone_utils.rb ver. 1.1.2 beta 09-Nov-13
 # File with some utility classes:
 # - LSS_Geom
 # - LSS_Math
