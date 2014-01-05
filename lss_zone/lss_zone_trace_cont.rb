@@ -1,4 +1,4 @@
-﻿# lss_zone_trace_cont.rb ver. 1.2.1 beta 03-Jan-14
+# lss_zone_trace_cont.rb ver. 1.2.1 beta 03-Jan-14
 # The script, which contains a class with contour tracing implementation.
 
 # (C) 2013, Links System Software

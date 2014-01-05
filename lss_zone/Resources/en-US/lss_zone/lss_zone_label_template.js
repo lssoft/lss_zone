@@ -31,7 +31,10 @@ function custom_init(){
 }
 
 function send_label_template(txt_box){
-	var label_text=escape(txt_box.value);
+	// Escape only new line characters instead of escaping the whole string as it was before escape(txt_box.value).
+	// The point is that 'escape' method escapes all UTF-8 characters, so the result 'label_template' string
+	// becomes unreadable in ruby. Change made in ver. 1.2.1 05-Jan-14.
+	var label_text=txt_box.value.replace(/[\n]/g, '%0A');
 	var act_name="label_template" + delimiter + label_text;
 	callRuby(act_name);
 	callRuby("get_label_preview");

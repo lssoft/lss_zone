@@ -1,4 +1,4 @@
-﻿# lss_zone_filter.rb ver. 1.2.1 alpha 26-Dec-13
+# lss_zone_filter.rb ver. 1.2.1 beta 05-Jan-14
 # The file, which contains 'Filter' dialog implementation
 
 # (C) 2013, Links System Software

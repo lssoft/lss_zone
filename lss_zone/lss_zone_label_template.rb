@@ -1,4 +1,4 @@
-﻿# lss_zone_label_template.rb ver. 1.2.1 alpha 26-Dec-13
+# lss_zone_label_template.rb ver. 1.2.1 beta 05-Jan-14
 # The script, which implements editing label template (template's name and string)
 
 # (C) 2013, Links System Software
@@ -79,6 +79,8 @@ module LSS_Extensions
 				return if $lss_label_template_dial_is_active
 				$lss_label_template_dial_is_active=true
 				
+				su_ver=Sketchup.version
+				
 				# Read defaults
 				self.read_defaults
 				
@@ -113,6 +115,7 @@ module LSS_Extensions
 					end
 					if action_name.split(",")[0]=="label_template"
 						@label_template=action_name.split(",")[1]
+						
 						@labels_tool.label_template=@label_template
 						@labels_tool.generate_label_preview_txt
 						@labels_tool.send_label_preview2dlg(@label_template_dial)

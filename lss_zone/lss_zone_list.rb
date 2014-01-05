@@ -1,4 +1,4 @@
-﻿# lss_zone_list.rb ver. 1.2.1 beta 30-Dec-13
+# lss_zone_list.rb ver. 1.2.1 beta 30-Dec-13
 # The file, which contains report generator implementation.
 # It generates selected zones list for further saving
 # it to an HTML file.

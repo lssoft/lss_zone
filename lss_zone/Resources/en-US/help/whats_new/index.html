@@ -72,7 +72,8 @@ function send_size(){
 	<p><a href="index.html"><span class="blackheader">Version 1.2.1</span></a></p>
 	<br>
 	<img src="images/standard_vs_small.png" height="300px"><br>
-	This update was basically focused on user interface improvements.
+	This update was basically focused on user interface improvements and what is even more important
+	this version is made compatible with SketchUp 2014.
 	<p><span class="blacksubheader">New Features</span></p>
 	<ul>
 		<li>ability to switch all dialogs to a smaller font size added</li>
@@ -88,10 +89,22 @@ function send_size(){
 			persistence of zone's label position added (it is possible to move label manually after attaching and label will stay
 			at the same position after rebuilding of a zone)
 		</li>
+		<li>
+			eye-droppers of 'LSS Zone' main tool dialog now pick visible material of a face (tool checks
+			if front surface or back surface of a face is under cursor and returns
+			face.material or face.back_material depended on check result)
+		</li>
+		<li>'LSS Zone' extension is made compatible with SketchUp 2014</li>
 	</ul>
 	<p><span class="blacksubheader">Fixes</span></p>
 	<ul>
 		<li>pressing of an 'eye-dropper' button of 'Zone Tool' dialog now unpresses other 'eye-dropper' buttons in case if they were pressed</li>
+		<li>label template now processes well all characters</li>
+		<li>contour tracing now traces contours made of instances of the same component definition/group</li>
+		<li>
+			deleting of an attribute dictionary in 'Properties' dialog now handles the situation when there are not only zone
+			objects in current selection set
+		</li>
 	</ul>
 </body>
 </html>

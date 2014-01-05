@@ -1,4 +1,4 @@
-﻿# lss_zone_labels.rb ver. 1.2.1 beta 30-Dec-13
+# lss_zone_labels.rb ver. 1.2.1 beta 05-Jan-14
 # The script, which implements attaching labels with zone attributes to existing zone objects
 # in an active model.
 
@@ -427,6 +427,10 @@ module LSS_Extensions
 			def edit_preset
 				template_inst=LSS_Zone_Label_Template.new
 				template_inst.preset_name=@preset_name
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=14
+					@label_template=@label_template.force_encoding("UTF-8")
+				end
 				template_inst.label_template=@label_template
 				template_inst.labels_tool=self
 				template_inst.create_web_dial
@@ -577,6 +581,10 @@ module LSS_Extensions
 			# This method draws label preview text right in the center of screen in a current model.
 			
 			def draw_label_preview(view)
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=14
+					@label_preview_txt=@label_preview_txt.force_encoding("UTF-8")
+				end
 				return if @preset_name.nil? or @preset_name==""
 				txt_pt=view.center
 				preview_text="Preview of Label:\n\n" + @label_preview_txt
@@ -589,6 +597,7 @@ module LSS_Extensions
 			# the screen.
 			
 			def generate_label_preview_txt
+				su_ver=Sketchup.version
 				if @label_template.nil? or @label_template==""
 					@label_preview_txt=""
 					return
@@ -625,16 +634,23 @@ module LSS_Extensions
 						else
 							
 					end
-					@label_preview_txt.gsub!(attr_name, value.to_s)
+					if su_ver.split(".")[0].to_i>=14
+						@label_preview_txt.force_encoding("UTF-8").gsub!(attr_name, value.to_s)
+					else
+						@label_preview_txt.gsub!(attr_name, value.to_s)
+					end
 				}
 			end
 			
 			# This method saves template to a corresponding label template file.
 			
 			def save_template
+				su_ver=Sketchup.version
+				if su_ver.split(".")[0].to_i>=14
+					@label_template=@label_template.force_encoding("UTF-8")
+				end
 				resource_dir=LSS_Dirs.new.resource_path
 				presets_dir="#{resource_dir}/label_presets/"
-				su_ver=Sketchup.version
 				if su_ver.split(".")[0].to_i>=14
 					preset_file=File.open((presets_dir+@preset_file_name).force_encoding("UTF-8"), "w")
 				else
